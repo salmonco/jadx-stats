@@ -1,0 +1,101 @@
+/* 테이블 컨테이너 스타일 */
+.statistics-table-container {
+  overflow-x: auto !important;
+  border: 1px solid #d1d1d1 !important;
+  border-radius: 6px !important;
+}
+
+/* 테이블 기본 스타일 */
+.statistics-table {
+  width: 100% !important;
+  background-color: white !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* 헤더 스타일 */
+.statistics-table thead th {
+  background-color: #eeeeee !important;
+  color: #4c4c4c !important;
+  font-weight: 600 !important;
+  padding: 12px 20px !important;
+  text-align: center !important;
+  border-bottom: 1px solid #d1d1d1 !important;
+  border-right: 1px solid #d1d1d1 !important;
+  white-space: nowrap !important;
+}
+
+.statistics-table .th-measure {
+  background-color: #f6f5f5 !important;
+  color: #6d6d6d !important;
+}
+
+/* 고정된 첫 번째 열 스타일 */
+.statistics-table .sticky-column {
+  position: sticky !important;
+  left: 0 !important;
+  background-color: #eeeeee !important;
+  z-index: 10 !important;
+  border-right: 1px solid #d1d1d1 !important;
+  white-space: nowrap !important;
+}
+
+.statistics-table td.sticky-column {
+  text-align: left !important;
+}
+
+/* 테이블 셀 스타일 */
+.statistics-table td {
+  padding: 14px 20px !important;
+  border-bottom: 1px solid #d1d1d1 !important;
+  border-right: 1px solid #d1d1d1 !important;
+  color: #4c4c4c !important;
+  white-space: nowrap !important;
+  text-align: right !important;
+}
+
+/* 행 호버 효과 */
+.statistics-table tbody tr:hover .data-cell {
+  background-color: #f8f8f8 !important;
+}
+
+/* 열 하이라이트 효과 - 더 진한 색상으로 변경 */
+.statistics-table .highlight {
+  background-color: #f8f8f8 !important;
+}
+
+/* 행과 열이 교차하는 셀의 하이라이트 효과 - 더 진한 색상 */
+.statistics-table tbody tr:hover td.highlight {
+  background-color: #e6e5e5 !important;
+}
+
+/* 마지막 행의 테두리 유지 */
+.statistics-table tbody tr:last-child td {
+  border-bottom: 1px solid #bababa !important;
+}
+
+/* 마지막 열의 오른쪽 테두리 제거 */
+.statistics-table th:last-child,
+.statistics-table td:last-child {
+  border-right: none !important;
+}
+
+.statistics-table thead tr:first-child th {
+  border-top: none !important;
+}
+
+.group-header {
+  font-weight: 600;
+  color: #666;
+  background-color: #eeeeee;
+  display: block;
+  padding: 8px 18px;
+  margin: -12px -20px;
+  text-align: left;
+}
+
+.group-header-cell {
+  background-color: #eeeeee !important;
+}

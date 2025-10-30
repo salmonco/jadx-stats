@@ -1,0 +1,164 @@
+/* openlayers */
+.ol-zoom {
+  left: unset !important;
+  top: 0.5em !important;
+  right: 0.5em !important;
+}
+
+.ol-zoomslider {
+  left: unset !important;
+  top: 4.5em !important;
+  right: 0.5em !important;
+  background: repeating-linear-gradient(to bottom, #888, /* 눈금색 */ #888 1px, transparent 1px, transparent 10.597px);
+  background-repeat: no-repeat;
+  background-size: 15px 100%; /* 눈금의 가로 폭, 전체 높이 */
+  background-position: center; /* 가로 중앙에 위치 */
+}
+/* 중앙 세로 회색선 */
+.ol-zoomslider::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 50%;
+  width: 5px;
+  background-color: #aaa; /* 회색 */
+  transform: translateX(-50%);
+}
+.ol-zoomslider-thumb {
+  border: 1px solid #555;
+}
+.ol-zoomslider-thumb::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  right: 2px;
+  height: 1px;
+  background-color: rgb(245, 67, 13);
+  transform: translateY(-50%);
+}
+
+.ol-scale-bar {
+  background-color: rgba(255, 255, 255, 0.65);
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 27px 15px 13px 13px;
+  font-size: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ol-scale-bar-inner {
+  padding-bottom: 10px;
+}
+
+.ol-scale-text {
+  font-weight: 500;
+  color: #000;
+  font-size: 15px !important;
+  text-shadow: none !important;
+  padding-bottom: 9px;
+}
+
+.ol-scale-step-text {
+  color: #000;
+  text-shadow: none !important;
+  font-size: 14px !important;
+  padding-bottom: 5px;
+}
+
+.ol-scale-step-marker {
+  display: none;
+}
+/* openlayers */
+
+/* antdesign */
+.ant-menu-horizontal .ant-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.ant-menu-horizontal .ant-menu-submenu-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.ant-menu-dark .ant-menu-sub {
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+  background-color: rgb(31, 41, 55) !important;
+}
+
+.gis-drawer > .ant-drawer-header {
+  display: none;
+}
+
+.gis-drawer {
+  height: calc(100% - 28px) !important;
+  margin: 14px 10px;
+  border-radius: 8px;
+}
+
+.drawer-open-handle {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  top: 14px;
+  left: 10px;
+  width: 70px;
+  background-color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #222;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.07);
+}
+
+.drawer-open-handle > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 75px;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.drawer-open-handle > div:last-child {
+  border-bottom: none;
+}
+
+.drawer-open-handle > div:hover {
+  background-color: #f0f0f0;
+  font-weight: 500;
+}
+
+.drawer-close-handle {
+  position: absolute;
+  top: 14px;
+  right: -53px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: white;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-color-picker .ant-color-picker-disabled {
+  background-color: #fff !important;
+}
+
+/* antdesign */
