@@ -1,7 +1,7 @@
 import React from "react";
 
 interface Props {
-  title: string | React.ReactNode;
+  title?: string | React.ReactNode;
   tooltip?: React.ReactNode;
   mapContent: React.ReactNode;
   filterContent?: React.ReactNode;

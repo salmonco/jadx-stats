@@ -1,19 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { RegionLevels } from "~/services/types/visualizationTypes";
-import visualizationApi from "~/services/apis/visualizationApi";
-import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
-import ChartContainer from "~/features/visualization/components/common/ChartContainer";
-import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
-import { regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
-import { AgingStatusLayer, Feature, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
-import AgingStatusDivergingBarChart from "~/features/visualization/components/production/AgingStatusDivergingBarChart";
-import useSetupOL from "~/maps/hooks/useSetupOL";
-import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
-import { colorsRed } from "~/utils/gisColors";
+import { useEffect, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import ChartContainer from "~/features/visualization/components/common/ChartContainer";
+import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
+import AgingStatusDivergingBarChart from "~/features/visualization/components/production/AgingStatusDivergingBarChart";
 import AgingStatusTable from "~/features/visualization/components/production/AgingStatusTable";
-import { Switch } from "antd";
+import { AgingStatusLayer, Feature, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
+import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
+import useSetupOL from "~/maps/hooks/useSetupOL";
+import visualizationApi from "~/services/apis/visualizationApi";
+import { RegionLevels } from "~/services/types/visualizationTypes";
+import { colorsRed } from "~/utils/gisColors";
 
 const MAP_ID = uuidv4();
 const mapOptions: MapOptions = {
@@ -134,22 +131,17 @@ const AgingStatus = () => {
 
   return (
     <VisualizationContainer
-      title={
-        <div className="flex justify-between">
-          <div className="flex items-center gap-6">
-            <div className="text-2xl font-semibold text-white">고령화 통계</div>
-            <div className="w-[380px]">
-              <ButtonGroupSelector cols={5} options={regionLevelOptions} selectedValues={selectedLevel} setSelectedValues={setSelectedLevel} />
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <p className="flex-shrink-0 text-[18px] font-semibold text-white">동 지역 제외</p>
-            <Switch checked={excludeDong} onChange={setExcludeDong} />
-          </div>
-        </div>
-      }
       mapContent={
-        <BackgroundMap layerManager={layerManager} ready={ready} mapId={MAP_ID} mapOptions={mapOptions}>
+        <BackgroundMap
+          layerManager={layerManager}
+          ready={ready}
+          mapId={MAP_ID}
+          mapOptions={mapOptions}
+          selectedLevel={selectedLevel}
+          setSelectedLevel={setSelectedLevel}
+          excludeDong={excludeDong}
+          setExcludeDong={setExcludeDong}
+        >
           <AgingStatusLegend features={features} />
         </BackgroundMap>
       }
