@@ -4,9 +4,10 @@ interface LayerHeaderProps {
   title: string;
   tooltip?: React.ReactNode;
   onClickFullScreen?: () => void;
+  onAddMap: () => void;
 }
 
-const LayerHeader = ({ title, tooltip, onClickFullScreen }: LayerHeaderProps) => {
+const LayerHeader = ({ title, tooltip, onClickFullScreen, onAddMap }: LayerHeaderProps) => {
   return (
     <div className="absolute left-0 top-0 flex w-full justify-between bg-[#37445E] p-3">
       <div className="flex items-center gap-2.5">
@@ -21,8 +22,9 @@ const LayerHeader = ({ title, tooltip, onClickFullScreen }: LayerHeaderProps) =>
         </button>
         {/* TODO: 공유 구현 */}
         <div>공유</div>
-        {/* TODO: 다중뷰 구현 */}
-        <div>다중뷰</div>
+        <button onClick={onAddMap} className="text-white" aria-label="지도 추가" title="지도 추가">
+          +
+        </button>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import BackgroundMapList from "~/maps/classes/BackgroundMapList";
@@ -14,6 +14,9 @@ const AgingStatus = () => {
       }),
     []
   );
+
+  // 지도가 변경될 때마다 컴포넌트를 리렌더링하도록 설정
+  useSyncExternalStore(mapList.subscribe, mapList.getSnapshot);
 
   return <VisualizationContainer mapContent={mapList.renderMaps()} chartContent={mapList.renderFirstChart()} />;
 };
