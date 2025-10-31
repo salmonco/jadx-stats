@@ -1,5 +1,5 @@
 import { Feature } from "~/features/visualization/layers/AgingStatusLayer";
-import { AgingChartData } from "~/pages/visualization/production/AgingStatus";
+import { AgingChartData } from "~/maps/components/agingStatus/AgingStatusChart";
 
 const transformToChartData = (features: Feature[]): AgingChartData[] => {
   const data = features

@@ -1,6 +1,8 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import { MapOptions } from "~/maps/components/BackgroundMap";
 import BackgroundMapWrapper from "~/maps/components/BackgroundMapWrapper";
+import ChartRenderer from "~/maps/components/common/ChartRenderer";
+import MapRenderer from "~/maps/components/common/MapRenderer";
 
 type ConstructorParams<T> = { title: string; tooltip?: React.ReactNode; mapOptionsList: MapOptions[]; mapClass: new (mapOptions: MapOptions) => T };
 
@@ -13,8 +15,8 @@ class BackgroundMapList<T extends CommonBackgroundMap = CommonBackgroundMap> {
     this.#title = title;
     this.#tooltip = tooltip ?? null;
     this.#maps = mapOptionsList.map((opt) => new mapClass(opt));
-    // `subscribe` 및 `getSnapshot` 메서드의 `this` 컨텍스트를 바인딩하여
-    // `useSyncExternalStore`에 전달될 때 컨텍스트가 손실되지 않도록 합니다.
+
+    // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
     this.getSnapshot = this.getSnapshot.bind(this);
   }
@@ -28,22 +30,23 @@ class BackgroundMapList<T extends CommonBackgroundMap = CommonBackgroundMap> {
   }
 
   renderMaps() {
-    return <BackgroundMapWrapper title={this.#title} tooltip={this.#tooltip} maps={this.#maps.map((map) => map.renderMap())} />;
+    return (
+      <BackgroundMapWrapper
+        title={this.#title}
+        tooltip={this.#tooltip}
+        maps={this.#maps.map((map) => (
+          <MapRenderer key={map.mapId} map={map} />
+        ))}
+      />
+    );
   }
 
   renderFirstChart() {
     if (this.#maps.length === 0) {
       return null;
     }
-    return this.#maps[0].renderChart();
-  }
 
-  getMaps() {
-    return this.#maps;
-  }
-
-  getFirstMap() {
-    return this.#maps[0];
+    return <ChartRenderer map={this.#getFirstMap()} />;
   }
 
   /**
@@ -63,6 +66,10 @@ class BackgroundMapList<T extends CommonBackgroundMap = CommonBackgroundMap> {
    */
   getSnapshot() {
     return this.#maps.map((map) => map.getSnapshot()).join("|");
+  }
+
+  #getFirstMap() {
+    return this.#maps[0];
   }
 }
 

@@ -48,19 +48,36 @@ class CommonBackgroundMap {
    */
   #mapType: MapType = DEFAULT_MAP_TYPE;
 
-  constructor(mapOptions) {
+  /**
+   * 리액트 컴포넌트의 렌더링 제어를 위한 구독자 목록
+   * - 클래스 내부 필드 값 변경 시 notifyListeners 메서드를 통해 모든 구독자에게 알림
+   */
+  #listeners = new Set<() => void>();
+
+  /**
+   * 상태 변경 감지를 위한 내부 수정 번호
+   */
+  #revision = 0;
+
+  constructor(mapOptions: MapOptions) {
     this.#mapOptions = mapOptions;
-    // `subscribe` 및 `getSnapshot` 메서드의 `this` 컨텍스트를 바인딩하여
-    // `useSyncExternalStore`에 전달될 때 컨텍스트가 손실되지 않도록 합니다.
+
+    // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
     this.getSnapshot = this.getSnapshot.bind(this);
   }
 
   /**
-   * 대표 지도 반환 (첫 번째 지도)
-   * - 그래프에 표시하고, 보고서 생성할 지도
+   * @returns 선택된 지역 구분
    */
-  getFirstMap() {}
+  getSelectedRegionLevel() {
+    return this.#regionFilterSetting.구분;
+  }
+
+  setSelectedRegionLevel(level: RegionLevelOptions) {
+    this.#regionFilterSetting.구분 = level;
+    this.notifyListeners();
+  }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
   renderMap() {
@@ -72,23 +89,14 @@ class CommonBackgroundMap {
     return <></>;
   }
 
-  get mapId() {
-    return this.#mapId;
-  }
-
-  get mapOptions() {
-    return this.#mapOptions;
-  }
-
   /**
-   * @returns 선택된 지역 레벨
+   * 상태 변경 시 모든 구독자에게 알리는 보호된 메서드입니다.
+   * `revision` 값을 증가시켜 새로운 스냅샷을 생성하고 구독자에게 알립니다.
    */
-  getSelectedRegionLevel() {
-    return this.#regionFilterSetting.구분;
-  }
-
-  #listeners = new Set<() => void>();
-  #revision = 0;
+  protected notifyListeners = () => {
+    this.#revision++;
+    this.#listeners.forEach((cb) => cb());
+  };
 
   /**
    * 외부 스토어 구독을 위한 메서드. 리스너를 추가하고 구독 해제 함수를 반환합니다.
@@ -110,18 +118,12 @@ class CommonBackgroundMap {
     return String(this.#revision);
   }
 
-  /**
-   * 상태 변경 시 모든 구독자에게 알리는 보호된 메서드입니다.
-   * `revision` 값을 증가시켜 새로운 스냅샷을 생성하고 구독자에게 알립니다.
-   */
-  protected notifyListeners = () => {
-    this.#revision++;
-    this.#listeners.forEach((cb) => cb());
-  };
+  get mapId() {
+    return this.#mapId;
+  }
 
-  setSelectedRegionLevel(level: RegionLevelOptions) {
-    this.#regionFilterSetting.구분 = level;
-    this.notifyListeners();
+  get mapOptions() {
+    return this.#mapOptions;
   }
 
   get excludeDong() {

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import BackgroundMapList from "~/maps/classes/BackgroundMapList";
@@ -10,15 +11,18 @@ const mapOptions: MapOptions = {
   roundCorners: true,
 };
 
-export interface AgingChartData {
-  region: string;
-  label: string;
-  avg_age: number;
-  count: number;
-}
+const TITLE = "고령화 현황";
 
 const AgingStatus = () => {
-  const mapList = new BackgroundMapList<AgingStatusMap>({ title: "고령화 현황", mapOptionsList: [mapOptions, mapOptions], mapClass: AgingStatusMap });
+  const mapList = useMemo(
+    () =>
+      new BackgroundMapList<AgingStatusMap>({
+        title: TITLE,
+        mapOptionsList: [mapOptions, mapOptions],
+        mapClass: AgingStatusMap,
+      }),
+    []
+  );
 
   return <VisualizationContainer mapContent={mapList.renderMaps()} chartContent={mapList.renderFirstChart()} />;
 };

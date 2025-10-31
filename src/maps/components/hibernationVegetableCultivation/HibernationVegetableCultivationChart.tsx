@@ -24,7 +24,6 @@ const HibernationVegetableCultivationChart = ({ selectedRegionLevel, selectedTar
     // enabled: !!ready,
   });
 
-  // features 차트 데이터로 가공
   useEffect(() => {
     if (features) {
       const processed = processedData(features);
