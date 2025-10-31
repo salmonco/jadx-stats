@@ -4,7 +4,12 @@ import BackgroundMapWrapper from "~/maps/components/BackgroundMapWrapper";
 import ChartRenderer from "~/maps/components/common/ChartRenderer";
 import MapRenderer from "~/maps/components/common/MapRenderer";
 
-type ConstructorParams<T> = { title: string; tooltip?: React.ReactNode; mapOptionsList: MapOptions[]; mapClass: new (mapOptions: MapOptions) => T };
+type ConstructorParams<T> = {
+  title: string;
+  tooltip?: React.ReactNode;
+  mapOptionsList: MapOptions[];
+  mapClass: new (mapOptions: MapOptions) => T;
+};
 
 class BackgroundMapList<T extends CommonBackgroundMap = CommonBackgroundMap> {
   #title: string;
