@@ -1,6 +1,6 @@
 interface LayerHeaderProps {
   title: string;
-  tooltip: React.ReactNode;
+  tooltip?: React.ReactNode;
 }
 
 export const LayerHeader = ({ title, tooltip }: LayerHeaderProps) => {

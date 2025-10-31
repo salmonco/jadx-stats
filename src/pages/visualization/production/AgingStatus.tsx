@@ -136,7 +136,6 @@ const AgingStatus = () => {
       mapContent={
         <BackgroundMapWrapper
           title="고령화 현황"
-          tooltip={<span>Tooltip content</span>}
           maps={[
             <BackgroundMap layerManager={layerManager} ready={ready} mapId={MAP_ID} mapOptions={mapOptions}>
               <AgingStatusLegend features={features} />

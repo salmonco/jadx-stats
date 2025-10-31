@@ -1,12 +1,12 @@
 import { LayerHeader } from "~/maps/components/LayerHeader";
 
-interface Props {
+interface BackgroundMapWrapperProps {
   title: string;
-  tooltip: React.ReactNode;
+  tooltip?: React.ReactNode;
   maps: Array<React.ReactNode>;
 }
 
-const BackgroundMapWrapper = ({ title, tooltip, maps }: Props) => {
+const BackgroundMapWrapper = ({ title, tooltip, maps }: BackgroundMapWrapperProps) => {
   return (
     <div className="relative flex h-full w-full">
       {maps.map((map) => (

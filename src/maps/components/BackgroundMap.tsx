@@ -103,7 +103,6 @@ const BackgroundMap = ({ layerManager, eventManager, ready, mapId, map, mapOptio
   return (
     <div className={cn("relative h-full w-full border border-[#43516D]", mergedMapOptions?.roundCorners && "overflow-clip rounded-lg", mergedMapOptions?.className)}>
       <div className="h-full w-full" id={mapId} />
-
       {ready && (
         <>
           {mergedMapOptions?.miniMap && <MiniMap mainMap={map} />}
