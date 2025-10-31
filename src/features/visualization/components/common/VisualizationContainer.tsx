@@ -1,6 +1,7 @@
 import React from "react";
 
 interface Props {
+  // TODO: title 삭제
   title?: string | React.ReactNode;
   tooltip?: React.ReactNode;
   mapContent: React.ReactNode;

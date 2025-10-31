@@ -1,4 +1,4 @@
-import { LayerHeader } from "~/maps/components/LayerHeader";
+import LayerHeader from "~/maps/components/LayerHeader";
 
 interface BackgroundMapWrapperProps {
   title: string;

@@ -29,9 +29,11 @@ export interface AgingChartData {
 }
 
 const AgingStatus = () => {
+  // TODO: layerManager를 여러 개 생성하는 부분을 훅으로 분리
   const { layerManager, ready } = useSetupOL(MAP_ID, 10.5, "jeju", true, false);
   const { layerManager: layerManager2, ready: ready2 } = useSetupOL("test", 10.5, "jeju", true, false);
 
+  // TODO: 필터 컴포넌트로 분리
   const [selectedLevel, setSelectedLevel] = useState<RegionLevels>("emd");
   const [excludeDong, setExcludeDong] = useState<boolean>(true);
 
@@ -136,6 +138,7 @@ const AgingStatus = () => {
       mapContent={
         <BackgroundMapWrapper
           title="고령화 현황"
+          // TODO: maps를 동적으로 처리하도록 수정
           maps={[
             <BackgroundMap layerManager={layerManager} ready={ready} mapId={MAP_ID} mapOptions={mapOptions}>
               <AgingStatusLegend features={features} />
