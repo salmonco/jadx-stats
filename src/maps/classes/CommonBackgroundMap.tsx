@@ -91,7 +91,7 @@ class CommonBackgroundMap {
 
   /**
    * 상태 변경 시 모든 구독자에게 알리는 보호된 메서드입니다.
-   * `revision` 값을 증가시켜 새로운 스냅샷을 생성하고 구독자에게 알립니다.
+   * - `revision` 값을 증가시켜 새로운 스냅샷을 생성하고 구독자에게 알립니다.
    */
   protected notifyListeners = () => {
     this.#revision++;
@@ -111,7 +111,7 @@ class CommonBackgroundMap {
 
   /**
    * 현재 스냅샷을 반환하는 메서드. React의 `useSyncExternalStore` 훅에서 사용됩니다.
-   * 스냅샷은 상태 변경을 감지하기 위한 고유한 값이어야 합니다.
+   * - 스냅샷은 상태 변경을 감지하기 위한 고유한 값이어야 합니다.
    * @returns 현재 상태를 나타내는 문자열 스냅샷
    */
   getSnapshot() {
