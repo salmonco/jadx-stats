@@ -52,12 +52,10 @@ const HibernationVegetableCultivationMapContent = ({
 
     if (existingLayer) {
       existingLayer.updateFeatures(features);
-      // TODO: selectedCrops 배열 전체를 받도록 하기
-      existingLayer.updateSelectedCrops(selectedCrops[0]);
+      existingLayer.updateSelectedCrops(selectedCrops);
       existingLayer.changed();
     } else {
-      // TODO: selectedCrops 배열 전체를 받도록 하기
-      HibernationVegetableCultivationLayer.createLayer(features, selectedCrops[0]).then((layer) => {
+      HibernationVegetableCultivationLayer.createLayer(features, selectedCrops).then((layer) => {
         layerManager.addLayer(layer, "HibernationVegetableCultivationLayer", 1);
       });
     }
@@ -70,7 +68,7 @@ const HibernationVegetableCultivationMapContent = ({
         <FilterContainer>
           <YearSelector targetYear={TARGET_YEAR} selectedTargetYear={selectedTargetYear} setSelectedTargetYear={setSelectedTargetYear} />
           <ButtonGroupSelector title="권역 단위" cols={5} options={regionLevelOptions} selectedValues={selectedRegionLevel} setSelectedValues={setSelectedRegionLevel} />
-          <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={selectedCrops} setSelectedValues={setSelectedCrops} />
+          <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={selectedCrops} setSelectedValues={setSelectedCrops} multiSelect />
         </FilterContainer>
       </div>
     </BackgroundMap>

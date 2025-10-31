@@ -50,6 +50,10 @@ class CommonBackgroundMap {
 
   constructor(mapOptions) {
     this.#mapOptions = mapOptions;
+    // `subscribe` 및 `getSnapshot` 메서드의 `this` 컨텍스트를 바인딩하여
+    // `useSyncExternalStore`에 전달될 때 컨텍스트가 손실되지 않도록 합니다.
+    this.subscribe = this.subscribe.bind(this);
+    this.getSnapshot = this.getSnapshot.bind(this);
   }
 
   /**
@@ -83,8 +87,41 @@ class CommonBackgroundMap {
     return this.#regionFilterSetting.구분;
   }
 
+  #listeners = new Set<() => void>();
+  #revision = 0;
+
+  /**
+   * 외부 스토어 구독을 위한 메서드. 리스너를 추가하고 구독 해제 함수를 반환합니다.
+   * @param callback 상태 변경 시 호출될 콜백 함수
+   */
+  subscribe(callback: () => void) {
+    this.#listeners.add(callback);
+    return () => {
+      this.#listeners.delete(callback);
+    };
+  }
+
+  /**
+   * 현재 스냅샷을 반환하는 메서드. React의 `useSyncExternalStore` 훅에서 사용됩니다.
+   * 스냅샷은 상태 변경을 감지하기 위한 고유한 값이어야 합니다.
+   * @returns 현재 상태를 나타내는 문자열 스냅샷
+   */
+  getSnapshot() {
+    return String(this.#revision);
+  }
+
+  /**
+   * 상태 변경 시 모든 구독자에게 알리는 보호된 메서드입니다.
+   * `revision` 값을 증가시켜 새로운 스냅샷을 생성하고 구독자에게 알립니다.
+   */
+  protected notifyListeners = () => {
+    this.#revision++;
+    this.#listeners.forEach((cb) => cb());
+  };
+
   setSelectedRegionLevel(level: RegionLevelOptions) {
     this.#regionFilterSetting.구분 = level;
+    this.notifyListeners();
   }
 
   get excludeDong() {
