@@ -9,8 +9,8 @@ export interface BaseSelectOption {
 interface CustomSelectProps extends Omit<SelectProps<any>, "options"> {
   title: string;
   options: BaseSelectOption[];
-  selectedValue?: string | number;
-  onSelect: (value: string | number) => void;
+  selectedValue?: string | number | string[];
+  onSelect: (value: string | number | string[]) => void;
 }
 
 export const BaseSelect = ({ options, className, title, selectedValue, onSelect, ...props }: CustomSelectProps) => {
