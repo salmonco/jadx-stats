@@ -3,10 +3,10 @@ import { Maximize } from "lucide-react";
 interface LayerHeaderProps {
   title: string;
   tooltip?: React.ReactNode;
-  onClickFullscreen?: () => void;
+  onClickFullScreen?: () => void;
 }
 
-const LayerHeader = ({ title, tooltip, onClickFullscreen }: LayerHeaderProps) => {
+const LayerHeader = ({ title, tooltip, onClickFullScreen }: LayerHeaderProps) => {
   return (
     <div className="absolute left-0 top-0 flex w-full justify-between bg-[#37445E] p-3">
       <div className="flex items-center gap-2.5">
@@ -16,7 +16,7 @@ const LayerHeader = ({ title, tooltip, onClickFullscreen }: LayerHeaderProps) =>
       <div className="flex items-center gap-4">
         {/* TODO: 보고서 구현 */}
         <div>보고서</div>
-        <button onClick={onClickFullscreen} className="text-white" aria-label="전체화면 토글" title="전체화면 토글">
+        <button onClick={onClickFullScreen} className="text-white" aria-label="전체화면 토글" title="전체화면 토글">
           <Maximize />
         </button>
         {/* TODO: 공유 구현 */}

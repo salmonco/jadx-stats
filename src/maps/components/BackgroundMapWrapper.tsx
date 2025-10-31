@@ -1,5 +1,5 @@
-import { useRef } from "react";
 import LayerHeader from "~/maps/components/LayerHeader";
+import useMapFullScreen from "~/maps/hooks/useMapFullscreen";
 
 interface BackgroundMapWrapperProps {
   title: string;
@@ -8,20 +8,7 @@ interface BackgroundMapWrapperProps {
 }
 
 const BackgroundMapWrapper = ({ title, tooltip, maps }: BackgroundMapWrapperProps) => {
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-
-  const handleFullscreenClick = () => {
-    if (!mapContainerRef.current) {
-      return;
-    }
-
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-      return;
-    }
-
-    mapContainerRef.current.requestFullscreen();
-  };
+  const { mapContainerRef, onClickFullScreen } = useMapFullScreen();
 
   return (
     <div className="relative flex h-full w-full" ref={mapContainerRef}>
@@ -30,7 +17,7 @@ const BackgroundMapWrapper = ({ title, tooltip, maps }: BackgroundMapWrapperProp
           {map}
         </div>
       ))}
-      <LayerHeader title={title} tooltip={tooltip} onClickFullscreen={handleFullscreenClick} />
+      <LayerHeader title={title} tooltip={tooltip} onClickFullScreen={onClickFullScreen} />
     </div>
   );
 };
