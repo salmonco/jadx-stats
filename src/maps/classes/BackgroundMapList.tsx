@@ -3,27 +3,41 @@ import { MapOptions } from "~/maps/components/BackgroundMap";
 import BackgroundMapWrapper from "~/maps/components/BackgroundMapWrapper";
 import ChartRenderer from "~/maps/components/common/ChartRenderer";
 import MapRenderer from "~/maps/components/common/MapRenderer";
+import { DEFAULT_MAP_OPTIONS } from "~/maps/constants/mapOptions";
 
-type ConstructorParams<T> = {
-  title: string;
-  tooltip?: React.ReactNode;
-  mapOptionsList: MapOptions[];
-  mapClass: new (mapOptions: MapOptions) => T;
-};
-
-class BackgroundMapList<T extends CommonBackgroundMap = CommonBackgroundMap> {
+class BackgroundMapList {
   #title: string;
   #tooltip: React.ReactNode | null = null;
-  #maps: T[] = [];
+  #maps: CommonBackgroundMap[] = [];
 
-  constructor({ title, tooltip, mapOptionsList, mapClass }: ConstructorParams<T>) {
+  constructor({
+    title,
+    tooltip,
+    mapOptions = DEFAULT_MAP_OPTIONS,
+    mapConstructor,
+  }: {
+    title: string;
+    tooltip?: React.ReactNode;
+    mapOptions?: MapOptions;
+    mapConstructor: new (mapOptions: MapOptions) => CommonBackgroundMap;
+  }) {
     this.#title = title;
     this.#tooltip = tooltip ?? null;
-    this.#maps = mapOptionsList.map((opt) => new mapClass(opt));
+    this.addMap(mapConstructor, mapOptions);
 
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
     this.getSnapshot = this.getSnapshot.bind(this);
+  }
+
+  /**
+   * 지도 인스턴스를 추가합니다.
+   * @param mapConstructor 지도 생성자 (ex. AgingStatusMap 클래스)
+   * @param mapOptions 지도 기본 옵션 (옵셔널)
+   */
+  addMap<T extends CommonBackgroundMap>(mapConstructor: new (mapOptions: MapOptions) => T, mapOptions: MapOptions = DEFAULT_MAP_OPTIONS) {
+    const mapInstance = new mapConstructor(mapOptions);
+    this.#maps.push(mapInstance);
   }
 
   /**
