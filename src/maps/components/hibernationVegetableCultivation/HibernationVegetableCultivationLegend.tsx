@@ -5,7 +5,7 @@ import { CropType } from "~/maps/constants/hibernationVegetableCultivation";
 
 interface Props {
   features: HibernationVegetableCultivationFeatureCollection | null;
-  selectedCrops: CropType[];
+  selectedCrops: CropType;
 }
 
 const HibernationVegetableCultivationLegend = ({ features, selectedCrops }: Props) => {
@@ -19,8 +19,7 @@ const HibernationVegetableCultivationLegend = ({ features, selectedCrops }: Prop
       if (!Array.isArray(matters)) continue;
 
       for (const matter of matters) {
-        // TODO: 타입 단언 제거
-        if (selectedCrops.includes(matter.crop_nm as CropType)) {
+        if (matter.crop_nm === selectedCrops) {
           const value = matter.chg_cn;
           if (typeof value === "number" && !isNaN(value)) {
             max = Math.max(max, Math.abs(value) / 10000);

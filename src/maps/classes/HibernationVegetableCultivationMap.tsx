@@ -7,7 +7,7 @@ import { CropType, DEFAULT_CROP, DEFAULT_TARGET_YEAR } from "~/maps/constants/hi
 class HibernationVegetableCultivationMap extends CommonBackgroundMap {
   #selectedTargetYear = DEFAULT_TARGET_YEAR;
 
-  selectedCrops: CropType[] = [DEFAULT_CROP];
+  #selectedCrops: CropType = DEFAULT_CROP;
 
   constructor(mapOptions: MapOptions) {
     super(mapOptions);
@@ -23,7 +23,7 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
         mapOptions={this.mapOptions}
         selectedRegionLevel={this.getSelectedRegionLevel()}
         selectedTargetYear={this.selectedTargetYear}
-        selectedCrops={this.selectedCrops}
+        selectedCrops={this.#selectedCrops}
         setSelectedRegionLevel={(level) => this.setSelectedRegionLevel(level)}
         setSelectedTargetYear={(year) => (this.selectedTargetYear = year)}
         setSelectedCrops={(crops) => this.setSelectedCrops(crops)}
@@ -34,9 +34,9 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
   renderChart() {
     return (
       <HibernationVegetableCultivationChart
-        selectedLevel={this.getSelectedRegionLevel()}
-        selectedCrops={this.selectedCrops}
-        selectedTargetYear={this.selectedTargetYear}
+        selectedRegionLevel={this.getSelectedRegionLevel()}
+        selectedTargetYear={this.#selectedTargetYear}
+        selectedCrops={this.#selectedCrops}
       />
     );
   }
@@ -55,12 +55,8 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
    * React의 `setState`와 유사하게 값 또는 업데이트 함수를 받을 수 있습니다.
    * @param crops 새로운 작물 목록 또는 이전 목록을 기반으로 하는 업데이트 함수
    */
-  setSelectedCrops(crops: CropType[] | ((prev: CropType[]) => CropType[])) {
-    if (typeof crops === "function") {
-      this.selectedCrops = crops(this.selectedCrops);
-    } else {
-      this.selectedCrops = crops;
-    }
+  setSelectedCrops(crops: CropType) {
+    this.#selectedCrops = crops;
     this.notifyListeners();
   }
 
@@ -70,7 +66,7 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
    * @returns 현재 맵의 상태를 나타내는 문자열 스냅샷
    */
   getSnapshot() {
-    return `${super.getSnapshot()}-${this.#selectedTargetYear}-${this.selectedCrops.join(",")}`;
+    return `${super.getSnapshot()}-${this.#selectedTargetYear}-${this.#selectedCrops}`;
   }
 }
 

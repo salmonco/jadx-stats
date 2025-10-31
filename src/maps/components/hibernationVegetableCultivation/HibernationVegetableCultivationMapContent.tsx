@@ -20,10 +20,10 @@ interface Props {
   mapOptions: MapOptions;
   selectedRegionLevel: RegionLevelOptions;
   selectedTargetYear: number;
-  selectedCrops: CropType[];
+  selectedCrops: CropType;
   setSelectedRegionLevel: (levels: RegionLevelOptions) => void;
   setSelectedTargetYear: (year: number) => void;
-  setSelectedCrops: (crops: CropType[]) => void;
+  setSelectedCrops: (crops: CropType) => void;
 }
 
 const HibernationVegetableCultivationMapContent = ({
@@ -68,7 +68,7 @@ const HibernationVegetableCultivationMapContent = ({
         <FilterContainer>
           <YearSelector targetYear={TARGET_YEAR} selectedTargetYear={selectedTargetYear} setSelectedTargetYear={setSelectedTargetYear} />
           <ButtonGroupSelector title="권역 단위" cols={5} options={regionLevelOptions} selectedValues={selectedRegionLevel} setSelectedValues={setSelectedRegionLevel} />
-          <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={selectedCrops} setSelectedValues={setSelectedCrops} multiSelect />
+          <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={selectedCrops} setSelectedValues={setSelectedCrops} />
         </FilterContainer>
       </div>
     </BackgroundMap>
