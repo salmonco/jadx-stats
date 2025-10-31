@@ -18,9 +18,7 @@ import MiniMap from "~/maps/components/MiniMap";
 
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
-import { LayerHeader } from "~/maps/components/LayerHeader";
 import "~/maps/styles/map.css";
-import { RegionLevels } from "~/services/types/visualizationTypes";
 import { cn } from "~/utils/common";
 import { useEventHandlers } from "../hooks/useEventHandlers";
 import { EventManager } from "../hooks/useEventManager";
@@ -36,10 +34,6 @@ interface BackgroundMapProps {
   mapId: string;
   mapOptions?: MapOptions;
   children?: React.ReactNode;
-  selectedLevel?: RegionLevels;
-  setSelectedLevel?: (level: RegionLevels) => void;
-  excludeDong?: boolean;
-  setExcludeDong?: (value: boolean) => void;
 }
 
 export interface MapOptions {
@@ -71,19 +65,7 @@ const MapLoadingOverlay = () => (
   </div>
 );
 
-const BackgroundMap = ({
-  layerManager,
-  eventManager,
-  ready,
-  mapId,
-  map,
-  mapOptions = {} as MapOptions,
-  children,
-  selectedLevel,
-  setSelectedLevel,
-  excludeDong,
-  setExcludeDong,
-}: BackgroundMapProps) => {
+const BackgroundMap = ({ layerManager, eventManager, ready, mapId, map, mapOptions = {} as MapOptions, children }: BackgroundMapProps) => {
   const mergedMapOptions = { ...DEFAULT_MAP_OPTIONS, ...mapOptions };
 
   const [mapType, setMapType] = useState<BgMapType>(mergedMapOptions.type);
@@ -121,7 +103,7 @@ const BackgroundMap = ({
   return (
     <div className={cn("relative h-full w-full border border-[#43516D]", mergedMapOptions?.roundCorners && "overflow-clip rounded-lg", mergedMapOptions?.className)}>
       <div className="h-full w-full" id={mapId} />
-      <LayerHeader selectedLevel={selectedLevel} setSelectedLevel={setSelectedLevel} excludeDong={excludeDong} setExcludeDong={setExcludeDong} />
+
       {ready && (
         <>
           {mergedMapOptions?.miniMap && <MiniMap mainMap={map} />}

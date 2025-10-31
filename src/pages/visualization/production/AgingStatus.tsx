@@ -7,6 +7,7 @@ import AgingStatusDivergingBarChart from "~/features/visualization/components/pr
 import AgingStatusTable from "~/features/visualization/components/production/AgingStatusTable";
 import { AgingStatusLayer, Feature, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
 import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
+import BackgroundMapWrapper from "~/maps/components/BackgroundMapWrapper";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import visualizationApi from "~/services/apis/visualizationApi";
 import { RegionLevels } from "~/services/types/visualizationTypes";
@@ -29,6 +30,7 @@ export interface AgingChartData {
 
 const AgingStatus = () => {
   const { layerManager, ready } = useSetupOL(MAP_ID, 10.5, "jeju", true, false);
+  const { layerManager: layerManager2, ready: ready2 } = useSetupOL("test", 10.5, "jeju", true, false);
 
   const [selectedLevel, setSelectedLevel] = useState<RegionLevels>("emd");
   const [excludeDong, setExcludeDong] = useState<boolean>(true);
@@ -132,18 +134,18 @@ const AgingStatus = () => {
   return (
     <VisualizationContainer
       mapContent={
-        <BackgroundMap
-          layerManager={layerManager}
-          ready={ready}
-          mapId={MAP_ID}
-          mapOptions={mapOptions}
-          selectedLevel={selectedLevel}
-          setSelectedLevel={setSelectedLevel}
-          excludeDong={excludeDong}
-          setExcludeDong={setExcludeDong}
-        >
-          <AgingStatusLegend features={features} />
-        </BackgroundMap>
+        <BackgroundMapWrapper
+          title="고령화 현황"
+          tooltip={<span>Tooltip content</span>}
+          maps={[
+            <BackgroundMap layerManager={layerManager} ready={ready} mapId={MAP_ID} mapOptions={mapOptions}>
+              <AgingStatusLegend features={features} />
+            </BackgroundMap>,
+            <BackgroundMap layerManager={layerManager2} ready={ready2} mapId={"test"} mapOptions={mapOptions}>
+              <AgingStatusLegend features={features} />
+            </BackgroundMap>,
+          ]}
+        />
       }
       chartContent={
         <div className="flex flex-col gap-4">
