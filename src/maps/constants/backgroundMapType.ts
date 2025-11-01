@@ -29,7 +29,7 @@ const BACKGROUND_MAP_ENABLED: Record<BackgroundMapType, boolean> = {
  * enabled가 true인 항목만 필터링하여 생성된 메뉴
  */
 export const BackgroundMapTypeMenuItems: MenuProps["items"] = Object.entries(BACKGROUND_MAP_TYPE)
-  .filter(([label]) => BACKGROUND_MAP_ENABLED[label as BackgroundMapType])
+  .filter(([, mapType]) => BACKGROUND_MAP_ENABLED[mapType])
   .map(([label, key]) => ({
     label,
     key,
