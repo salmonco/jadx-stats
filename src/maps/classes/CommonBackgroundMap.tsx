@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import { RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
 import { DEFAULT_REGION_LEVEL, RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { MapOptions } from "~/maps/components/BackgroundMap";
-import { DEFAULT_MAP_TYPE, MapType } from "~/maps/constants/mapType";
+import { BackgroundMapType, DEFAULT_BACKGROUND_MAP_TYPE } from "~/maps/constants/backgroundMapType";
 import { DEFAULT_LABEL_OPTIONS, DEFAULT_LEGEND_OPTIONS, DEFAULT_TRANSPARENCY, DEFAULT_VISUAL_TYPE, VisualizationSetting } from "~/maps/constants/visualizationSetting";
 
 class CommonBackgroundMap {
@@ -39,7 +39,7 @@ class CommonBackgroundMap {
   /**
    * 지도 타입 (일반, 위성, 백지도, 자정)
    */
-  #mapType: MapType = DEFAULT_MAP_TYPE;
+  #mapType: BackgroundMapType = DEFAULT_BACKGROUND_MAP_TYPE;
 
   /**
    * 리액트 컴포넌트의 렌더링 제어를 위한 구독자 목록
