@@ -10,7 +10,7 @@ class BackgroundMapList {
   #tooltip: React.ReactNode | null = null;
   #maps: CommonBackgroundMap[] = [];
 
-  #mapConstructor: new (mapOptions: MapOptions) => CommonBackgroundMap;
+  #mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => CommonBackgroundMap;
   #listeners: Set<() => void> = new Set();
 
   constructor({
@@ -22,13 +22,13 @@ class BackgroundMapList {
     title: string;
     tooltip?: React.ReactNode;
     mapOptions?: MapOptions;
-    mapConstructor: new (mapOptions: MapOptions) => CommonBackgroundMap;
+    mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => CommonBackgroundMap;
   }) {
     this.#title = title;
     this.#tooltip = tooltip ?? null;
 
     this.#mapConstructor = mapConstructor;
-    this.addMap(mapConstructor, mapOptions);
+    this.addMap(mapConstructor, mapOptions, title, tooltip);
 
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
@@ -40,29 +40,23 @@ class BackgroundMapList {
    * @param mapConstructor 지도 생성자 (ex. AgingStatusMap 클래스)
    * @param mapOptions 지도 기본 옵션 (옵셔널)
    */
-  addMap<T extends CommonBackgroundMap>(mapConstructor: new (mapOptions: MapOptions) => T, mapOptions: MapOptions = DEFAULT_MAP_OPTIONS) {
-    const mapInstance = new mapConstructor(mapOptions);
-    this.#maps.push(mapInstance);
+  addMap<T extends CommonBackgroundMap>(
+    mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => T,
+    mapOptions: MapOptions = DEFAULT_MAP_OPTIONS,
+    title: string = this.#title,
+    tooltip: React.ReactNode = this.#tooltip
+  ) {
+    const mapInstance = new mapConstructor(mapOptions, title, tooltip);
+    this.#maps = [...this.#maps, mapInstance];
     this.#notifyListeners();
-  }
-
-  /**
-   * 지도가 2개 이하면 레이아웃 fix, 그게 아니라면 PopupWindow
-   * @returns 고정 레이아웃 여부
-   */
-  isFixedLayout() {
-    return this.#maps.length <= 2;
   }
 
   renderMaps() {
     return (
       <BackgroundMapWrapper
-        title={this.#title}
-        tooltip={this.#tooltip}
         maps={this.#maps.map((map) => (
-          <MapRenderer key={map.mapId} map={map} />
+          <MapRenderer key={map.mapId} map={map} onAddMap={() => this.addMap(this.#mapConstructor)} />
         ))}
-        onAddMap={() => this.addMap(this.#mapConstructor)}
       />
     );
   }
