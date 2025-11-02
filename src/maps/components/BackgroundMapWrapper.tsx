@@ -1,4 +1,5 @@
 import LayerHeader from "~/maps/components/LayerHeader";
+import useMapFullScreen from "~/maps/hooks/useMapFullscreen";
 
 interface BackgroundMapWrapperProps {
   title: string;
@@ -7,14 +8,16 @@ interface BackgroundMapWrapperProps {
 }
 
 const BackgroundMapWrapper = ({ title, tooltip, maps }: BackgroundMapWrapperProps) => {
+  const { mapContainerRef, onClickFullScreen } = useMapFullScreen();
+
   return (
-    <div className="relative flex h-full w-full">
+    <div className="relative flex h-full w-full" ref={mapContainerRef}>
       {maps.map((map) => (
         <div key={map.toString()} className="flex-1">
           {map}
         </div>
       ))}
-      <LayerHeader title={title} tooltip={tooltip} />
+      <LayerHeader title={title} tooltip={tooltip} onClickFullScreen={onClickFullScreen} />
     </div>
   );
 };
