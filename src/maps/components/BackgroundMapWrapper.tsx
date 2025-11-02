@@ -5,9 +5,10 @@ interface BackgroundMapWrapperProps {
   title: string;
   tooltip?: React.ReactNode;
   maps: Array<React.ReactNode>;
+  onAddMap: () => void;
 }
 
-const BackgroundMapWrapper = ({ title, tooltip, maps }: BackgroundMapWrapperProps) => {
+const BackgroundMapWrapper = ({ title, tooltip, maps, onAddMap }: BackgroundMapWrapperProps) => {
   const { mapContainerRef, onClickFullScreen } = useMapFullScreen();
 
   return (
@@ -17,7 +18,7 @@ const BackgroundMapWrapper = ({ title, tooltip, maps }: BackgroundMapWrapperProp
           {map}
         </div>
       ))}
-      <LayerHeader title={title} tooltip={tooltip} onClickFullScreen={onClickFullScreen} />
+      <LayerHeader title={title} tooltip={tooltip} onClickFullScreen={onClickFullScreen} onAddMap={onAddMap} />
     </div>
   );
 };
