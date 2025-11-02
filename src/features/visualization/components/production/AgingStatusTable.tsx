@@ -1,6 +1,6 @@
 import { Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import type { AgingChartData } from "~/pages/visualization/production/AgingStatus";
+import { AgingChartData } from "~/maps/components/agingStatus/AgingStatusChart";
 
 interface TransposedRow {
   key: string;

@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
 import * as Plot from "@observablehq/plot";
 import * as d3 from "d3";
-import { AgingChartData } from "~/pages/visualization/production/AgingStatus";
+import { useEffect, useRef, useState } from "react";
+import { AgingChartData } from "~/maps/components/agingStatus/AgingStatusChart";
 
 interface Props {
   title: string;

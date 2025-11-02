@@ -12,8 +12,8 @@ const BackgroundMapWrapper = ({ title, tooltip, maps }: BackgroundMapWrapperProp
 
   return (
     <div className="relative flex h-full w-full" ref={mapContainerRef}>
-      {maps.map((map) => (
-        <div key={map.toString()} className="flex-1">
+      {maps.map((map, i) => (
+        <div key={i} className="flex-1">
           {map}
         </div>
       ))}

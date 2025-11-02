@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useRef } from "react";
-import { createRoot, Root } from "react-dom/client";
 import * as d3 from "d3";
+import { getCenter } from "ol/extent";
 import { Vector as VectorLayer } from "ol/layer";
 import { Vector as SourceVector } from "ol/source";
-import { getCenter } from "ol/extent";
+import { useEffect, useMemo, useRef } from "react";
+import { createRoot, Root } from "react-dom/client";
 import { FeatureCollection, Geometry } from "~/maps/classes/interfaces";
 import BaseLayer from "~/maps/layers/BaseLayer";
-import { colorsBlue, colorsRed } from "~/utils/gisColors";
 import { formatAreaHa } from "~/utils/format";
+import { colorsBlue, colorsRed } from "~/utils/gisColors";
 
 interface AreaChange {
   crop_nm: string;
@@ -73,7 +73,7 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
     properties: {
       ...f.properties,
       area_chg: {
-        chg_mttr: (f.properties.area_chg?.chg_mttr ?? []).filter((c) => selectedCrops.includes(c.crop_nm)),
+        chg_mttr: (f.properties.area_chg?.chg_mttr ?? []).filter((c) => c.crop_nm === selectedCrops),
       },
     },
   }));
@@ -229,7 +229,6 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
     </div>
   );
 };
-
 // @ts-ignore
 export class InnerLayer extends VectorLayer<VectorSource> {
   features: HibernationVegetableCultivationFeatureCollection;
