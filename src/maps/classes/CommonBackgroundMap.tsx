@@ -62,6 +62,12 @@ class CommonBackgroundMap {
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
     this.getSnapshot = this.getSnapshot.bind(this);
+    this.setSelectedRegionLevel = this.setSelectedRegionLevel.bind(this);
+    this.setMapType = this.setMapType.bind(this);
+  }
+
+  destroy() {
+    this.#listeners.clear();
   }
 
   /**
@@ -77,7 +83,7 @@ class CommonBackgroundMap {
   }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
-  renderMap(onAddMap: () => void) {
+  renderMap() {
     return <></>;
   }
 
@@ -137,6 +143,11 @@ class CommonBackgroundMap {
 
   get mapType() {
     return this.#mapType;
+  }
+
+  setMapType(type: BackgroundMapType) {
+    this.#mapType = type;
+    this.notifyListeners();
   }
 
   get visualizationSetting() {

@@ -1,29 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { AgingStatusLayer, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
-import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
+import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import AgingStatusLegend from "~/maps/components/agingStatus/AgingStatusLegend";
-import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
+import BackgroundMap from "~/maps/components/BackgroundMap";
+import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
-  mapOptions: MapOptions;
-  title: string;
-  tooltip?: React.ReactNode;
-  onAddMap: () => void;
-  selectedRegionLevel: RegionLevelOptions;
-  excludeDong: boolean;
 }
 
-const AgingStatusMapContent = ({ mapId, mapOptions, title, tooltip, onAddMap, selectedRegionLevel, excludeDong }: Props) => {
+const AgingStatusMapContent = ({ mapId }: Props) => {
+  const mapList = useMapList();
+  const map = mapList.getMapById(mapId) as AgingStatusMap;
   const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju");
 
   const { data: features } = useQuery({
-    queryKey: ["agingStatus", selectedRegionLevel, excludeDong],
-    queryFn: () => visualizationApi.getAgingStatus(selectedRegionLevel, excludeDong),
-    enabled: !!selectedRegionLevel,
+    queryKey: ["agingStatus", map?.getSelectedRegionLevel(), map?.excludeDong],
+    queryFn: () => visualizationApi.getAgingStatus(map.getSelectedRegionLevel(), map.excludeDong),
+    enabled: !!map?.getSelectedRegionLevel(),
     retry: false,
   });
 
@@ -42,8 +39,12 @@ const AgingStatusMapContent = ({ mapId, mapOptions, title, tooltip, onAddMap, se
     }
   }, [ready, features]);
 
+  if (!map) {
+    return null;
+  }
+
   return (
-    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} mapOptions={mapOptions} title={title} tooltip={tooltip} onAddMap={onAddMap}>
+    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <AgingStatusLegend features={features} />
     </BackgroundMap>
   );

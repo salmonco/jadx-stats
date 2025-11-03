@@ -1,16 +1,22 @@
-import React, { SetStateAction, useState } from "react";
+import { useState } from "react";
 import { BackgroundMapType, BackgroundMapTypeMenuItems } from "~/maps/constants/backgroundMapType";
+import { useMapList } from "~/maps/hooks/useMapList";
 
 interface MapTypeSwitcherProps {
-  mapType: BackgroundMapType;
-  setMapType: React.Dispatch<SetStateAction<BackgroundMapType>>;
+  mapId: string;
 }
 
-const MapTypeSwitcher = ({ mapType, setMapType }: MapTypeSwitcherProps) => {
+const MapTypeSwitcher = ({ mapId }: MapTypeSwitcherProps) => {
+  const mapList = useMapList();
+  const map = mapList.getMapById(mapId);
   const [isOpen, setIsOpen] = useState(false);
 
+  if (!map) {
+    return null;
+  }
+
   const handleTypeSelect = (type: BackgroundMapType) => {
-    setMapType(type);
+    map.setMapType(type);
   };
 
   return (
@@ -21,7 +27,7 @@ const MapTypeSwitcher = ({ mapType, setMapType }: MapTypeSwitcherProps) => {
             <button
               key={key}
               onClick={() => handleTypeSelect(key)}
-              className={`flex h-12 w-12 items-center justify-center rounded-full text-sm text-white shadow-lg transition-transform hover:scale-105 ${mapType === key ? "bg-blue-500" : "bg-gray-400"}`}
+              className={`flex h-12 w-12 items-center justify-center rounded-full text-sm text-white shadow-lg transition-transform hover:scale-105 ${map.mapType === key ? "bg-blue-500" : "bg-gray-400"}`}
             >
               {label}
             </button>
