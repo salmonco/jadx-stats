@@ -23,13 +23,7 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
   }
 
   renderChart() {
-    return (
-      <HibernationVegetableCultivationChart
-        selectedRegionLevel={this.getSelectedRegionLevel()}
-        selectedTargetYear={this.#selectedTargetYear}
-        selectedCrops={this.#selectedCrops}
-      />
-    );
+    return <HibernationVegetableCultivationChart />;
   }
 
   /**
