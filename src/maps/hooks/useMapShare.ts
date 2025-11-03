@@ -9,7 +9,7 @@ const useMapShare = ({ map }: Params) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
 
-  const onClickShare = () => {
+  const onClickShare = async () => {
     if (isShareModalOpen) {
       setIsShareModalOpen(false);
       return;
@@ -22,9 +22,23 @@ const useMapShare = ({ map }: Params) => {
 
     try {
       const state = map.getShareableState();
+
+      // JSON -> 직렬화 -> gzip 압축
       const jsonState = JSON.stringify(state);
-      const base64State = btoa(encodeURIComponent(jsonState));
-      const url = `${window.location.origin}${window.location.pathname}?config=${base64State}`;
+      const stream = new Blob([jsonState]).stream();
+      const compressedStream = stream.pipeThrough(new CompressionStream("gzip"));
+      const compressedResponse = new Response(compressedStream);
+      const blob = await compressedResponse.blob();
+      const buffer = await blob.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+
+      // URL-safe Base64 인코딩
+      const safeBase64State = btoa(String.fromCharCode.apply(null, bytes as unknown as number[]))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
+
+      const url = `${window.location.origin}${window.location.pathname}?config=${safeBase64State}`;
 
       setShareUrl(url);
       setIsShareModalOpen(true);
