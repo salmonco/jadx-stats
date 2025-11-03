@@ -58,6 +58,25 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
   get selectedCrops() {
     return this.#selectedCrops;
   }
+
+  getShareableState() {
+    const state = super.getShareableState();
+    return {
+      ...state,
+      selectedTargetYear: this.selectedTargetYear,
+      selectedCrops: this.selectedCrops,
+    };
+  }
+
+  applySharedState(state: Record<string, any>) {
+    super.applySharedState(state);
+    if (state.selectedTargetYear) {
+      this.setSelectedTargetYear(state.selectedTargetYear);
+    }
+    if (state.selectedCrops) {
+      this.setSelectedCrops(state.selectedCrops);
+    }
+  }
 }
 
 export default HibernationVegetableCultivationMap;
