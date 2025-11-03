@@ -22,8 +22,9 @@ interface Props {
 }
 
 const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
-  const mapList = useMapList();
-  const map = mapList.getMapById(mapId) as unknown as HibernationVegetableCultivationMap;
+  const mapList = useMapList<HibernationVegetableCultivationMap>();
+  const map = mapList.getMapById(mapId);
+
   const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju");
 
   const { data: features } = useQuery<HibernationVegetableCultivationFeatureCollection>({
@@ -48,6 +49,10 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
       });
     }
   }, [ready, features, map.selectedCrops]);
+
+  if (!map) {
+    return null;
+  }
 
   return (
     <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>

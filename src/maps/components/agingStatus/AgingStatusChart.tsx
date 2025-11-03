@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import ChartContainer from "~/features/visualization/components/common/ChartContainer";
 import AgingStatusDivergingBarChart from "~/features/visualization/components/production/AgingStatusDivergingBarChart";
 import AgingStatusTable from "~/features/visualization/components/production/AgingStatusTable";
+import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import { useMapList } from "~/maps/hooks/useMapList";
 import transformToChartData from "~/maps/utils/agingStatus/transformToChartData";
 import visualizationApi from "~/services/apis/visualizationApi";
@@ -15,7 +16,7 @@ export interface AgingChartData {
 }
 
 const AgingStatusChart = () => {
-  const mapList = useMapList();
+  const mapList = useMapList<AgingStatusMap>();
   const firstMap = mapList.getFirstMap();
 
   const { data: features } = useQuery({

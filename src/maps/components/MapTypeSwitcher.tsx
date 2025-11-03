@@ -9,15 +9,16 @@ interface MapTypeSwitcherProps {
 const MapTypeSwitcher = ({ mapId }: MapTypeSwitcherProps) => {
   const mapList = useMapList();
   const map = mapList.getMapById(mapId);
-  const [isOpen, setIsOpen] = useState(false);
 
-  if (!map) {
-    return null;
-  }
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleTypeSelect = (type: BackgroundMapType) => {
     map.setMapType(type);
   };
+
+  if (!map) {
+    return null;
+  }
 
   return (
     <div className="absolute bottom-3 right-3 flex items-center gap-2">

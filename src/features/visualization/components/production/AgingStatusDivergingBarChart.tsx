@@ -1,6 +1,7 @@
 import * as Plot from "@observablehq/plot";
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
+import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import { AgingChartData } from "~/maps/components/agingStatus/AgingStatusChart";
 import { useMapList } from "~/maps/hooks/useMapList";
 
@@ -11,12 +12,12 @@ interface Props {
 }
 
 const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => {
-  const mapList = useMapList();
+  const mapList = useMapList<AgingStatusMap>();
   const firstMap = mapList.getFirstMap();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [size, setSize] = useState({ width: 800, height: 420 });
-  const barColor = category === "avg_age" ? "#F59E0B" : "#EA580C";
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -83,6 +84,8 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
     const maxAbs = d3.max(regionTotals, (d) => Math.abs(d.value)) || 1;
     const xMin = category === "avg_age" ? 50 : 0;
     const xDomain = category === "avg_age" ? [xMin, maxAbs * 1.035] : [xMin, maxAbs * 1.08];
+
+    const barColor = category === "avg_age" ? "#F59E0B" : "#EA580C";
 
     const chart = Plot.plot({
       width: size.width,

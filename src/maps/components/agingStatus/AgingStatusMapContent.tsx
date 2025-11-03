@@ -13,14 +13,15 @@ interface Props {
 }
 
 const AgingStatusMapContent = ({ mapId }: Props) => {
-  const mapList = useMapList();
-  const map = mapList.getMapById(mapId) as AgingStatusMap;
+  const mapList = useMapList<AgingStatusMap>();
+  const map = mapList.getMapById(mapId);
+
   const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju");
 
   const { data: features } = useQuery({
-    queryKey: ["agingStatus", map?.getSelectedRegionLevel(), map?.excludeDong],
+    queryKey: ["agingStatus", map.getSelectedRegionLevel(), map.excludeDong],
     queryFn: () => visualizationApi.getAgingStatus(map.getSelectedRegionLevel(), map.excludeDong),
-    enabled: !!map?.getSelectedRegionLevel(),
+    enabled: !!map.getSelectedRegionLevel(),
     retry: false,
   });
 

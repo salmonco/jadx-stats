@@ -10,6 +10,7 @@ interface BackgroundMapWrapperProps {
 
 const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
   const mapList = useMapList();
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const isFixedLayout = maps.length <= 2;
