@@ -49,7 +49,6 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
 
   /**
    * 지도 인스턴스를 추가합니다.
-   * - 기본 지도 생성자는 인스턴스 생성 시 사용된 생성자입니다.
    * @param mapConstructor 지도 생성자 (옵셔널)
    * @param mapOptions 지도 기본 옵션 (옵셔널)
    */
@@ -59,16 +58,12 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
     title: string = this.#title,
     tooltip: React.ReactNode = this.#tooltip
   ) {
+    // 지도 생성자 없으면 인스턴스 생성할 때 사용한 기본 생성자 사용
     const constructorToUse = mapConstructor || this.#mapConstructor;
     const mapInstance = new constructorToUse(mapOptions, title, tooltip);
     this.#maps = [...this.#maps, mapInstance];
 
-    // 초기 위치 설정 (오프셋을 주어 겹치지 않도록 함)
-    const offsetIndex = (this.#maps.length - 1) % 5;
-    const initialX = 50 + offsetIndex * INITIAL_MAP_POSITION_X_OFFSET;
-    const initialY = 50 + offsetIndex * INITIAL_MAP_POSITION_Y_OFFSET;
-    this.#mapPositions.set(mapInstance.mapId, { x: initialX, y: initialY });
-
+    this.#initMapPosition(mapInstance);
     this.#notifyListeners();
   }
 
@@ -99,15 +94,7 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
   }
 
   renderMaps() {
-    return (
-      <BackgroundMapWrapper
-        maps={this.#maps}
-        onAddMap={() => this.addMap(this.#mapConstructor)}
-        onRemoveMap={this.removeMap}
-        onUpdateMapPosition={this.updateMapPosition}
-        getMapPosition={this.getMapPosition}
-      />
-    );
+    return <BackgroundMapWrapper maps={this.#maps} />;
   }
 
   renderFirstChart() {
@@ -141,6 +128,18 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
 
   #notifyListeners() {
     this.#listeners.forEach((cb) => cb());
+  }
+
+  /**
+   * 초기 위치 설정
+   * - 오프셋을 주어 겹치지 않도록 함
+   * @param mapInstance
+   */
+  #initMapPosition(mapInstance: M) {
+    const offsetIndex = (this.#maps.length - 1) % 5;
+    const initialX = 50 + offsetIndex * INITIAL_MAP_POSITION_X_OFFSET;
+    const initialY = 50 + offsetIndex * INITIAL_MAP_POSITION_Y_OFFSET;
+    this.#mapPositions.set(mapInstance.mapId, { x: initialX, y: initialY });
   }
 }
 

@@ -1,26 +1,15 @@
-import { useEffect, useMemo } from "react";
 import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
-import BackgroundMapList from "~/maps/classes/BackgroundMapList";
 import { MapListProvider } from "~/maps/contexts/MapListContext";
+import { useMapInitializer } from "~/maps/hooks/useMapInitializer";
 
 const TITLE = "고령화 현황";
 
 const AgingStatus = () => {
-  const mapList = useMemo(
-    () =>
-      new BackgroundMapList<AgingStatusMap>({
-        title: TITLE,
-        mapConstructor: AgingStatusMap,
-      }),
-    []
-  );
-
-  useEffect(() => {
-    return () => {
-      mapList.destroy();
-    };
-  }, [mapList]);
+  const mapList = useMapInitializer({
+    title: TITLE,
+    mapConstructor: AgingStatusMap,
+  });
 
   return (
     <MapListProvider value={mapList}>
