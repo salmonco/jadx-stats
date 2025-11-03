@@ -76,7 +76,12 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
       .filter((d) => typeof d.value === "number" && !isNaN(d.value))
       .sort((a, b) => (category === "count" ? b.value - a.value : 0));
 
-    const margin = { top: 0, right: firstMap.getSelectedRegionLevel() === "ri" ? 30 : 40, bottom: 30, left: firstMap.getSelectedRegionLevel() === "ri" ? 80 : 55 };
+    const margin = {
+      top: 0,
+      right: firstMap.getSelectedRegionLevel() === "ri" ? 30 : 40,
+      bottom: 30,
+      left: firstMap.getSelectedRegionLevel() === "ri" ? 80 : 55,
+    };
     const barHeight = regionTotals.length > 12 ? 32 : 48;
     const height = regionTotals.length > 11 ? regionTotals.length * barHeight + margin.top + margin.bottom : size.height;
     const barInset = regionTotals.length === 1 ? 110 : regionTotals.length === 2 ? 40 : regionTotals.length === 4 ? 15 : 7;
