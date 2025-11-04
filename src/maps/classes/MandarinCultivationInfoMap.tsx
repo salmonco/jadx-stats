@@ -1,9 +1,8 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
-import { MapOptions } from "~/maps/components/BackgroundMap";
 import MandarinCultivationInfoChart from "~/maps/components/mandarinCultivationInfo/MandarinCultivationInfoChart";
 import MandarinCultivationInfoMapContent from "~/maps/components/mandarinCultivationInfo/MandarinCultivationInfoMapContent";
 import { DEFAULT_CROP_GROUP, DEFAULT_CROP_PUMMOK } from "~/maps/constants/cropDistribution";
-
+import { MapOptions } from "~/maps/constants/mapOptions";
 class MandarinCultivationInfoMap extends CommonBackgroundMap {
   #selectedCropPummok = DEFAULT_CROP_PUMMOK;
 

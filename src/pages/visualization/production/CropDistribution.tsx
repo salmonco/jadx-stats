@@ -1,4 +1,4 @@
-import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
+import ListManagedVisualizationContainer from "~/features/visualization/components/common/ListManagedVisualizationContainer";
 import CropDistributionMap from "~/maps/classes/CropDistributionMap";
 import CropDistributionTooltip from "~/maps/components/cropDistribution/CropDistributionTooltip";
 import { MapListProvider } from "~/maps/contexts/MapListContext";
@@ -15,7 +15,7 @@ const CropDistribution = () => {
 
   return (
     <MapListProvider value={mapList}>
-      <VisualizationContainer />
+      <ListManagedVisualizationContainer />
     </MapListProvider>
   );
 };

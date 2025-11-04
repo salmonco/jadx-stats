@@ -10,7 +10,7 @@ import {
 } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
 import { regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import HibernationVegetableCultivationMap from "~/maps/classes/HibernationVegetableCultivationMap";
-import BackgroundMap from "~/maps/components/BackgroundMap";
+import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import HibernationVegetableCultivationLegend from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationLegend";
 import { CROP_LEGEND_ITEMS, TARGET_YEAR } from "~/maps/constants/hibernationVegetableCultivation";
 import { useMapList } from "~/maps/hooks/useMapList";
@@ -55,7 +55,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <HibernationVegetableCultivationLegend features={features} selectedCrop={map.selectedCrop} />
       <div className="absolute left-4 top-4 z-10">
         <FilterContainer>
@@ -70,7 +70,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
           <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} setSelectedValues={map.setSelectedCrop} />
         </FilterContainer>
       </div>
-    </BackgroundMap>
+    </ListManagedBackgroundMap>
   );
 };
 
