@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import {
   CITY_OPTIONS,
   CITY_TO_REGION_MAPPING,
-  CityOptions,
   DEFAULT_ALL_OPTION,
   EMD_OPTIONS,
   REGION_OPTIONS,
@@ -34,7 +33,7 @@ const useRegionFilter = ({ selectedValue, onSelect }: RegionFilterProps) => {
     });
   };
 
-  const handleCityChange = (newCity: CityOptions) => {
+  const handleCityChange = (newCity: string) => {
     onSelect({
       구분: selectedValue.구분,
       행정시: isSelectedAllStr(newCity) ? DEFAULT_ALL_OPTION : newCity,

@@ -62,7 +62,8 @@ const RegionFilter = ({ selectedValue, onSelect }: RegionFilterProps) => {
   ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <div className="flex flex-col gap-4">
+      <p className="text-[18px] font-semibold">지역선택</p>
       <BaseSelect title={REGION_LEVEL_LABEL} options={regionLevelOptions} selectedValue={selectedValue.구분} onSelect={handleLevelChange} />
 
       {filters.map((filter) => {

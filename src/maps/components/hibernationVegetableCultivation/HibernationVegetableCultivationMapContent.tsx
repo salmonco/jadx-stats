@@ -1,18 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
-import FilterContainer from "~/features/visualization/components/common/FilterContainer";
-import YearSelector from "~/features/visualization/components/common/YearSelector";
+import { useEffect, useState } from "react";
 import {
   HibernationVegetableCultivationFeatureCollection,
   HibernationVegetableCultivationLayer,
   InnerLayer,
 } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
-import { regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
+import { DEFAULT_ALL_OPTION, DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
+import { REGION_LEVEL_OPTIONS } from "~/features/visualization/utils/regionLevelOptions";
 import HibernationVegetableCultivationMap from "~/maps/classes/HibernationVegetableCultivationMap";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
+import HibernationVegetableCultivationFilter from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationFilter";
 import HibernationVegetableCultivationLegend from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationLegend";
-import { CROP_LEGEND_ITEMS, TARGET_YEAR } from "~/maps/constants/hibernationVegetableCultivation";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import visualizationApi from "~/services/apis/visualizationApi";
@@ -33,14 +31,52 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
     enabled: !!ready,
   });
 
+  const [filteredFeatures, setFilteredFeatures] = useState<HibernationVegetableCultivationFeatureCollection>(features);
+  const [selectedRegion, setSelectedRegion] = useState<RegionFilterOptions>(map.regionFilterSetting || DEFAULT_REGION_SETTING);
+
   useEffect(() => {
-    if (!ready || !features) return;
+    map.setRegionFilterSetting(selectedRegion);
+  }, [selectedRegion]);
+
+  useEffect(() => {
+    if (!features) {
+      return;
+    }
+
+    // 지금은 선택한 지역 구분에서만 필터링 됨
+    // TODO: 하위 선택 지역도 필터링되도록 수정 필요 (API 호출)
+    const filtered = {
+      ...features,
+      features: features.features.filter((feature) => {
+        const props = feature.properties;
+        const regionLevel = selectedRegion.구분;
+
+        if (regionLevel === REGION_LEVEL_OPTIONS.행정시 && selectedRegion.행정시 !== DEFAULT_ALL_OPTION && selectedRegion.행정시 !== null) {
+          return props.vrbs_nm === selectedRegion.행정시;
+        }
+        if (regionLevel === REGION_LEVEL_OPTIONS.권역 && selectedRegion.권역.length > 0) {
+          return selectedRegion.권역.includes(props.vrbs_nm);
+        }
+        if (regionLevel === REGION_LEVEL_OPTIONS.읍면 && selectedRegion.읍면.length > 0) {
+          return selectedRegion.읍면.includes(props.vrbs_nm);
+        }
+        if (regionLevel === REGION_LEVEL_OPTIONS.리동 && selectedRegion.리동.length > 0) {
+          return selectedRegion.리동.includes(props.vrbs_nm);
+        }
+        return true;
+      }),
+    };
+    setFilteredFeatures(filtered);
+  }, [features, selectedRegion]);
+
+  useEffect(() => {
+    if (!ready || !filteredFeatures) return;
 
     const layerWrapper = layerManager.getLayer("HibernationVegetableCultivationLayer");
     const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
 
     if (existingLayer) {
-      existingLayer.updateFeatures(features);
+      existingLayer.updateFeatures(filteredFeatures);
       existingLayer.updateSelectedCrop(map.selectedCrop);
       existingLayer.changed();
     } else {
@@ -48,7 +84,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
         layerManager.addLayer(layer, "HibernationVegetableCultivationLayer", 1);
       });
     }
-  }, [ready, features, map.selectedCrop]);
+  }, [ready, filteredFeatures, map.selectedCrop]);
 
   if (!map) {
     return null;
@@ -56,19 +92,9 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
 
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
-      <HibernationVegetableCultivationLegend features={features} selectedCrop={map.selectedCrop} />
+      <HibernationVegetableCultivationLegend features={filteredFeatures} selectedCrop={map.selectedCrop} />
       <div className="absolute left-4 top-4 z-10">
-        <FilterContainer>
-          <YearSelector targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
-          <ButtonGroupSelector
-            title="권역 단위"
-            cols={5}
-            options={regionLevelOptions}
-            selectedValues={map.getSelectedRegionLevel()}
-            setSelectedValues={map.setSelectedRegionLevel}
-          />
-          <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} setSelectedValues={map.setSelectedCrop} />
-        </FilterContainer>
+        <HibernationVegetableCultivationFilter mapId={mapId} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
       </div>
     </ListManagedBackgroundMap>
   );
