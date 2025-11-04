@@ -30,7 +30,7 @@ const YearlyDisasterLegend = ({ mapId, features }) => {
   const gradientColors = [...colorsRed].reverse().join(", ");
 
   return (
-    <div className="absolute left-[10px] top-[10px] flex w-[300px] flex-col gap-2 rounded-lg">
+    <div className="flex w-[300px] flex-col gap-2 rounded-lg">
       <div className="rounded-lg border border-[#d9d9d9] bg-white px-[8px] py-[8px] pb-[4px] shadow">
         <div
           className="h-[15px] rounded-md"

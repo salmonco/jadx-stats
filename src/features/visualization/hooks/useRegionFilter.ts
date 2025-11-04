@@ -9,14 +9,14 @@ import {
   RI_OPTIONS,
   withAllOption,
 } from "~/features/visualization/utils/regionFilterOptions";
-import type { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
+import { REGION_LEVEL_OPTIONS, type RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 
 interface RegionFilterProps {
-  selectedValue: RegionFilterOptions;
-  onSelect: (newSelection: RegionFilterOptions) => void;
+  selectedRegion: RegionFilterOptions;
+  setSelectedRegion: (newSelection: RegionFilterOptions) => void;
 }
 
-const useRegionFilter = ({ selectedValue, onSelect }: RegionFilterProps) => {
+const useRegionFilter = ({ selectedRegion, setSelectedRegion }: RegionFilterProps) => {
   const isSelectedAll = (selection: string[]) => {
     return selection.length === 0 || selection.includes(DEFAULT_ALL_OPTION);
   };
@@ -24,7 +24,7 @@ const useRegionFilter = ({ selectedValue, onSelect }: RegionFilterProps) => {
   const isSelectedAllStr = (selection: string) => selection === DEFAULT_ALL_OPTION || selection === null;
 
   const handleLevelChange = (newLevel: RegionLevelOptions) => {
-    onSelect({
+    setSelectedRegion({
       구분: newLevel,
       행정시: null,
       권역: [],
@@ -34,8 +34,8 @@ const useRegionFilter = ({ selectedValue, onSelect }: RegionFilterProps) => {
   };
 
   const handleCityChange = (newCity: string) => {
-    onSelect({
-      구분: selectedValue.구분,
+    setSelectedRegion({
+      구분: selectedRegion.구분,
       행정시: isSelectedAllStr(newCity) ? DEFAULT_ALL_OPTION : newCity,
       권역: [],
       읍면: [],
@@ -57,9 +57,9 @@ const useRegionFilter = ({ selectedValue, onSelect }: RegionFilterProps) => {
       processedRegions = newRegions;
     }
 
-    onSelect({
-      구분: selectedValue.구분,
-      행정시: selectedValue.행정시,
+    setSelectedRegion({
+      구분: selectedRegion.구분,
+      행정시: selectedRegion.행정시,
       권역: processedRegions,
       읍면: [],
       리동: [],
@@ -79,10 +79,10 @@ const useRegionFilter = ({ selectedValue, onSelect }: RegionFilterProps) => {
       processedEmds = newEmds;
     }
 
-    onSelect({
-      구분: selectedValue.구분,
-      행정시: selectedValue.행정시,
-      권역: selectedValue.권역,
+    setSelectedRegion({
+      구분: selectedRegion.구분,
+      행정시: selectedRegion.행정시,
+      권역: selectedRegion.권역,
       읍면: processedEmds,
       리동: [],
     });
@@ -101,44 +101,63 @@ const useRegionFilter = ({ selectedValue, onSelect }: RegionFilterProps) => {
       processedRis = newRis;
     }
 
-    onSelect({
-      구분: selectedValue.구분,
-      행정시: selectedValue.행정시,
-      권역: selectedValue.권역,
-      읍면: selectedValue.읍면,
+    setSelectedRegion({
+      구분: selectedRegion.구분,
+      행정시: selectedRegion.행정시,
+      권역: selectedRegion.권역,
+      읍면: selectedRegion.읍면,
       리동: processedRis,
     });
   };
 
   const cityOptions = useMemo(() => withAllOption(CITY_OPTIONS), []);
   const regionOptions = useMemo(() => {
-    if (selectedValue.행정시 === DEFAULT_ALL_OPTION || selectedValue.행정시 === null) {
+    if (selectedRegion.행정시 === DEFAULT_ALL_OPTION || selectedRegion.행정시 === null) {
       return withAllOption(REGION_OPTIONS);
     }
-    const filtered = CITY_TO_REGION_MAPPING[selectedValue.행정시] || [];
+    const filtered = CITY_TO_REGION_MAPPING[selectedRegion.행정시] || [];
     return withAllOption(filtered);
-  }, [selectedValue.행정시]);
+  }, [selectedRegion.행정시]);
 
   const emdOptions = useMemo(() => {
-    if (selectedValue.권역.length === 0) {
+    if (selectedRegion.권역.length === 0) {
       return withAllOption(Object.values(EMD_OPTIONS).flat());
     }
-    const filtered = selectedValue.권역.flatMap((r) => EMD_OPTIONS[r] || []);
+    const filtered = selectedRegion.권역.flatMap((r) => EMD_OPTIONS[r] || []);
     return withAllOption([...new Set(filtered)]);
-  }, [selectedValue.권역]);
+  }, [selectedRegion.권역]);
 
   const riOptions = useMemo(() => {
-    if (selectedValue.읍면.length === 0) {
-      if (selectedValue.권역.length === 0) {
+    if (selectedRegion.읍면.length === 0) {
+      if (selectedRegion.권역.length === 0) {
         return withAllOption(Object.values(RI_OPTIONS).flat());
       }
-      const emdsInRegion = selectedValue.권역.flatMap((r) => EMD_OPTIONS[r] || []);
+      const emdsInRegion = selectedRegion.권역.flatMap((r) => EMD_OPTIONS[r] || []);
       const filtered = emdsInRegion.flatMap((e) => RI_OPTIONS[e] || []);
       return withAllOption([...new Set(filtered)]);
     }
-    const filtered = selectedValue.읍면.flatMap((e) => RI_OPTIONS[e] || []);
+    const filtered = selectedRegion.읍면.flatMap((e) => RI_OPTIONS[e] || []);
     return withAllOption([...new Set(filtered)]);
-  }, [selectedValue.읍면, selectedValue.권역]);
+  }, [selectedRegion.읍면, selectedRegion.권역]);
+
+  const filterFeatures = (feature) => {
+    const props = feature.properties;
+    const regionLevel = selectedRegion.구분;
+
+    if (regionLevel === REGION_LEVEL_OPTIONS.행정시 && selectedRegion.행정시 !== DEFAULT_ALL_OPTION && selectedRegion.행정시 !== null) {
+      return props.vrbs_nm === selectedRegion.행정시;
+    }
+    if (regionLevel === REGION_LEVEL_OPTIONS.권역 && selectedRegion.권역.length > 0) {
+      return selectedRegion.권역.includes(props.vrbs_nm);
+    }
+    if (regionLevel === REGION_LEVEL_OPTIONS.읍면 && selectedRegion.읍면.length > 0) {
+      return selectedRegion.읍면.includes(props.vrbs_nm);
+    }
+    if (regionLevel === REGION_LEVEL_OPTIONS.리동 && selectedRegion.리동.length > 0) {
+      return selectedRegion.리동.includes(props.vrbs_nm);
+    }
+    return true;
+  };
 
   return {
     cityOptions,
@@ -152,6 +171,7 @@ const useRegionFilter = ({ selectedValue, onSelect }: RegionFilterProps) => {
     handleEmdChange,
     handleRiChange,
     handleLevelChange,
+    filterFeatures,
   };
 };
 

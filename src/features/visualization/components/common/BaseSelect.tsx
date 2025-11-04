@@ -7,14 +7,16 @@ export interface BaseSelectOption {
 }
 
 interface CustomSelectProps extends Omit<SelectProps<any>, "options"> {
+  title: string;
   options: BaseSelectOption[];
   selectedValue?: string | number | string[];
   onSelect: (value: string | number | string[]) => void;
 }
 
-export const BaseSelect = ({ options, className, selectedValue, onSelect, ...props }: CustomSelectProps) => {
+export const BaseSelect = ({ options, className, title, selectedValue, onSelect, ...props }: CustomSelectProps) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex w-full items-center gap-2">
+      <p className="flex-shrink-0 text-[18px] font-semibold text-white">{title}</p>
       <Select className={`w-full ${className}`} options={options} value={selectedValue} onChange={onSelect} {...props} size="large" />
     </div>
   );
