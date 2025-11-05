@@ -41,14 +41,14 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
 
     if (existingLayer) {
       existingLayer.updateFeatures(features);
-      existingLayer.updateSelectedCrops(map.selectedCrops);
+      existingLayer.updateSelectedCrop(map.selectedCrop);
       existingLayer.changed();
     } else {
-      HibernationVegetableCultivationLayer.createLayer(features, map.selectedCrops).then((layer) => {
+      HibernationVegetableCultivationLayer.createLayer(features, map.selectedCrop).then((layer) => {
         layerManager.addLayer(layer, "HibernationVegetableCultivationLayer", 1);
       });
     }
-  }, [ready, features, map.selectedCrops]);
+  }, [ready, features, map.selectedCrop]);
 
   if (!map) {
     return null;
@@ -56,7 +56,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
 
   return (
     <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
-      <HibernationVegetableCultivationLegend features={features} selectedCrops={map.selectedCrops} />
+      <HibernationVegetableCultivationLegend features={features} selectedCrop={map.selectedCrop} />
       <div className="absolute left-4 top-4 z-10">
         <FilterContainer>
           <YearSelector targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
@@ -67,7 +67,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
             selectedValues={map.getSelectedRegionLevel()}
             setSelectedValues={map.setSelectedRegionLevel}
           />
-          <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrops} setSelectedValues={map.setSelectedCrops} />
+          <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} setSelectedValues={map.setSelectedCrop} />
         </FilterContainer>
       </div>
     </BackgroundMap>
