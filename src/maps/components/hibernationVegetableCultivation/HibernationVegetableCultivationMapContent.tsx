@@ -18,9 +18,6 @@ import visualizationApi from "~/services/apis/visualizationApi";
 interface Props {
   mapId: string;
   mapOptions: MapOptions;
-  title: string;
-  tooltip?: React.ReactNode;
-  onAddMap: () => void;
   selectedRegionLevel: RegionLevelOptions;
   selectedTargetYear: number;
   selectedCrops: CropType;
@@ -32,9 +29,6 @@ interface Props {
 const HibernationVegetableCultivationMapContent = ({
   mapId,
   mapOptions,
-  title,
-  tooltip,
-  onAddMap,
   selectedRegionLevel,
   selectedTargetYear,
   selectedCrops,
@@ -68,7 +62,7 @@ const HibernationVegetableCultivationMapContent = ({
   }, [ready, features, selectedCrops]);
 
   return (
-    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} mapOptions={mapOptions} title={title} tooltip={tooltip} onAddMap={onAddMap}>
+    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} mapOptions={mapOptions}>
       <HibernationVegetableCultivationLegend features={features} selectedCrops={selectedCrops} />
       <div className="absolute left-4 top-4 z-10">
         <FilterContainer>

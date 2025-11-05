@@ -10,14 +10,11 @@ import visualizationApi from "~/services/apis/visualizationApi";
 interface Props {
   mapId: string;
   mapOptions: MapOptions;
-  title: string;
-  tooltip?: React.ReactNode;
-  onAddMap: () => void;
   selectedRegionLevel: RegionLevelOptions;
   excludeDong: boolean;
 }
 
-const AgingStatusMapContent = ({ mapId, mapOptions, title, tooltip, onAddMap, selectedRegionLevel, excludeDong }: Props) => {
+const AgingStatusMapContent = ({ mapId, mapOptions, selectedRegionLevel, excludeDong }: Props) => {
   const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju", true, false);
 
   const { data: features } = useQuery({
@@ -43,7 +40,7 @@ const AgingStatusMapContent = ({ mapId, mapOptions, title, tooltip, onAddMap, se
   }, [ready, features]);
 
   return (
-    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} mapOptions={mapOptions} title={title} tooltip={tooltip} onAddMap={onAddMap}>
+    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} mapOptions={mapOptions}>
       <AgingStatusLegend features={features} />
     </BackgroundMap>
   );

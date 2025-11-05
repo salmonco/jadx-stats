@@ -17,10 +17,8 @@ import MiniMap from "~/maps/components/MiniMap";
 
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
-import LayerHeader from "~/maps/components/LayerHeader";
 import MapTypeSwitcher from "~/maps/components/MapTypeSwitcher";
 import { BackgroundMapType } from "~/maps/constants/backgroundMapType";
-import useMapFullScreen from "~/maps/hooks/useMapFullscreen";
 import "~/maps/styles/map.css";
 import { cn } from "~/utils/common";
 import { useEventHandlers } from "../hooks/useEventHandlers";
@@ -36,9 +34,6 @@ interface BackgroundMapProps {
   map?: ExtendedOLMap;
   mapId: string;
   mapOptions?: MapOptions;
-  title: string;
-  tooltip?: React.ReactNode;
-  onAddMap: () => void;
   children?: React.ReactNode;
 }
 
@@ -71,7 +66,7 @@ const MapLoadingOverlay = () => (
   </div>
 );
 
-const BackgroundMap = ({ layerManager, eventManager, ready, mapId, map, mapOptions = {} as MapOptions, title, tooltip, onAddMap, children }: BackgroundMapProps) => {
+const BackgroundMap = ({ layerManager, eventManager, ready, mapId, map, mapOptions = {} as MapOptions, children }: BackgroundMapProps) => {
   const mergedMapOptions = { ...DEFAULT_MAP_OPTIONS, ...mapOptions };
 
   const [mapType, setMapType] = useState<BackgroundMapType>(mergedMapOptions.type);
@@ -106,15 +101,9 @@ const BackgroundMap = ({ layerManager, eventManager, ready, mapId, map, mapOptio
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const { mapContainerRef, onClickFullScreen } = useMapFullScreen();
-
   return (
-    <div
-      className={cn("relative h-full w-full border border-[#43516D]", mergedMapOptions?.roundCorners && "overflow-clip rounded-lg", mergedMapOptions?.className)}
-      ref={mapContainerRef}
-    >
+    <div className={cn("relative h-full w-full border border-[#43516D]", mergedMapOptions?.roundCorners && "overflow-clip rounded-lg", mergedMapOptions?.className)}>
       <div className="h-full w-full" id={mapId} />
-      <LayerHeader title={title} tooltip={tooltip} onClickFullScreen={onClickFullScreen} onAddMap={onAddMap} />
       {ready && (
         <>
           {mergedMapOptions?.miniMap && <MiniMap mainMap={map} />}
