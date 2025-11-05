@@ -59,6 +59,3 @@ export type CropColor = (typeof CROP_COLORS)[keyof typeof CROP_COLORS];
 export const cropColors = Object.values(CROP_COLORS) as CropColor[];
 
 export const cropColorScale = d3.scaleOrdinal().domain(cropLabels).range(cropColors);
-
-export const DEFAULT_CROP_PUMMOK = "온주밀감류";
-export const DEFAULT_CROP_GROUP = "극조생온주";
