@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import FilterContainer from "~/features/visualization/components/common/FilterContainer";
-import RegionFilter from "~/features/visualization/components/common/RegionFilter";
-import { AgingStatusFeatureCollection, AgingStatusLayer, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
-import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
+import { useEffect } from "react";
+import { AgingStatusLayer, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import AgingStatusLegend from "~/maps/components/agingStatus/AgingStatusLegend";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
@@ -28,23 +25,20 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
     retry: false,
   });
 
-  const [filteredFeatures, setFilteredFeatures] = useState<AgingStatusFeatureCollection>(features);
-  const [selectedRegion, setSelectedRegion] = useState<RegionFilterOptions>(map.regionFilterSetting || DEFAULT_REGION_SETTING);
-
   useEffect(() => {
-    if (!ready || !filteredFeatures) return;
+    if (!ready || !features) return;
 
     const layerWrapper = layerManager.getLayer("agingStatusLayer");
     const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
 
     if (existingLayer && typeof existingLayer.updateFeatures === "function") {
-      existingLayer.updateFeatures(filteredFeatures);
+      existingLayer.updateFeatures(features);
     } else {
-      AgingStatusLayer.createLayer(filteredFeatures).then((layer) => {
+      AgingStatusLayer.createLayer(features).then((layer) => {
         layerManager.addLayer(layer, "agingStatusLayer", 1);
       });
     }
-  }, [ready, filteredFeatures]);
+  }, [ready, features]);
 
   if (!map) {
     return null;
@@ -52,10 +46,7 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
 
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
-      <FilterContainer isFixed>
-        <RegionFilter selectedRegion={selectedRegion} features={features} setSelectedRegion={setSelectedRegion} setFilteredFeatures={setFilteredFeatures} />
-        <AgingStatusLegend features={features} />
-      </FilterContainer>
+      <AgingStatusLegend features={features} />
     </ListManagedBackgroundMap>
   );
 };

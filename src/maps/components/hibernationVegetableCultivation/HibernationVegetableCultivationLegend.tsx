@@ -48,7 +48,7 @@ const HibernationVegetableCultivationLegend = ({ features, selectedCrop }: Props
   ));
 
   return (
-    <div className="flex w-[280px] flex-col gap-2 rounded-lg">
+    <div style={{ position: "absolute", top: 10, left: 10, zIndex: 100 }} className="flex w-[280px] flex-col gap-2 rounded-lg">
       <div className="rounded-lg border border-[#d9d9d9] bg-[#fff] px-[8px] py-[8px] pb-[4px]">
         <div className="flex justify-center">{gradientSteps1}</div>
         <div className="flex justify-between px-[2px] text-[14px] text-[#222]">

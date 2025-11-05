@@ -1,22 +1,22 @@
-import { DEFAULT_REGION_LEVEL, RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
+import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 
 export const REGION_LEVEL_LABEL = "구분";
 
-export const CITY_OPTIONS = ["제주", "서귀"];
+export const CITY_OPTIONS = ["제주", "서귀"] as const;
 
-export const REGION_OPTIONS = ["제주", "서귀", "동부", "서부"];
+export const REGION_OPTIONS = ["제주", "서귀", "동부", "서부"] as const;
 
 export const CITY_TO_REGION_MAPPING = {
   제주: ["제주", "동부", "서부"],
   서귀: ["서귀", "동부", "서부"],
-};
+} as const;
 
 export const EMD_OPTIONS = {
   제주: ["제주", "조천", "애월"],
   서귀: ["서귀", "남원"],
   동부: ["구좌", "성산", "표선"],
   서부: ["안덕", "한림", "한경", "대정"],
-};
+} as const;
 
 export const RI_OPTIONS = {
   // --- 제주 ---
@@ -81,24 +81,24 @@ export const RI_OPTIONS = {
   한림: ["한림리", "협재리", "귀덕리", "월령리", "금능리", "명월리", "금악리", "상명리", "한수리"],
   한경: ["고산리", "용수리", "두모리", "낙천리", "청수리", "저지리", "조수리", "금등리"],
   대정: ["하모리", "상모리", "신도리", "구억리", "보성리", "인성리", "일과리", "덕수리", "모슬포리", "무릉리", "영락리"],
-};
+} as const;
 
 export const DEFAULT_ALL_OPTION = "전체";
 
+export type AddAllOption<T> = typeof DEFAULT_ALL_OPTION | T;
+export type MultiOption<T> = T[];
+
+export type CityOptions = AddAllOption<(typeof CITY_OPTIONS)[number]>;
+export type RegionOptions = MultiOption<AddAllOption<(typeof REGION_OPTIONS)[number]>>;
+export type EmdOptions = MultiOption<AddAllOption<(typeof EMD_OPTIONS)[keyof typeof EMD_OPTIONS][number]>>;
+export type RiOptions = MultiOption<AddAllOption<(typeof RI_OPTIONS)[keyof typeof RI_OPTIONS][number]>>;
+
 export type RegionFilterOptions = {
   구분: RegionLevelOptions;
-  행정시?: string | null;
-  권역?: string[];
-  읍면?: string[];
-  리동?: string[];
-};
-
-export const DEFAULT_REGION_SETTING: RegionFilterOptions = {
-  구분: DEFAULT_REGION_LEVEL,
-  행정시: null,
-  권역: [],
-  읍면: [],
-  리동: [],
+  행정시?: CityOptions;
+  권역?: RegionOptions;
+  읍면?: EmdOptions;
+  리동?: RiOptions;
 };
 
 export const withAllOption = (options: readonly string[]) => [DEFAULT_ALL_OPTION, ...options];

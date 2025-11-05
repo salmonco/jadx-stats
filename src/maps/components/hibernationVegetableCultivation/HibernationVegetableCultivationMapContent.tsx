@@ -1,15 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
 import FilterContainer from "~/features/visualization/components/common/FilterContainer";
-import RegionFilter from "~/features/visualization/components/common/RegionFilter";
-import YearFilter from "~/features/visualization/components/common/YearFilter";
+import YearSelector from "~/features/visualization/components/common/YearSelector";
 import {
   HibernationVegetableCultivationFeatureCollection,
   HibernationVegetableCultivationLayer,
   InnerLayer,
 } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
-import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
+import { regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import HibernationVegetableCultivationMap from "~/maps/classes/HibernationVegetableCultivationMap";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import HibernationVegetableCultivationLegend from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationLegend";
@@ -34,21 +33,14 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
     enabled: !!ready,
   });
 
-  const [filteredFeatures, setFilteredFeatures] = useState<HibernationVegetableCultivationFeatureCollection>(features);
-  const [selectedRegion, setSelectedRegion] = useState<RegionFilterOptions>(map.regionFilterSetting || DEFAULT_REGION_SETTING);
-
   useEffect(() => {
-    map.setRegionFilterSetting(selectedRegion);
-  }, [selectedRegion]);
-
-  useEffect(() => {
-    if (!ready || !filteredFeatures) return;
+    if (!ready || !features) return;
 
     const layerWrapper = layerManager.getLayer("HibernationVegetableCultivationLayer");
     const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
 
     if (existingLayer) {
-      existingLayer.updateFeatures(filteredFeatures);
+      existingLayer.updateFeatures(features);
       existingLayer.updateSelectedCrop(map.selectedCrop);
       existingLayer.changed();
     } else {
@@ -56,7 +48,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
         layerManager.addLayer(layer, "HibernationVegetableCultivationLayer", 1);
       });
     }
-  }, [ready, filteredFeatures, map.selectedCrop]);
+  }, [ready, features, map.selectedCrop]);
 
   if (!map) {
     return null;
@@ -64,12 +56,20 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
 
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
-      <FilterContainer isFixed>
-        <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
-        <RegionFilter selectedRegion={selectedRegion} features={features} setSelectedRegion={setSelectedRegion} setFilteredFeatures={setFilteredFeatures} />
-        <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} setSelectedValues={map.setSelectedCrop} />
-        <HibernationVegetableCultivationLegend features={filteredFeatures} selectedCrop={map.selectedCrop} />
-      </FilterContainer>
+      <HibernationVegetableCultivationLegend features={features} selectedCrop={map.selectedCrop} />
+      <div className="absolute left-4 top-4 z-10">
+        <FilterContainer>
+          <YearSelector targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
+          <ButtonGroupSelector
+            title="권역 단위"
+            cols={5}
+            options={regionLevelOptions}
+            selectedValues={map.getSelectedRegionLevel()}
+            setSelectedValues={map.setSelectedRegionLevel}
+          />
+          <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} setSelectedValues={map.setSelectedCrop} />
+        </FilterContainer>
+      </div>
     </ListManagedBackgroundMap>
   );
 };

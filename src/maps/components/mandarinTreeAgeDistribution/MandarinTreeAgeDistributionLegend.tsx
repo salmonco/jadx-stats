@@ -27,7 +27,7 @@ const MandarinTreeAgeDistributionLegend = ({ features }) => {
   const gradientColors = [...colorsRed].reverse().join(", ");
 
   return (
-    <div className="flex w-[300px] flex-col rounded-lg">
+    <div style={{ position: "absolute", top: 10, left: 10, zIndex: 100 }} className="flex w-[300px] flex-col rounded-lg">
       <div className="rounded-lg border border-[#d9d9d9] bg-[#fff] px-[8px] py-[8px] pb-[4px]">
         <div
           className="h-[15px] rounded-md"

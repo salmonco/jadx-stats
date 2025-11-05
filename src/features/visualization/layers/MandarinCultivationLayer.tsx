@@ -1,12 +1,12 @@
-import * as d3 from "d3";
-import { getCenter } from "ol/extent";
-import { Vector as VectorLayer } from "ol/layer";
-import { Vector as SourceVector } from "ol/source";
 import { useEffect, useMemo, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FeatureCollection, Geometry } from "~/maps/classes/interfaces";
 import BaseLayer from "~/maps/layers/BaseLayer";
+import { Vector as VectorLayer } from "ol/layer";
+import { Vector as SourceVector } from "ol/source";
+import { getCenter } from "ol/extent";
 import { colorsRed } from "~/utils/gisColors";
+import * as d3 from "d3";
 
 interface Stats {
   average_area: number;
@@ -35,6 +35,7 @@ interface Feature {
 export type MandarinCultivationFeatureCollection = FeatureCollection<Feature>;
 
 const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedVariety }: InnerLayerProps) => {
+  console.log(features);
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
