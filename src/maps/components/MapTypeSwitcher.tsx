@@ -1,30 +1,20 @@
-import React, { SetStateAction } from "react";
-import { Dropdown, Button, MenuProps } from "antd";
 import { UpOutlined } from "@ant-design/icons";
-
-export type BgMapType = "Satellite" | "Base" | "white" | "midnight" | "Terrain" | "world";
+import { Button, Dropdown, MenuProps } from "antd";
+import React, { SetStateAction } from "react";
+import { BackgroundMapType, BackgroundMapTypeMenuItems } from "~/maps/constants/backgroundMapType";
 
 interface MapTypeSwitcherProps {
-  mapType: BgMapType;
-  setMapType: React.Dispatch<SetStateAction<BgMapType>>;
+  mapType: BackgroundMapType;
+  setMapType: React.Dispatch<SetStateAction<BackgroundMapType>>;
 }
 
 const MapTypeSwitcher = ({ mapType, setMapType }: MapTypeSwitcherProps) => {
   const handleMenuClick: MenuProps["onClick"] = (e) => {
-    setMapType(e.key as BgMapType);
+    setMapType(e.key as BackgroundMapType);
   };
 
-  const allTypes: MenuProps["items"] = [
-    { label: "위성", key: "Satellite" },
-    { label: "기본", key: "Base" },
-    { label: "백지도", key: "white" },
-    { label: "자정", key: "midnight" },
-    // { label: "지형도", key: "Terrain" },
-    // { label: "세계지도", key: "world" },
-  ];
-
-  const items = allTypes.filter((item) => item.key !== mapType);
-  const selectedItems = allTypes.find((item) => item.key === mapType);
+  const items = BackgroundMapTypeMenuItems.filter((item) => item.key !== mapType);
+  const selectedItems = BackgroundMapTypeMenuItems.find((item) => item.key === mapType);
   const label = selectedItems && "label" in selectedItems ? selectedItems.label : "";
 
   return (
