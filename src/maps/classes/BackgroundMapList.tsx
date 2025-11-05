@@ -2,10 +2,8 @@ import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import { MapOptions } from "~/maps/components/BackgroundMap";
 import BackgroundMapWrapper from "~/maps/components/BackgroundMapWrapper";
 import ChartRenderer from "~/maps/components/common/ChartRenderer";
+import MapRenderer from "~/maps/components/common/MapRenderer";
 import { DEFAULT_MAP_OPTIONS } from "~/maps/constants/mapOptions";
-
-const INITIAL_MAP_POSITION_X_OFFSET = 20;
-const INITIAL_MAP_POSITION_Y_OFFSET = 20;
 
 class BackgroundMapList {
   #title: string;
@@ -14,7 +12,6 @@ class BackgroundMapList {
 
   #mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => CommonBackgroundMap;
   #listeners: Set<() => void> = new Set();
-  #mapPositions: Map<string, { x: number; y: number }> = new Map();
 
   constructor({
     title,
@@ -36,10 +33,6 @@ class BackgroundMapList {
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
     this.getSnapshot = this.getSnapshot.bind(this);
-    this.addMap = this.addMap.bind(this);
-    this.removeMap = this.removeMap.bind(this);
-    this.updateMapPosition = this.updateMapPosition.bind(this);
-    this.getMapPosition = this.getMapPosition.bind(this);
   }
 
   /**
@@ -55,38 +48,15 @@ class BackgroundMapList {
   ) {
     const mapInstance = new mapConstructor(mapOptions, title, tooltip);
     this.#maps = [...this.#maps, mapInstance];
-
-    // 초기 위치 설정 (오프셋을 주어 겹치지 않도록 함)
-    const offsetIndex = (this.#maps.length - 1) % 5;
-    const initialX = 50 + offsetIndex * INITIAL_MAP_POSITION_X_OFFSET;
-    const initialY = 50 + offsetIndex * INITIAL_MAP_POSITION_Y_OFFSET;
-    this.#mapPositions.set(mapInstance.mapId, { x: initialX, y: initialY });
-
     this.#notifyListeners();
-  }
-
-  removeMap(mapId: string) {
-    this.#maps = this.#maps.filter((map) => map.mapId !== mapId);
-    this.#mapPositions.delete(mapId);
-    this.#notifyListeners();
-  }
-
-  getMapPosition(mapId: string) {
-    return this.#mapPositions.get(mapId);
-  }
-
-  updateMapPosition(mapId: string, x: number, y: number) {
-    this.#mapPositions.set(mapId, { x, y });
   }
 
   renderMaps() {
     return (
       <BackgroundMapWrapper
-        maps={this.#maps}
-        onAddMap={() => this.addMap(this.#mapConstructor)}
-        onRemoveMap={this.removeMap}
-        onUpdateMapPosition={this.updateMapPosition}
-        getMapPosition={this.getMapPosition}
+        maps={this.#maps.map((map) => (
+          <MapRenderer key={map.mapId} map={map} onAddMap={() => this.addMap(this.#mapConstructor)} />
+        ))}
       />
     );
   }
