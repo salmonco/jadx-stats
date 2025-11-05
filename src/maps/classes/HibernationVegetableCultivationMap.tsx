@@ -14,31 +14,16 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
 
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.getSnapshot = this.getSnapshot.bind(this);
+    this.setSelectedTargetYear = this.setSelectedTargetYear.bind(this);
+    this.setSelectedCrops = this.setSelectedCrops.bind(this);
   }
 
   renderMap() {
-    return (
-      <HibernationVegetableCultivationMapContent
-        mapId={this.mapId}
-        mapOptions={this.mapOptions}
-        selectedRegionLevel={this.getSelectedRegionLevel()}
-        selectedTargetYear={this.selectedTargetYear}
-        selectedCrops={this.#selectedCrops}
-        setSelectedRegionLevel={(level) => this.setSelectedRegionLevel(level)}
-        setSelectedTargetYear={(year) => (this.selectedTargetYear = year)}
-        setSelectedCrops={(crops) => this.setSelectedCrops(crops)}
-      />
-    );
+    return <HibernationVegetableCultivationMapContent mapId={this.mapId} />;
   }
 
   renderChart() {
-    return (
-      <HibernationVegetableCultivationChart
-        selectedRegionLevel={this.getSelectedRegionLevel()}
-        selectedTargetYear={this.#selectedTargetYear}
-        selectedCrops={this.#selectedCrops}
-      />
-    );
+    return <HibernationVegetableCultivationChart />;
   }
 
   /**
@@ -65,9 +50,32 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
     return this.#selectedTargetYear;
   }
 
-  set selectedTargetYear(year: number) {
+  setSelectedTargetYear(year: number) {
     this.#selectedTargetYear = year;
     this.notifyListeners();
+  }
+
+  get selectedCrops() {
+    return this.#selectedCrops;
+  }
+
+  getShareableState() {
+    const state = super.getShareableState();
+    return {
+      ...state,
+      selectedTargetYear: this.selectedTargetYear,
+      selectedCrops: this.selectedCrops,
+    };
+  }
+
+  applySharedState(state: Record<string, any>) {
+    super.applySharedState(state);
+    if (state.selectedTargetYear) {
+      this.setSelectedTargetYear(state.selectedTargetYear);
+    }
+    if (state.selectedCrops) {
+      this.setSelectedCrops(state.selectedCrops);
+    }
   }
 }
 
