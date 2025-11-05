@@ -18,7 +18,7 @@ interface Props {
 }
 
 const AgingStatusMapContent = ({ mapId, mapOptions, title, tooltip, onAddMap, selectedRegionLevel, excludeDong }: Props) => {
-  const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju", true, false);
+  const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju");
 
   const { data: features } = useQuery({
     queryKey: ["agingStatus", selectedRegionLevel, excludeDong],

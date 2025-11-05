@@ -42,7 +42,7 @@ const HibernationVegetableCultivationMapContent = ({
   setSelectedTargetYear,
   setSelectedCrops,
 }: Props) => {
-  const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju", true, false);
+  const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju");
 
   const { data: features } = useQuery<HibernationVegetableCultivationFeatureCollection>({
     queryKey: ["hibernationVegetableCultivationFeatures", selectedTargetYear, selectedRegionLevel],
