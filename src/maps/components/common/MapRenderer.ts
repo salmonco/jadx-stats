@@ -1,18 +1,24 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 
 interface Props<T extends CommonBackgroundMap = CommonBackgroundMap> {
   map: T;
-  onAddMap: () => void;
 }
 
 /**
  * 개별 맵 인스턴스를 렌더링하고 해당 맵의 상태 변경을 구독하는 컴포넌트입니다.
  * - `useSyncExternalStore`를 사용하여 맵 인스턴스의 상태가 변경될 때만 리렌더링됩니다.
  */
-const MapRenderer = ({ map, onAddMap }: Props) => {
+const MapRenderer = ({ map }: Props) => {
   useSyncExternalStore(map.subscribe, map.getSnapshot);
-  return map.renderMap(onAddMap);
+
+  useEffect(() => {
+    return () => {
+      map.destroy();
+    };
+  }, []);
+
+  return map.renderMap();
 };
 
 export default MapRenderer;

@@ -9,8 +9,6 @@ class CommonBackgroundMap {
   #mapId = uuidv4();
   #mapOptions: MapOptions;
   #excludeDong = true;
-  #title: string;
-  #tooltip?: React.ReactNode;
 
   /**
    * 지역 필터 설정
@@ -54,14 +52,18 @@ class CommonBackgroundMap {
    */
   #revision = 0;
 
-  constructor(mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) {
+  constructor(mapOptions: MapOptions) {
     this.#mapOptions = mapOptions;
-    this.#title = title;
-    this.#tooltip = tooltip;
 
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
     this.getSnapshot = this.getSnapshot.bind(this);
+    this.setSelectedRegionLevel = this.setSelectedRegionLevel.bind(this);
+    this.setMapType = this.setMapType.bind(this);
+  }
+
+  destroy() {
+    this.#listeners.clear();
   }
 
   /**
@@ -77,7 +79,7 @@ class CommonBackgroundMap {
   }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
-  renderMap(onAddMap: () => void) {
+  renderMap() {
     return <></>;
   }
 
@@ -123,14 +125,6 @@ class CommonBackgroundMap {
     return this.#mapOptions;
   }
 
-  get title() {
-    return this.#title;
-  }
-
-  get tooltip() {
-    return this.#tooltip;
-  }
-
   get excludeDong() {
     return this.#excludeDong;
   }
@@ -139,8 +133,43 @@ class CommonBackgroundMap {
     return this.#mapType;
   }
 
+  setMapType(type: BackgroundMapType) {
+    this.#mapType = type;
+    this.notifyListeners();
+  }
+
   get visualizationSetting() {
     return this.#visualizationSetting;
+  }
+
+  /**
+   * 공유 가능한 상태를 객체로 반환합니다.
+   * - 하위 클래스에서 이 메서드를 확장하여 특정 상태를 추가할 수 있습니다.
+   */
+  getShareableState(): Record<string, any> {
+    return {
+      mapType: this.mapType,
+      regionFilterSetting: this.#regionFilterSetting,
+      visualizationSetting: this.#visualizationSetting,
+    };
+  }
+
+  /**
+   * 제공된 상태 객체를 기반으로 맵의 상태를 적용합니다.
+   * - 하위 클래스에서 이 메서드를 확장하여 특정 상태를 적용할 수 있습니다.
+   * @param state 공유 상태 객체
+   */
+  applySharedState(state: Record<string, any>) {
+    if (state.mapType) {
+      this.setMapType(state.mapType);
+    }
+    if (state.regionFilterSetting) {
+      this.#regionFilterSetting = state.regionFilterSetting;
+    }
+    if (state.visualizationSetting) {
+      this.#visualizationSetting = state.visualizationSetting;
+    }
+    this.notifyListeners();
   }
 }
 
