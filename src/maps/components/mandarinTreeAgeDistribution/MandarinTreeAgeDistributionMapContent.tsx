@@ -6,7 +6,7 @@ import {
   MandarinTreeAgeDistributionLayer,
 } from "~/features/visualization/layers/MandarinTreeAgeDistributionLayer";
 import MandarinTreeAgeDistributionMap from "~/maps/classes/MandarinTreeAgeDistributionMap";
-import BackgroundMap from "~/maps/components/BackgroundMap";
+import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import MandarinTreeAgeDistributionFilter from "~/maps/components/mandarinTreeAgeDistribution/MandarinTreeAgeDistributionFilter";
 import MandarinTreeAgeDistributionLegend from "~/maps/components/mandarinTreeAgeDistribution/MandarinTreeAgeDistributionLegend";
 import { useMapList } from "~/maps/hooks/useMapList";
@@ -54,12 +54,12 @@ const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
   }, [ready, features]);
 
   return (
-    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <MandarinTreeAgeDistributionLegend features={features} />
       <div className="absolute left-4 top-4 z-10">
         <MandarinTreeAgeDistributionFilter mapId={mapId} />
       </div>
-    </BackgroundMap>
+    </ListManagedBackgroundMap>
   );
 };
 

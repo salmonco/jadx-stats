@@ -1,4 +1,4 @@
-import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
+import ListManagedVisualizationContainer from "~/features/visualization/components/common/ListManagedVisualizationContainer";
 import MandarinCultivationInfoMap from "~/maps/classes/MandarinCultivationInfoMap";
 import MandarinCultivationInfoTooltip from "~/maps/components/mandarinCultivationInfo/MandarinCultivationInfoTooltip";
 import { MapListProvider } from "~/maps/contexts/MapListContext";
@@ -15,7 +15,7 @@ const MandarinCultivationInfo = () => {
 
   return (
     <MapListProvider value={mapList}>
-      <VisualizationContainer />
+      <ListManagedVisualizationContainer />
     </MapListProvider>
   );
 };
