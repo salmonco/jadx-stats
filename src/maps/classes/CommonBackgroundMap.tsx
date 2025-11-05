@@ -1,26 +1,21 @@
 import { v4 as uuidv4 } from "uuid";
-import { RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
-import { DEFAULT_REGION_LEVEL, RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
-import { MapOptions } from "~/maps/components/BackgroundMap";
-import { DEFAULT_MAP_TYPE, MapType } from "~/maps/constants/mapType";
+import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
+import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
+import { BackgroundMapType, DEFAULT_BACKGROUND_MAP_TYPE } from "~/maps/constants/backgroundMapType";
+import { MapOptions } from "~/maps/constants/mapOptions";
 import { DEFAULT_LABEL_OPTIONS, DEFAULT_LEGEND_OPTIONS, DEFAULT_TRANSPARENCY, DEFAULT_VISUAL_TYPE, VisualizationSetting } from "~/maps/constants/visualizationSetting";
-
 class CommonBackgroundMap {
   #mapId = uuidv4();
   #mapOptions: MapOptions;
   #excludeDong = true;
+  #title: string;
+  #tooltip: React.ReactNode | null;
 
   /**
    * 지역 필터 설정
    * - 구분, 행정시, 권역, 읍면, 리동
    */
-  #regionFilterSetting: RegionFilterOptions = {
-    구분: DEFAULT_REGION_LEVEL,
-    행정시: null,
-    권역: [],
-    읍면: [],
-    리동: [],
-  };
+  #regionFilterSetting: RegionFilterOptions = DEFAULT_REGION_SETTING;
 
   /**
    * 시각화 설정
@@ -39,7 +34,7 @@ class CommonBackgroundMap {
   /**
    * 지도 타입 (일반, 위성, 백지도, 자정)
    */
-  #mapType: MapType = DEFAULT_MAP_TYPE;
+  #mapType: BackgroundMapType = DEFAULT_BACKGROUND_MAP_TYPE;
 
   /**
    * 리액트 컴포넌트의 렌더링 제어를 위한 구독자 목록
@@ -52,12 +47,21 @@ class CommonBackgroundMap {
    */
   #revision = 0;
 
-  constructor(mapOptions: MapOptions) {
+  constructor(mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) {
     this.#mapOptions = mapOptions;
+    this.#title = title;
+    this.#tooltip = tooltip ?? null;
 
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
     this.getSnapshot = this.getSnapshot.bind(this);
+    this.setSelectedRegionLevel = this.setSelectedRegionLevel.bind(this);
+    this.setRegionFilterSetting = this.setRegionFilterSetting.bind(this);
+    this.setMapType = this.setMapType.bind(this);
+  }
+
+  destroy() {
+    this.#listeners.clear();
   }
 
   /**
@@ -123,12 +127,64 @@ class CommonBackgroundMap {
     return this.#excludeDong;
   }
 
-  get mapType() {
-    return this.#mapType;
+  get regionFilterSetting() {
+    return this.#regionFilterSetting;
+  }
+
+  setRegionFilterSetting(setting: RegionFilterOptions) {
+    this.#regionFilterSetting = setting;
+    this.notifyListeners();
   }
 
   get visualizationSetting() {
     return this.#visualizationSetting;
+  }
+
+  get mapType() {
+    return this.#mapType;
+  }
+
+  setMapType(type: BackgroundMapType) {
+    this.#mapType = type;
+    this.notifyListeners();
+  }
+
+  /**
+   * 공유 가능한 상태를 객체로 반환합니다.
+   * - 하위 클래스에서 이 메서드를 확장하여 특정 상태를 추가할 수 있습니다.
+   */
+  getShareableState(): Record<string, any> {
+    return {
+      mapType: this.mapType,
+      regionFilterSetting: this.#regionFilterSetting,
+      visualizationSetting: this.#visualizationSetting,
+    };
+  }
+
+  /**
+   * 제공된 상태 객체를 기반으로 맵의 상태를 적용합니다.
+   * - 하위 클래스에서 이 메서드를 확장하여 특정 상태를 적용할 수 있습니다.
+   * @param state 공유 상태 객체
+   */
+  applySharedState(state: Record<string, any>) {
+    if (state.mapType) {
+      this.setMapType(state.mapType);
+    }
+    if (state.regionFilterSetting) {
+      this.#regionFilterSetting = state.regionFilterSetting;
+    }
+    if (state.visualizationSetting) {
+      this.#visualizationSetting = state.visualizationSetting;
+    }
+    this.notifyListeners();
+  }
+
+  get title() {
+    return this.#title;
+  }
+
+  get tooltip() {
+    return this.#tooltip;
   }
 }
 

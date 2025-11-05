@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useRef } from "react";
 import * as d3 from "d3";
+import { useEffect, useMemo, useRef } from "react";
 
-import { cropColorScale, crops } from "~/utils/gitUtils";
+import { cropColorScale } from "~/features/visualization/utils/getCropItems";
+import { cropLabels } from "~/maps/constants/cropDistribution";
 
 interface Props {
   excludeCrops?: string[];
 }
 
 const CropLegend = ({ excludeCrops = [] }: Props) => {
-  const filteredCrops = useMemo(() => crops.filter((crop) => !excludeCrops.includes(crop)), [excludeCrops]);
+  const filteredCrops = useMemo(() => cropLabels.filter((crop) => !excludeCrops.includes(crop)), [excludeCrops]);
 
   const ref = useRef(null);
 
@@ -23,7 +24,7 @@ const CropLegend = ({ excludeCrops = [] }: Props) => {
   const drawChart = () => {
     d3.select(ref.current).selectAll("*").remove();
 
-    let maxWidthForCol = {};
+    const maxWidthForCol = {};
     filteredCrops.forEach((crop, index) => {
       const column = Math.floor(index / 5);
       const textWidth = (crop.length + 2) * 16;

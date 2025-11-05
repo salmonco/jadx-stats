@@ -1,12 +1,13 @@
-import { useEffect } from "react";
 import { Feature } from "ol";
-import { Vector as VectorSource } from "ol/source";
 import HeatmapLayer from "ol/layer/Heatmap";
-import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
-import BaseLayer from "~/maps/layers/BaseLayer";
-import useSetupOL from "~/maps/hooks/useSetupOL";
-import { calculateDayOfYear } from "~/features/visualization/utils/mandarinFloweringUtils";
+import { Vector as VectorSource } from "ol/source";
+import { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { calculateDayOfYear } from "~/features/visualization/utils/mandarinFloweringUtils";
+import BackgroundMap from "~/maps/components/BackgroundMap";
+import { MapOptions } from "~/maps/constants/mapOptions";
+import useSetupOL from "~/maps/hooks/useSetupOL";
+import BaseLayer from "~/maps/layers/BaseLayer";
 
 const mapOptions: MapOptions = {
   layerSwitcher: false,

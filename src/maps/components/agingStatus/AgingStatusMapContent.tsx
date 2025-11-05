@@ -1,48 +1,62 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { AgingStatusLayer, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
-import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
+import { useEffect, useState } from "react";
+import FilterContainer from "~/features/visualization/components/common/FilterContainer";
+import RegionFilter from "~/features/visualization/components/common/RegionFilter";
+import { AgingStatusFeatureCollection, AgingStatusLayer, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
+import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
+import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import AgingStatusLegend from "~/maps/components/agingStatus/AgingStatusLegend";
-import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
+import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
+import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
-  mapOptions: MapOptions;
-  selectedRegionLevel: RegionLevelOptions;
-  excludeDong: boolean;
 }
 
-const AgingStatusMapContent = ({ mapId, mapOptions, selectedRegionLevel, excludeDong }: Props) => {
-  const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju", true, false);
+const AgingStatusMapContent = ({ mapId }: Props) => {
+  const mapList = useMapList<AgingStatusMap>();
+  const map = mapList.getMapById(mapId);
+
+  const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju");
 
   const { data: features } = useQuery({
-    queryKey: ["agingStatus", selectedRegionLevel, excludeDong],
-    queryFn: () => visualizationApi.getAgingStatus(selectedRegionLevel, excludeDong),
-    enabled: !!selectedRegionLevel,
+    queryKey: ["agingStatus", map.getSelectedRegionLevel(), map.excludeDong],
+    queryFn: () => visualizationApi.getAgingStatus(map.getSelectedRegionLevel(), map.excludeDong),
+    enabled: !!map.getSelectedRegionLevel(),
     retry: false,
   });
 
+  const [filteredFeatures, setFilteredFeatures] = useState<AgingStatusFeatureCollection>(features);
+  const [selectedRegion, setSelectedRegion] = useState<RegionFilterOptions>(map.regionFilterSetting || DEFAULT_REGION_SETTING);
+
   useEffect(() => {
-    if (!ready || !features) return;
+    if (!ready || !filteredFeatures) return;
 
     const layerWrapper = layerManager.getLayer("agingStatusLayer");
     const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
 
     if (existingLayer && typeof existingLayer.updateFeatures === "function") {
-      existingLayer.updateFeatures(features);
+      existingLayer.updateFeatures(filteredFeatures);
     } else {
-      AgingStatusLayer.createLayer(features).then((layer) => {
+      AgingStatusLayer.createLayer(filteredFeatures).then((layer) => {
         layerManager.addLayer(layer, "agingStatusLayer", 1);
       });
     }
-  }, [ready, features]);
+  }, [ready, filteredFeatures]);
+
+  if (!map) {
+    return null;
+  }
 
   return (
-    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} mapOptions={mapOptions}>
-      <AgingStatusLegend features={features} />
-    </BackgroundMap>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+      <FilterContainer isFixed>
+        <RegionFilter selectedRegion={selectedRegion} features={features} setSelectedRegion={setSelectedRegion} setFilteredFeatures={setFilteredFeatures} />
+        <AgingStatusLegend features={features} />
+      </FilterContainer>
+    </ListManagedBackgroundMap>
   );
 };
 

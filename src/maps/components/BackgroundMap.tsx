@@ -9,7 +9,6 @@ import { LayerManager } from "~/maps/hooks/useLayerManager";
 import useMapTools from "~/maps/hooks/useMapTools";
 import { ExtendedOLMap } from "~/maps/hooks/useOLMap";
 
-import MapTypeSwitcher, { BgMapType } from "~/maps/components/MapTypeSwitcher";
 // import LayerSwitcher from "~/maps/components/LayerSwitcher";
 import LayerConfigModal from "~/maps/components/LayerConfigModal";
 import LayerControlDrawer from "~/maps/components/LayerControlDrawer";
@@ -18,6 +17,9 @@ import MiniMap from "~/maps/components/MiniMap";
 
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
+import MapTypeSwitcher from "~/maps/components/MapTypeSwitcher";
+import { BackgroundMapType } from "~/maps/constants/backgroundMapType";
+import { DEFAULT_MAP_OPTIONS, MapOptions } from "~/maps/constants/mapOptions";
 import "~/maps/styles/map.css";
 import { cn } from "~/utils/common";
 import { useEventHandlers } from "../hooks/useEventHandlers";
@@ -36,29 +38,6 @@ interface BackgroundMapProps {
   children?: React.ReactNode;
 }
 
-export interface MapOptions {
-  type?: BgMapType;
-  layerSwitcher?: boolean;
-  mapTypeSwitcher?: boolean;
-  mapToolsController?: boolean;
-  toggleWindow?: (windowName: string) => void;
-  roundCorners?: boolean;
-  miniMap?: boolean;
-  layerControlDrawer?: boolean;
-  className?: string;
-}
-
-const DEFAULT_MAP_OPTIONS: MapOptions = {
-  type: "Satellite",
-  layerSwitcher: true,
-  mapTypeSwitcher: true,
-  mapToolsController: false,
-  roundCorners: false,
-  miniMap: false,
-  layerControlDrawer: false,
-  className: "",
-};
-
 const MapLoadingOverlay = () => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-70">
     <Spin indicator={<LoadingOutlined style={{ fontSize: 120 }} spin />} />
@@ -68,7 +47,7 @@ const MapLoadingOverlay = () => (
 const BackgroundMap = ({ layerManager, eventManager, ready, mapId, map, mapOptions = {} as MapOptions, children }: BackgroundMapProps) => {
   const mergedMapOptions = { ...DEFAULT_MAP_OPTIONS, ...mapOptions };
 
-  const [mapType, setMapType] = useState<BgMapType>(mergedMapOptions.type);
+  const [mapType, setMapType] = useState<BackgroundMapType>(mergedMapOptions.type);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [layersTrigger, setLayersTrigger] = useState<boolean>(false);

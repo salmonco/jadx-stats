@@ -40,7 +40,7 @@ interface InnerLayerOptions {
   zIndex: number;
   features: HibernationVegetableCultivationFeatureCollection;
   svgRef: React.MutableRefObject<SVGSVGElement>;
-  selectedCrops: string;
+  selectedCrop: string;
 }
 
 interface InnerLayerProps {
@@ -48,10 +48,10 @@ interface InnerLayerProps {
   frameState: any;
   visible: boolean;
   zIndex: number;
-  selectedCrops: string;
+  selectedCrop: string;
 }
 
-const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCrops }: InnerLayerProps) => {
+const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCrop }: InnerLayerProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +73,7 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
     properties: {
       ...f.properties,
       area_chg: {
-        chg_mttr: (f.properties.area_chg?.chg_mttr ?? []).filter((c) => c.crop_nm === selectedCrops),
+        chg_mttr: (f.properties.area_chg?.chg_mttr ?? []).filter((c) => c.crop_nm === selectedCrop),
       },
     },
   }));
@@ -87,7 +87,7 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
   }, []);
 
   useEffect(() => {
-    if (selectedCrops?.length === 0) return;
+    if (selectedCrop?.length === 0) return;
 
     const svg = d3.select(svgRef.current);
     if (!visible) {
@@ -113,7 +113,7 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
       .sort((a, b) => {
         const getVal = (fs: Feature) => {
           const matters = fs.properties.area_chg?.chg_mttr ?? [];
-          const matter = matters.find((m) => m.crop_nm === selectedCrops);
+          const matter = matters.find((m) => m.crop_nm === selectedCrop);
           if (!matter) return 0;
           return Math.abs(matter.chg_cn);
         };
@@ -132,7 +132,7 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
       const matters = feature?.properties?.area_chg?.chg_mttr;
       if (!Array.isArray(matters)) return "#f9f9f9";
 
-      const matter = matters.find((m) => m.crop_nm === selectedCrops);
+      const matter = matters.find((m) => m.crop_nm === selectedCrop);
       if (!matter) return "#f9f9f9";
 
       const value = matter.chg_cn;
@@ -167,7 +167,7 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
         if (!tooltip) return;
         const regionNm = d.properties.vrbs_nm;
         const areaChanges = d.properties.area_chg.chg_mttr
-          .filter((m) => m.crop_nm === selectedCrops)
+          .filter((m) => m.crop_nm === selectedCrop)
           .slice()
           .sort((a, b) => Math.abs(b.chg_cn) - Math.abs(a.chg_cn))
           .slice(0, 3);
@@ -220,7 +220,7 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
     return () => {
       svg.selectAll("*").remove();
     };
-  }, [features, frameState, visible, zIndex, selectedCrops]);
+  }, [features, frameState, visible, zIndex, selectedCrop]);
 
   return (
     <div className="">
@@ -237,10 +237,10 @@ export class InnerLayer extends VectorLayer<VectorSource> {
   zIndex: number;
   container: HTMLElement;
   root: Root;
-  selectedCrops: string;
+  selectedCrop: string;
 
   constructor(options: InnerLayerOptions) {
-    const { name, features, svgRef, zIndex, selectedCrops, ...superOptions } = options;
+    const { name, features, svgRef, zIndex, selectedCrop, ...superOptions } = options;
 
     const vectorSource = new SourceVector({
       features: [],
@@ -254,7 +254,7 @@ export class InnerLayer extends VectorLayer<VectorSource> {
     this.visible = true;
     this.container = this.setupContainer();
     this.root = createRoot(this.container);
-    this.selectedCrops = selectedCrops;
+    this.selectedCrop = selectedCrop;
   }
 
   setupContainer() {
@@ -271,39 +271,39 @@ export class InnerLayer extends VectorLayer<VectorSource> {
     this.features = newFeatures;
   }
 
-  updateSelectedCrops(newCrops: string) {
-    this.selectedCrops = newCrops;
+  updateSelectedCrop(newCrop: string) {
+    this.selectedCrop = newCrop;
   }
 
   render(frameState: any) {
     if (!frameState) return;
 
     this.root.render(
-      <InnerLayerComponent features={this.features} frameState={frameState} visible={this.visible} zIndex={this.zIndex} selectedCrops={this.selectedCrops} />
+      <InnerLayerComponent features={this.features} frameState={frameState} visible={this.visible} zIndex={this.zIndex} selectedCrop={this.selectedCrop} />
     );
     return this.container;
   }
 }
 
 export class HibernationVegetableCultivationLayer extends BaseLayer {
-  constructor(featureCol: HibernationVegetableCultivationFeatureCollection, verboseName: string | null = null, selectedCrops: string) {
+  constructor(featureCol: HibernationVegetableCultivationFeatureCollection, verboseName: string | null = null, selectedCrop: string) {
     const layerType = "custom";
     const layer = new InnerLayer({
       name: "HibernationVegetableCultivationLayer",
       features: featureCol,
       svgRef: { current: null },
       zIndex: 50,
-      selectedCrops: selectedCrops,
+      selectedCrop: selectedCrop,
     });
     super({ layerType, layer }, verboseName);
   }
 
   public static async createLayer(
     featureCollection: HibernationVegetableCultivationFeatureCollection,
-    selectedCrops: string
+    selectedCrop: string
   ): Promise<HibernationVegetableCultivationLayer> {
     try {
-      const layer = new HibernationVegetableCultivationLayer(featureCollection, "재배면적변화", selectedCrops);
+      const layer = new HibernationVegetableCultivationLayer(featureCollection, "재배면적변화", selectedCrop);
       return layer;
     } catch (error) {
       throw new Error("Failed to create HibernationVegetableCultivationLayer: " + error.message);

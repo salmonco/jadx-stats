@@ -1,28 +1,30 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
-import { MapOptions } from "~/maps/components/BackgroundMap";
 import BackgroundMapWrapper from "~/maps/components/BackgroundMapWrapper";
 import ChartRenderer from "~/maps/components/common/ChartRenderer";
-import MapRenderer from "~/maps/components/common/MapRenderer";
-import { DEFAULT_MAP_OPTIONS } from "~/maps/constants/mapOptions";
+import { DEFAULT_LIST_MANAGED_MAP_OPTIONS, MapOptions } from "~/maps/constants/mapOptions";
 
-class BackgroundMapList {
+const INITIAL_MAP_POSITION_X_OFFSET = 20;
+const INITIAL_MAP_POSITION_Y_OFFSET = 20;
+
+class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
   #title: string;
   #tooltip: React.ReactNode | null = null;
-  #maps: CommonBackgroundMap[] = [];
+  #maps: M[] = [];
 
-  #mapConstructor: new (mapOptions: MapOptions) => CommonBackgroundMap;
+  #mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => M;
   #listeners: Set<() => void> = new Set();
+  #mapPositions: Map<string, { x: number; y: number }> = new Map();
 
   constructor({
     title,
     tooltip,
-    mapOptions = DEFAULT_MAP_OPTIONS,
+    mapOptions = DEFAULT_LIST_MANAGED_MAP_OPTIONS,
     mapConstructor,
   }: {
     title: string;
     tooltip?: React.ReactNode;
     mapOptions?: MapOptions;
-    mapConstructor: new (mapOptions: MapOptions) => CommonBackgroundMap;
+    mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => M;
   }) {
     this.#title = title;
     this.#tooltip = tooltip ?? null;
@@ -33,38 +35,72 @@ class BackgroundMapList {
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
     this.getSnapshot = this.getSnapshot.bind(this);
+    this.addMap = this.addMap.bind(this);
+    this.removeMap = this.removeMap.bind(this);
+    this.updateMapPosition = this.updateMapPosition.bind(this);
+    this.getMapPosition = this.getMapPosition.bind(this);
+  }
+
+  destroy() {
+    this.#maps.forEach((map) => map.destroy());
+    this.#listeners.clear();
   }
 
   /**
    * 지도 인스턴스를 추가합니다.
-   * @param mapConstructor 지도 생성자 (ex. AgingStatusMap 클래스)
+   * @param mapConstructor 지도 생성자 (옵셔널)
    * @param mapOptions 지도 기본 옵션 (옵셔널)
    */
-  addMap<T extends CommonBackgroundMap>(mapConstructor: new (mapOptions: MapOptions) => T, mapOptions: MapOptions = DEFAULT_MAP_OPTIONS) {
-    const mapInstance = new mapConstructor(mapOptions);
-    this.#maps.push(mapInstance);
+  addMap(
+    mapConstructor?: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => M,
+    mapOptions: MapOptions = DEFAULT_LIST_MANAGED_MAP_OPTIONS,
+    title: string = this.#title,
+    tooltip: React.ReactNode = this.#tooltip
+  ) {
+    // 지도 생성자 없으면 인스턴스 생성할 때 사용한 기본 생성자 사용
+    const constructorToUse = mapConstructor || this.#mapConstructor;
+    const mapInstance = new constructorToUse(mapOptions, title, tooltip);
+    this.#maps = [...this.#maps, mapInstance];
+
+    this.#initMapPosition(mapInstance);
     this.#notifyListeners();
   }
 
-  /**
-   * 지도가 2개 이하면 레이아웃 fix, 그게 아니라면 PopupWindow
-   * @returns 고정 레이아웃 여부
-   */
-  isFixedLayout() {
-    return this.#maps.length <= 2;
+  removeMap(mapId: string) {
+    const mapToRemove = this.#maps.find((map) => map.mapId === mapId);
+    if (mapToRemove) {
+      mapToRemove.destroy();
+    }
+    this.#maps = this.#maps.filter((map) => map.mapId !== mapId);
+    this.#mapPositions.delete(mapId);
+    this.#notifyListeners();
+  }
+
+  getMapPosition(mapId: string) {
+    return this.#mapPositions.get(mapId);
+  }
+
+  updateMapPosition(mapId: string, x: number, y: number) {
+    this.#mapPositions.set(mapId, { x, y });
+  }
+
+  getMapById(mapId: string) {
+    return this.#maps.find((map) => map.mapId === mapId);
+  }
+
+  getFirstMap() {
+    return this.#maps[0];
+  }
+
+  initSharedState(state: unknown) {
+    const firstMap = this.getFirstMap();
+    if (firstMap) {
+      firstMap.applySharedState(state);
+    }
   }
 
   renderMaps() {
-    return (
-      <BackgroundMapWrapper
-        title={this.#title}
-        tooltip={this.#tooltip}
-        maps={this.#maps.map((map) => (
-          <MapRenderer key={map.mapId} map={map} />
-        ))}
-        onAddMap={() => this.addMap(this.#mapConstructor)}
-      />
-    );
+    return <BackgroundMapWrapper maps={this.#maps} />;
   }
 
   renderFirstChart() {
@@ -72,7 +108,7 @@ class BackgroundMapList {
       return null;
     }
 
-    return <ChartRenderer map={this.#getFirstMap()} />;
+    return <ChartRenderer map={this.getFirstMap()} />;
   }
 
   /**
@@ -100,8 +136,16 @@ class BackgroundMapList {
     this.#listeners.forEach((cb) => cb());
   }
 
-  #getFirstMap() {
-    return this.#maps[0];
+  /**
+   * 초기 위치 설정
+   * - 오프셋을 주어 겹치지 않도록 함
+   * @param mapInstance
+   */
+  #initMapPosition(mapInstance: M) {
+    const offsetIndex = (this.#maps.length - 1) % 5;
+    const initialX = 50 + offsetIndex * INITIAL_MAP_POSITION_X_OFFSET;
+    const initialY = 50 + offsetIndex * INITIAL_MAP_POSITION_Y_OFFSET;
+    this.#mapPositions.set(mapInstance.mapId, { x: initialX, y: initialY });
   }
 }
 

@@ -4,11 +4,11 @@ import AgingStatusMapContent from "~/maps/components/agingStatus/AgingStatusMapC
 
 class AgingStatusMap extends CommonBackgroundMap {
   renderMap() {
-    return <AgingStatusMapContent mapId={this.mapId} mapOptions={this.mapOptions} selectedRegionLevel={this.getSelectedRegionLevel()} excludeDong={this.excludeDong} />;
+    return <AgingStatusMapContent mapId={this.mapId} />;
   }
 
   renderChart() {
-    return <AgingStatusChart selectedRegionLevel={this.getSelectedRegionLevel()} excludeDong={this.excludeDong} />;
+    return <AgingStatusChart />;
   }
 }
 

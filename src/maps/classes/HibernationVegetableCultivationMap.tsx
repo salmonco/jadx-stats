@@ -1,54 +1,47 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
-import { MapOptions } from "~/maps/components/BackgroundMap";
 import HibernationVegetableCultivationChart from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationChart";
 import HibernationVegetableCultivationMapContent from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationMapContent";
 import { CropType, DEFAULT_CROP, DEFAULT_TARGET_YEAR } from "~/maps/constants/hibernationVegetableCultivation";
-
+import { MapOptions } from "~/maps/constants/mapOptions";
 class HibernationVegetableCultivationMap extends CommonBackgroundMap {
   #selectedTargetYear = DEFAULT_TARGET_YEAR;
 
-  #selectedCrops: CropType = DEFAULT_CROP;
+  #selectedCrop: CropType = DEFAULT_CROP;
 
-  constructor(mapOptions: MapOptions) {
-    super(mapOptions);
+  constructor(mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) {
+    super(mapOptions, title, tooltip);
 
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.getSnapshot = this.getSnapshot.bind(this);
+    this.setSelectedTargetYear = this.setSelectedTargetYear.bind(this);
+    this.setSelectedCrop = this.setSelectedCrop.bind(this);
+  }
+
+  getShareableState() {
+    const state = super.getShareableState();
+    return {
+      ...state,
+      selectedTargetYear: this.selectedTargetYear,
+      selectedCrop: this.selectedCrop,
+    };
+  }
+
+  applySharedState(state: Record<string, any>) {
+    super.applySharedState(state);
+    if (state.selectedTargetYear) {
+      this.setSelectedTargetYear(state.selectedTargetYear);
+    }
+    if (state.selectedCrop) {
+      this.setSelectedCrop(state.selectedCrop);
+    }
   }
 
   renderMap() {
-    return (
-      <HibernationVegetableCultivationMapContent
-        mapId={this.mapId}
-        mapOptions={this.mapOptions}
-        selectedRegionLevel={this.getSelectedRegionLevel()}
-        selectedTargetYear={this.selectedTargetYear}
-        selectedCrops={this.#selectedCrops}
-        setSelectedRegionLevel={(level) => this.setSelectedRegionLevel(level)}
-        setSelectedTargetYear={(year) => (this.selectedTargetYear = year)}
-        setSelectedCrops={(crops) => this.setSelectedCrops(crops)}
-      />
-    );
+    return <HibernationVegetableCultivationMapContent mapId={this.mapId} />;
   }
 
   renderChart() {
-    return (
-      <HibernationVegetableCultivationChart
-        selectedRegionLevel={this.getSelectedRegionLevel()}
-        selectedTargetYear={this.#selectedTargetYear}
-        selectedCrops={this.#selectedCrops}
-      />
-    );
-  }
-
-  /**
-   * 선택된 작물 목록을 설정하고 구독자에게 알립니다.
-   * - React의 `setState`와 유사하게 값 또는 업데이트 함수를 받을 수 있습니다.
-   * @param crops 새로운 작물 목록 또는 이전 목록을 기반으로 하는 업데이트 함수
-   */
-  setSelectedCrops(crops: CropType) {
-    this.#selectedCrops = crops;
-    this.notifyListeners();
+    return <HibernationVegetableCultivationChart />;
   }
 
   /**
@@ -58,15 +51,29 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
    * @returns 현재 맵의 상태를 나타내는 문자열 스냅샷
    */
   getSnapshot() {
-    return `${super.getSnapshot()}-${this.#selectedTargetYear}-${this.#selectedCrops}`;
+    return `${super.getSnapshot()}-${this.#selectedTargetYear}-${this.#selectedCrop}`;
   }
 
   get selectedTargetYear() {
     return this.#selectedTargetYear;
   }
 
-  set selectedTargetYear(year: number) {
+  setSelectedTargetYear(year: number) {
     this.#selectedTargetYear = year;
+    this.notifyListeners();
+  }
+
+  get selectedCrop() {
+    return this.#selectedCrop;
+  }
+
+  /**
+   * 선택된 작물 목록을 설정하고 구독자에게 알립니다.
+   * - React의 `setState`와 유사하게 값 또는 업데이트 함수를 받을 수 있습니다.
+   * @param crops 새로운 작물 목록 또는 이전 목록을 기반으로 하는 업데이트 함수
+   */
+  setSelectedCrop(crop: CropType) {
+    this.#selectedCrop = crop;
     this.notifyListeners();
   }
 }
