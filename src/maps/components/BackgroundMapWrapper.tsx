@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import MapRenderer from "~/maps/components/common/MapRenderer";
+import DraggableMapWindow from "~/maps/components/DraggableMapWindow";
 import { useMapList } from "~/maps/hooks/useMapList";
-import DraggableMapWindow from "./DraggableMapWindow";
 
 interface BackgroundMapWrapperProps {
   maps: CommonBackgroundMap[];

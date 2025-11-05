@@ -1,11 +1,11 @@
-import { useMemo } from "react";
 import { ScaleLine, Zoom, ZoomSlider } from "ol/control";
-import useOLMap, { UseOLMapOptions } from "~/maps/hooks/useOLMap";
-import useLayerManager from "~/maps/hooks/useLayerManager";
+import { useMemo } from "react";
+import { jejuMapConfig, koreaMapConfig, MapType, worldMapConfig } from "~/maps/constants/gisConstants";
 import useEventManager from "~/maps/hooks/useEventManager";
-import { jejuMapConfig, koreaMapConfig, worldMapConfig, MapType } from "~/maps/constants/gisConstants";
+import useLayerManager from "~/maps/hooks/useLayerManager";
+import useOLMap, { UseOLMapOptions } from "~/maps/hooks/useOLMap";
 
-const useSetupOL = (mapId: string, zoom: number = 11, region?: MapType, zoomController = true, scaleLineController = false) => {
+const useSetupOL = (mapId: string, zoom: number = 11, region?: MapType, zoomController = true, scaleLineController = true) => {
   let config: UseOLMapOptions;
   if (region === "rest") {
     config = { ...koreaMapConfig, zoom: zoom };
@@ -26,14 +26,17 @@ const useSetupOL = (mapId: string, zoom: number = 11, region?: MapType, zoomCont
     map.addControl(new ZoomSlider());
   }
 
-  // scale line
+  /**
+   * scale line
+   * @see https://openlayers.org/en/latest/examples/scale-line.html
+   */
   if (map && ready && scaleLineController) {
     const scaleLineControl = new ScaleLine({
       units: "metric",
-      bar: true,
+      bar: false,
       steps: 4,
       text: true,
-      minWidth: 120,
+      minWidth: 60,
     });
     map.addControl(scaleLineControl);
   }
