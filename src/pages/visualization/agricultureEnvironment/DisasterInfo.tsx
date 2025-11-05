@@ -9,7 +9,7 @@ import BaseLegend from "~/features/visualization/components/common/BaseLegend";
 import YearSelector from "~/features/visualization/components/common/YearSelector";
 import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
 import InfoTooltip from "~/components/InfoTooltip";
-import { cropColorScale, getCropLegendItems, hexToRgb } from "~/utils/gitUtils";
+import { cropColorScale, getCropLegendItems, hexToRgb } from "~/features/visualization/utils/getCropItems";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
 import { Feature } from "ol";
