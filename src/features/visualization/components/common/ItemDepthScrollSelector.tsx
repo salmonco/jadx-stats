@@ -107,7 +107,7 @@ const ItemDepthScrollSelector = <M extends boolean = false>({ optionGroups, titl
   const options = optionGroups[selectedGroup] || {};
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg bg-[#43516D] p-5">
+    <div className="flex flex-col gap-2 rounded-lg p-5">
       <p className="text-[18px] font-semibold text-white">{title}</p>
 
       {/* 그룹 버튼 */}
