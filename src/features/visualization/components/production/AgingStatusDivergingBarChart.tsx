@@ -1,23 +1,20 @@
 import * as Plot from "@observablehq/plot";
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
-import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import { AgingChartData } from "~/maps/components/agingStatus/AgingStatusChart";
-import { useMapList } from "~/maps/hooks/useMapList";
 
 interface Props {
   title: string;
   category: "avg_age" | "count";
   chartData: AgingChartData[];
+  selectedLevel: string;
 }
 
-const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => {
-  const mapList = useMapList<AgingStatusMap>();
-  const firstMap = mapList.getFirstMap();
-
+const AgingStatusDivergingBarChart = ({ title, category, chartData, selectedLevel }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [size, setSize] = useState({ width: 800, height: 420 });
+  const barColor = category === "avg_age" ? "#F59E0B" : "#EA580C";
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -76,12 +73,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
       .filter((d) => typeof d.value === "number" && !isNaN(d.value))
       .sort((a, b) => (category === "count" ? b.value - a.value : 0));
 
-    const margin = {
-      top: 0,
-      right: firstMap.getSelectedRegionLevel() === "ri" ? 30 : 40,
-      bottom: 30,
-      left: firstMap.getSelectedRegionLevel() === "ri" ? 80 : 55,
-    };
+    const margin = { top: 0, right: selectedLevel === "ri" ? 30 : 40, bottom: 30, left: selectedLevel === "ri" ? 80 : 55 };
     const barHeight = regionTotals.length > 12 ? 32 : 48;
     const height = regionTotals.length > 11 ? regionTotals.length * barHeight + margin.top + margin.bottom : size.height;
     const barInset = regionTotals.length === 1 ? 110 : regionTotals.length === 2 ? 40 : regionTotals.length === 4 ? 15 : 7;
@@ -89,8 +81,6 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
     const maxAbs = d3.max(regionTotals, (d) => Math.abs(d.value)) || 1;
     const xMin = category === "avg_age" ? 50 : 0;
     const xDomain = category === "avg_age" ? [xMin, maxAbs * 1.035] : [xMin, maxAbs * 1.08];
-
-    const barColor = category === "avg_age" ? "#F59E0B" : "#EA580C";
 
     const chart = Plot.plot({
       width: size.width,

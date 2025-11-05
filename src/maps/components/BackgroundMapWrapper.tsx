@@ -1,16 +1,17 @@
 import { useRef } from "react";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import MapRenderer from "~/maps/components/common/MapRenderer";
-import { useMapList } from "~/maps/hooks/useMapList";
 import DraggableMapWindow from "./DraggableMapWindow";
 
 interface BackgroundMapWrapperProps {
-  maps: CommonBackgroundMap[];
+  maps: Array<CommonBackgroundMap>;
+  onAddMap: () => void;
+  onRemoveMap: (mapId: string) => void;
+  getMapPosition: (mapId: string) => { x: number; y: number } | undefined;
+  onUpdateMapPosition: (mapId: string, x: number, y: number) => void;
 }
 
-const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
-  const mapList = useMapList();
-
+const BackgroundMapWrapper = ({ maps, onAddMap, onRemoveMap, onUpdateMapPosition, getMapPosition }: BackgroundMapWrapperProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const isFixedLayout = maps.length <= 2;
@@ -21,11 +22,11 @@ const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
         <>
           {maps.map((map) => (
             <div key={map.mapId} className="flex-1">
-              <MapRenderer map={map} />
+              <MapRenderer map={map} onAddMap={onAddMap} />
             </div>
           ))}
           {maps.length === 2 && (
-            <button className="absolute right-4 top-14 rounded-md bg-white px-4 py-2 text-black shadow-lg" onClick={() => mapList.removeMap(mapList.getFirstMap().mapId)}>
+            <button className="absolute right-4 top-14 rounded-md bg-white px-4 py-2 text-black shadow-lg" onClick={() => onRemoveMap(maps[1].mapId)}>
               X
             </button>
           )}
@@ -33,7 +34,7 @@ const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
       ) : (
         <>
           {maps.map((map) => {
-            const position = mapList.getMapPosition(map.mapId);
+            const position = getMapPosition(map.mapId);
             if (!position) {
               return null;
             }
@@ -44,11 +45,11 @@ const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
                 mapId={map.mapId}
                 initialX={position.x}
                 initialY={position.y}
-                onClose={mapList.removeMap}
-                onDrag={mapList.updateMapPosition}
+                onClose={onRemoveMap}
+                onDrag={onUpdateMapPosition}
                 containerRef={containerRef}
               >
-                <MapRenderer map={map} />
+                <MapRenderer map={map} onAddMap={onAddMap} />
               </DraggableMapWindow>
             );
           })}

@@ -7,12 +7,12 @@ import { DEFAULT_MAP_OPTIONS } from "~/maps/constants/mapOptions";
 const INITIAL_MAP_POSITION_X_OFFSET = 20;
 const INITIAL_MAP_POSITION_Y_OFFSET = 20;
 
-class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
+class BackgroundMapList {
   #title: string;
   #tooltip: React.ReactNode | null = null;
-  #maps: M[] = [];
+  #maps: CommonBackgroundMap[] = [];
 
-  #mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => M;
+  #mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => CommonBackgroundMap;
   #listeners: Set<() => void> = new Set();
 
   constructor({
@@ -24,7 +24,7 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
     title: string;
     tooltip?: React.ReactNode;
     mapOptions?: MapOptions;
-    mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => M;
+    mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => CommonBackgroundMap;
   }) {
     this.#title = title;
     this.#tooltip = tooltip ?? null;
@@ -37,36 +37,30 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
     this.getSnapshot = this.getSnapshot.bind(this);
   }
 
-  destroy() {
-    this.#maps.forEach((map) => map.destroy());
-    this.#listeners.clear();
-  }
-
   /**
    * 지도 인스턴스를 추가합니다.
-   * @param mapConstructor 지도 생성자 (옵셔널)
+   * @param mapConstructor 지도 생성자 (ex. AgingStatusMap 클래스)
    * @param mapOptions 지도 기본 옵션 (옵셔널)
    */
-  addMap(
-    mapConstructor?: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => M,
+  addMap<T extends CommonBackgroundMap>(
+    mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => T,
     mapOptions: MapOptions = DEFAULT_MAP_OPTIONS,
     title: string = this.#title,
     tooltip: React.ReactNode = this.#tooltip
   ) {
-    // 지도 생성자 없으면 인스턴스 생성할 때 사용한 기본 생성자 사용
-    const constructorToUse = mapConstructor || this.#mapConstructor;
-    const mapInstance = new constructorToUse(mapOptions, title, tooltip);
+    const mapInstance = new mapConstructor(mapOptions, title, tooltip);
     this.#maps = [...this.#maps, mapInstance];
 
-    this.#initMapPosition(mapInstance);
+    // 초기 위치 설정 (오프셋을 주어 겹치지 않도록 함)
+    const offsetIndex = (this.#maps.length - 1) % 5;
+    const initialX = 50 + offsetIndex * INITIAL_MAP_POSITION_X_OFFSET;
+    const initialY = 50 + offsetIndex * INITIAL_MAP_POSITION_Y_OFFSET;
+    this.#mapPositions.set(mapInstance.mapId, { x: initialX, y: initialY });
+
     this.#notifyListeners();
   }
 
   removeMap(mapId: string) {
-    const mapToRemove = this.#maps.find((map) => map.mapId === mapId);
-    if (mapToRemove) {
-      mapToRemove.destroy();
-    }
     this.#maps = this.#maps.filter((map) => map.mapId !== mapId);
     this.#mapPositions.delete(mapId);
     this.#notifyListeners();
@@ -80,23 +74,16 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
     this.#mapPositions.set(mapId, { x, y });
   }
 
-  getMapById(mapId: string) {
-    return this.#maps.find((map) => map.mapId === mapId);
-  }
-
-  getFirstMap() {
-    return this.#maps[0];
-  }
-
-  initSharedState(state: unknown) {
-    const firstMap = this.getFirstMap();
-    if (firstMap) {
-      firstMap.applySharedState(state);
-    }
-  }
-
   renderMaps() {
-    return <BackgroundMapWrapper maps={this.#maps} />;
+    return (
+      <BackgroundMapWrapper
+        maps={this.#maps}
+        onAddMap={() => this.addMap(this.#mapConstructor)}
+        onRemoveMap={this.removeMap}
+        onUpdateMapPosition={this.updateMapPosition}
+        getMapPosition={this.getMapPosition}
+      />
+    );
   }
 
   renderFirstChart() {
@@ -104,7 +91,7 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
       return null;
     }
 
-    return <ChartRenderer map={this.getFirstMap()} />;
+    return <ChartRenderer map={this.#getFirstMap()} />;
   }
 
   /**
@@ -132,16 +119,8 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
     this.#listeners.forEach((cb) => cb());
   }
 
-  /**
-   * 초기 위치 설정
-   * - 오프셋을 주어 겹치지 않도록 함
-   * @param mapInstance
-   */
-  #initMapPosition(mapInstance: M) {
-    const offsetIndex = (this.#maps.length - 1) % 5;
-    const initialX = 50 + offsetIndex * INITIAL_MAP_POSITION_X_OFFSET;
-    const initialY = 50 + offsetIndex * INITIAL_MAP_POSITION_Y_OFFSET;
-    this.#mapPositions.set(mapInstance.mapId, { x: initialX, y: initialY });
+  #getFirstMap() {
+    return this.#maps[0];
   }
 }
 

@@ -8,28 +8,45 @@ import {
   HibernationVegetableCultivationLayer,
   InnerLayer,
 } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
-import { regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
-import HibernationVegetableCultivationMap from "~/maps/classes/HibernationVegetableCultivationMap";
-import BackgroundMap from "~/maps/components/BackgroundMap";
+import { regionLevelOptions, RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
+import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
 import HibernationVegetableCultivationLegend from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationLegend";
-import { CROP_LEGEND_ITEMS, TARGET_YEAR } from "~/maps/constants/hibernationVegetableCultivation";
-import { useMapList } from "~/maps/hooks/useMapList";
+import { CROP_LEGEND_ITEMS, CropType, TARGET_YEAR } from "~/maps/constants/hibernationVegetableCultivation";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
+  mapOptions: MapOptions;
+  title: string;
+  tooltip?: React.ReactNode;
+  onAddMap: () => void;
+  selectedRegionLevel: RegionLevelOptions;
+  selectedTargetYear: number;
+  selectedCrops: CropType;
+  setSelectedRegionLevel: (levels: RegionLevelOptions) => void;
+  setSelectedTargetYear: (year: number) => void;
+  setSelectedCrops: (crops: CropType) => void;
 }
 
-const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
-  const mapList = useMapList<HibernationVegetableCultivationMap>();
-  const map = mapList.getMapById(mapId);
-
+const HibernationVegetableCultivationMapContent = ({
+  mapId,
+  mapOptions,
+  title,
+  tooltip,
+  onAddMap,
+  selectedRegionLevel,
+  selectedTargetYear,
+  selectedCrops,
+  setSelectedRegionLevel,
+  setSelectedTargetYear,
+  setSelectedCrops,
+}: Props) => {
   const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju");
 
   const { data: features } = useQuery<HibernationVegetableCultivationFeatureCollection>({
-    queryKey: ["hibernationVegetableCultivationFeatures", map.selectedTargetYear, map.getSelectedRegionLevel()],
-    queryFn: () => visualizationApi.getHinatVgtblCltvarDclrFile(map.selectedTargetYear, map.selectedTargetYear - 1, map.getSelectedRegionLevel()),
+    queryKey: ["hibernationVegetableCultivationFeatures", selectedTargetYear, selectedRegionLevel],
+    queryFn: () => visualizationApi.getHinatVgtblCltvarDclrFile(selectedTargetYear, selectedTargetYear - 1, selectedRegionLevel),
     enabled: !!ready,
   });
 
@@ -41,33 +58,23 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
 
     if (existingLayer) {
       existingLayer.updateFeatures(features);
-      existingLayer.updateSelectedCrops(map.selectedCrops);
+      existingLayer.updateSelectedCrops(selectedCrops);
       existingLayer.changed();
     } else {
-      HibernationVegetableCultivationLayer.createLayer(features, map.selectedCrops).then((layer) => {
+      HibernationVegetableCultivationLayer.createLayer(features, selectedCrops).then((layer) => {
         layerManager.addLayer(layer, "HibernationVegetableCultivationLayer", 1);
       });
     }
-  }, [ready, features, map.selectedCrops]);
-
-  if (!map) {
-    return null;
-  }
+  }, [ready, features, selectedCrops]);
 
   return (
-    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
-      <HibernationVegetableCultivationLegend features={features} selectedCrops={map.selectedCrops} />
+    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} mapOptions={mapOptions} title={title} tooltip={tooltip} onAddMap={onAddMap}>
+      <HibernationVegetableCultivationLegend features={features} selectedCrops={selectedCrops} />
       <div className="absolute left-4 top-4 z-10">
         <FilterContainer>
-          <YearSelector targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
-          <ButtonGroupSelector
-            title="권역 단위"
-            cols={5}
-            options={regionLevelOptions}
-            selectedValues={map.getSelectedRegionLevel()}
-            setSelectedValues={map.setSelectedRegionLevel}
-          />
-          <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrops} setSelectedValues={map.setSelectedCrops} />
+          <YearSelector targetYear={TARGET_YEAR} selectedTargetYear={selectedTargetYear} setSelectedTargetYear={setSelectedTargetYear} />
+          <ButtonGroupSelector title="권역 단위" cols={5} options={regionLevelOptions} selectedValues={selectedRegionLevel} setSelectedValues={setSelectedRegionLevel} />
+          <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={selectedCrops} setSelectedValues={setSelectedCrops} />
         </FilterContainer>
       </div>
     </BackgroundMap>

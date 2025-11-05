@@ -3,8 +3,7 @@ import { useMemo } from "react";
 import ChartContainer from "~/features/visualization/components/common/ChartContainer";
 import AgingStatusDivergingBarChart from "~/features/visualization/components/production/AgingStatusDivergingBarChart";
 import AgingStatusTable from "~/features/visualization/components/production/AgingStatusTable";
-import AgingStatusMap from "~/maps/classes/AgingStatusMap";
-import { useMapList } from "~/maps/hooks/useMapList";
+import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import transformToChartData from "~/maps/utils/agingStatus/transformToChartData";
 import visualizationApi from "~/services/apis/visualizationApi";
 
@@ -15,14 +14,16 @@ export interface AgingChartData {
   count: number;
 }
 
-const AgingStatusChart = () => {
-  const mapList = useMapList<AgingStatusMap>();
-  const firstMap = mapList.getFirstMap();
+interface Props {
+  selectedRegionLevel: RegionLevelOptions;
+  excludeDong: boolean;
+}
 
+const AgingStatusChart = ({ selectedRegionLevel, excludeDong }: Props) => {
   const { data: features } = useQuery({
-    queryKey: ["agingStatus", firstMap.getSelectedRegionLevel(), firstMap.excludeDong],
-    queryFn: () => visualizationApi.getAgingStatus(firstMap.getSelectedRegionLevel(), firstMap.excludeDong),
-    enabled: !!firstMap.getSelectedRegionLevel(),
+    queryKey: ["agingStatus", selectedRegionLevel, excludeDong],
+    queryFn: () => visualizationApi.getAgingStatus(selectedRegionLevel, excludeDong),
+    enabled: !!selectedRegionLevel,
     retry: false,
   });
 
@@ -32,8 +33,8 @@ const AgingStatusChart = () => {
     <div className="flex flex-col gap-4">
       <AgingStatusTable chartData={chartData} />
       <ChartContainer cols={2} minHeight={500}>
-        <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} />
-        <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} />
+        <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} selectedLevel={selectedRegionLevel} />
+        <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} selectedLevel={selectedRegionLevel} />
       </ChartContainer>
     </div>
   );

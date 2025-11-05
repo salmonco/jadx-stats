@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 
 interface Props<T extends CommonBackgroundMap = CommonBackgroundMap> {
@@ -11,13 +11,6 @@ interface Props<T extends CommonBackgroundMap = CommonBackgroundMap> {
  */
 const ChartRenderer = ({ map }: Props) => {
   useSyncExternalStore(map.subscribe, map.getSnapshot);
-
-  useEffect(() => {
-    return () => {
-      map.destroy();
-    };
-  }, []);
-
   return map.renderChart();
 };
 

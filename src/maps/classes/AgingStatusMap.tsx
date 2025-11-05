@@ -3,12 +3,22 @@ import AgingStatusChart from "~/maps/components/agingStatus/AgingStatusChart";
 import AgingStatusMapContent from "~/maps/components/agingStatus/AgingStatusMapContent";
 
 class AgingStatusMap extends CommonBackgroundMap {
-  renderMap() {
-    return <AgingStatusMapContent mapId={this.mapId} />;
+  renderMap(onAddMap: () => void) {
+    return (
+      <AgingStatusMapContent
+        mapId={this.mapId}
+        mapOptions={this.mapOptions}
+        title={this.title}
+        tooltip={this.tooltip}
+        onAddMap={onAddMap}
+        selectedRegionLevel={this.getSelectedRegionLevel()}
+        excludeDong={this.excludeDong}
+      />
+    );
   }
 
   renderChart() {
-    return <AgingStatusChart />;
+    return <AgingStatusChart selectedRegionLevel={this.getSelectedRegionLevel()} excludeDong={this.excludeDong} />;
   }
 }
 
