@@ -153,36 +153,6 @@ class CommonBackgroundMap {
   get visualizationSetting() {
     return this.#visualizationSetting;
   }
-
-  /**
-   * 공유 가능한 상태를 객체로 반환합니다.
-   * - 하위 클래스에서 이 메서드를 확장하여 특정 상태를 추가할 수 있습니다.
-   */
-  getShareableState(): Record<string, any> {
-    return {
-      mapType: this.mapType,
-      regionFilterSetting: this.#regionFilterSetting,
-      visualizationSetting: this.#visualizationSetting,
-    };
-  }
-
-  /**
-   * 제공된 상태 객체를 기반으로 맵의 상태를 적용합니다.
-   * - 하위 클래스에서 이 메서드를 확장하여 특정 상태를 적용할 수 있습니다.
-   * @param state 공유 상태 객체
-   */
-  applySharedState(state: Record<string, any>) {
-    if (state.mapType) {
-      this.setMapType(state.mapType);
-    }
-    if (state.regionFilterSetting) {
-      this.#regionFilterSetting = state.regionFilterSetting;
-    }
-    if (state.visualizationSetting) {
-      this.#visualizationSetting = state.visualizationSetting;
-    }
-    this.notifyListeners();
-  }
 }
 
 export default CommonBackgroundMap;

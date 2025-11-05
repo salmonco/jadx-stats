@@ -93,13 +93,6 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
     return this.#maps[0];
   }
 
-  initSharedState(state: unknown) {
-    const firstMap = this.getFirstMap();
-    if (firstMap) {
-      firstMap.applySharedState(state);
-    }
-  }
-
   renderMaps() {
     return <BackgroundMapWrapper maps={this.#maps} />;
   }
