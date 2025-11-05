@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useMemo, useSyncExternalStore } from "react";
 import BackgroundMapList from "~/maps/classes/BackgroundMapList";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import { MapOptions } from "~/maps/components/BackgroundMap";
+import useMapSharedStateInitializer from "~/maps/hooks/useMapSharedStateInitializer";
 
 interface Params<M> {
   title: string;
@@ -9,7 +10,7 @@ interface Params<M> {
   tooltip?: ReactNode;
 }
 
-export const useMapInitializer = <M extends CommonBackgroundMap>({ title, tooltip, mapConstructor }: Params<M>) => {
+const useMapInitializer = <M extends CommonBackgroundMap>({ title, tooltip, mapConstructor }: Params<M>) => {
   const mapList = useMemo(
     () =>
       new BackgroundMapList<M>({
@@ -19,6 +20,8 @@ export const useMapInitializer = <M extends CommonBackgroundMap>({ title, toolti
       }),
     []
   );
+
+  useMapSharedStateInitializer({ mapList });
 
   useSyncExternalStore(mapList.subscribe, mapList.getSnapshot);
 
@@ -30,3 +33,5 @@ export const useMapInitializer = <M extends CommonBackgroundMap>({ title, toolti
 
   return mapList;
 };
+
+export default useMapInitializer;
