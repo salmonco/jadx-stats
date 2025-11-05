@@ -1,5 +1,5 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
-import { MapOptions } from "~/maps/components/BackgroundMap";
+import { MapOptions } from "~/maps/components/ListManagedBackgroundMap";
 import MandarinTreeAgeDistributionChart from "~/maps/components/mandarinTreeAgeDistribution/MandarinTreeAgeDistributionChart";
 import MandarinTreeAgeDistributionMapContent from "~/maps/components/mandarinTreeAgeDistribution/MandarinTreeAgeDistributionMapContent";
 import { DEFAULT_CROP_GROUP, DEFAULT_CROP_PUMMOK } from "~/maps/constants/cropDistribution";

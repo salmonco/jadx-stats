@@ -4,10 +4,12 @@ import BaseLegend from "~/features/visualization/components/common/BaseLegend";
 import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
 import FilterContainer from "~/features/visualization/components/common/FilterContainer";
 import FloatingMenu from "~/features/visualization/components/common/FloatingMenu";
+import RegionFilter from "~/features/visualization/components/common/RegionFilter";
 import useCropDistributionLayer from "~/features/visualization/hooks/useCropDistributionLayer";
 import { getCropLegendItems } from "~/features/visualization/utils/getCropItems";
+import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
 import CropDistributionMap from "~/maps/classes/CropDistributionMap";
-import BackgroundMap from "~/maps/components/BackgroundMap";
+import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import { cropInfoOptions } from "~/maps/constants/cropDistribution";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
@@ -44,6 +46,10 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
     enabled: ready,
   });
 
+  // TODO: 지역 필터링 API 연동
+  const [filteredFeatures, setFilteredFeatures] = useState<any>();
+  const [selectedRegion, setSelectedRegion] = useState<RegionFilterOptions>(map.regionFilterSetting || DEFAULT_REGION_SETTING);
+
   useCropDistributionLayer({
     layerManager,
     map: olMap,
@@ -69,15 +75,14 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       {menuPosition && menuChildren && <FloatingMenu position={menuPosition} onClose={closeMenu} menuChildren={menuChildren as any} />}
-      <div className="absolute left-4 top-4 z-10">
-        <FilterContainer>
-          <ButtonGroupSelector title="작물 정보" cols={2} options={cropInfoOptions} selectedValues={map.selectedCropLevel} setSelectedValues={map.setSelectedCropLevel} />
-          <BaseLegend title="범례" items={legendItems} direction="horizontal" itemsPerRow={3} />
-        </FilterContainer>
-      </div>
-    </BackgroundMap>
+      <FilterContainer isFixed>
+        <RegionFilter selectedRegion={selectedRegion} features={areaData} setSelectedRegion={setSelectedRegion} setFilteredFeatures={setFilteredFeatures} />
+        <ButtonGroupSelector title="작물 정보" cols={2} options={cropInfoOptions} selectedValues={map.selectedCropLevel} setSelectedValues={map.setSelectedCropLevel} />
+        <BaseLegend title="범례" items={legendItems} direction="horizontal" itemsPerRow={3} />
+      </FilterContainer>
+    </ListManagedBackgroundMap>
   );
 };
 
