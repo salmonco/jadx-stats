@@ -110,10 +110,7 @@ const BackgroundMap = ({ layerManager, eventManager, ready, map: olMap, mapId, c
   const mergedMapOptions = { ...DEFAULT_MAP_OPTIONS, ...map.mapOptions };
 
   return (
-    <div
-      className={cn("relative h-full w-full border border-[#43516D]", mergedMapOptions?.roundCorners && "overflow-clip rounded-lg", mergedMapOptions?.className)}
-      ref={mapContainerRef}
-    >
+    <div className={cn("relative h-full w-full border border-[#43516D]", mergedMapOptions?.roundCorners && "overflow-clip rounded-lg", mergedMapOptions?.className)}>
       <div className="h-full w-full" id={mapId} />
       <LayerHeader mapId={mapId} onClickFullScreen={onClickFullScreen} />
       {ready && (
