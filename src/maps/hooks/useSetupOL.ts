@@ -5,7 +5,7 @@ import useLayerManager from "~/maps/hooks/useLayerManager";
 import useEventManager from "~/maps/hooks/useEventManager";
 import { jejuMapConfig, koreaMapConfig, worldMapConfig, MapType } from "~/maps/constants/gisConstants";
 
-const useSetupOL = (mapId: string, zoom: number = 11, region?: MapType, zoomController = true, scaleLineController = true) => {
+const useSetupOL = (mapId: string, zoom: number = 11, region?: MapType, zoomController = true, scaleLineController = false) => {
   let config: UseOLMapOptions;
   if (region === "rest") {
     config = { ...koreaMapConfig, zoom: zoom };
@@ -26,17 +26,14 @@ const useSetupOL = (mapId: string, zoom: number = 11, region?: MapType, zoomCont
     map.addControl(new ZoomSlider());
   }
 
-  /**
-   * scale line
-   * @see https://openlayers.org/en/latest/examples/scale-line.html
-   */
+  // scale line
   if (map && ready && scaleLineController) {
     const scaleLineControl = new ScaleLine({
       units: "metric",
-      bar: false,
+      bar: true,
       steps: 4,
       text: true,
-      minWidth: 60,
+      minWidth: 120,
     });
     map.addControl(scaleLineControl);
   }

@@ -13,7 +13,6 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
 
   #mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => M;
   #listeners: Set<() => void> = new Set();
-  #mapPositions: Map<string, { x: number; y: number }> = new Map();
 
   constructor({
     title,
@@ -30,15 +29,11 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
     this.#tooltip = tooltip ?? null;
 
     this.#mapConstructor = mapConstructor;
-    this.addMap(mapConstructor, mapOptions, title, tooltip);
+    this.addMap(mapConstructor, mapOptions);
 
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
     this.getSnapshot = this.getSnapshot.bind(this);
-    this.addMap = this.addMap.bind(this);
-    this.removeMap = this.removeMap.bind(this);
-    this.updateMapPosition = this.updateMapPosition.bind(this);
-    this.getMapPosition = this.getMapPosition.bind(this);
   }
 
   destroy() {

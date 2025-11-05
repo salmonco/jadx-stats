@@ -70,22 +70,6 @@
 .ol-scale-step-marker {
   display: none;
 }
-
-/* 축척 숫자 표시 */
-.ol-scale-line {
-  background: transparent !important;
-  left: unset !important;
-  bottom: unset !important;
-  top: 17.5em !important;
-  right: 0.5em !important;
-}
-.ol-scale-line-inner {
-  border: 2px solid #6a6a6a !important;
-  border-top: none !important;
-  color: #6a6a6a !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-}
 /* openlayers */
 
 /* antdesign */
