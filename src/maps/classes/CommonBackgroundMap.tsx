@@ -1,10 +1,9 @@
 import { v4 as uuidv4 } from "uuid";
 import { RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
 import { DEFAULT_REGION_LEVEL, RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
-import { MapOptions } from "~/maps/components/BackgroundMap";
 import { BackgroundMapType, DEFAULT_BACKGROUND_MAP_TYPE } from "~/maps/constants/backgroundMapType";
+import { MapOptions } from "~/maps/constants/mapOptions";
 import { DEFAULT_LABEL_OPTIONS, DEFAULT_LEGEND_OPTIONS, DEFAULT_TRANSPARENCY, DEFAULT_VISUAL_TYPE, VisualizationSetting } from "~/maps/constants/visualizationSetting";
-
 class CommonBackgroundMap {
   #mapId = uuidv4();
   #mapOptions: MapOptions;

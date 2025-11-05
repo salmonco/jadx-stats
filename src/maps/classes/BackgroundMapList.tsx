@@ -1,8 +1,7 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
-import { MapOptions } from "~/maps/components/BackgroundMap";
 import BackgroundMapWrapper from "~/maps/components/BackgroundMapWrapper";
 import ChartRenderer from "~/maps/components/common/ChartRenderer";
-import { DEFAULT_MAP_OPTIONS } from "~/maps/constants/mapOptions";
+import { DEFAULT_LIST_MANAGED_MAP_OPTIONS, MapOptions } from "~/maps/constants/mapOptions";
 
 const INITIAL_MAP_POSITION_X_OFFSET = 20;
 const INITIAL_MAP_POSITION_Y_OFFSET = 20;
@@ -18,7 +17,7 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
   constructor({
     title,
     tooltip,
-    mapOptions = DEFAULT_MAP_OPTIONS,
+    mapOptions = DEFAULT_LIST_MANAGED_MAP_OPTIONS,
     mapConstructor,
   }: {
     title: string;
@@ -49,7 +48,7 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
    */
   addMap(
     mapConstructor?: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => M,
-    mapOptions: MapOptions = DEFAULT_MAP_OPTIONS,
+    mapOptions: MapOptions = DEFAULT_LIST_MANAGED_MAP_OPTIONS,
     title: string = this.#title,
     tooltip: React.ReactNode = this.#tooltip
   ) {
