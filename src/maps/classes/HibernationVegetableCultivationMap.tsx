@@ -8,8 +8,8 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
 
   #selectedCrop: CropType = DEFAULT_CROP;
 
-  constructor(mapOptions: MapOptions) {
-    super(mapOptions);
+  constructor(mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) {
+    super(mapOptions, title, tooltip);
 
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.getSnapshot = this.getSnapshot.bind(this);

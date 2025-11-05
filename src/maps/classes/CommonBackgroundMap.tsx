@@ -8,6 +8,8 @@ class CommonBackgroundMap {
   #mapId = uuidv4();
   #mapOptions: MapOptions;
   #excludeDong = true;
+  #title: string;
+  #tooltip: React.ReactNode | null;
 
   /**
    * 지역 필터 설정
@@ -45,8 +47,10 @@ class CommonBackgroundMap {
    */
   #revision = 0;
 
-  constructor(mapOptions: MapOptions) {
+  constructor(mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) {
     this.#mapOptions = mapOptions;
+    this.#title = title;
+    this.#tooltip = tooltip ?? null;
 
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.subscribe = this.subscribe.bind(this);
@@ -123,14 +127,6 @@ class CommonBackgroundMap {
     return this.#excludeDong;
   }
 
-  get title() {
-    return this.#title;
-  }
-
-  get tooltip() {
-    return this.#tooltip;
-  }
-
   get regionFilterSetting() {
     return this.#regionFilterSetting;
   }
@@ -181,6 +177,14 @@ class CommonBackgroundMap {
       this.#visualizationSetting = state.visualizationSetting;
     }
     this.notifyListeners();
+  }
+
+  get title() {
+    return this.#title;
+  }
+
+  get tooltip() {
+    return this.#tooltip;
   }
 }
 
