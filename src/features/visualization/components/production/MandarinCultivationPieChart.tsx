@@ -1,6 +1,6 @@
-import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
-import { getColor } from "~/maps/constants/mandarinCultivationInfo";
+import * as d3 from "d3";
+import { getColor, PALETTE_12 } from "~/pages/visualization/production/MandarinCultivationInfo";
 
 interface Props {
   chartData: any;

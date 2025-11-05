@@ -1,6 +1,6 @@
-import * as Plot from "@observablehq/plot";
 import { useEffect, useRef, useState } from "react";
-import { getColor } from "~/maps/constants/mandarinCultivationInfo";
+import * as Plot from "@observablehq/plot";
+import { getColor } from "~/pages/visualization/production/MandarinCultivationInfo";
 
 interface Props {
   chartData: any;
