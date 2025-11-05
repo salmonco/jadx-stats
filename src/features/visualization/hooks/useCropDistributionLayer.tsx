@@ -387,6 +387,9 @@ const useCropDistributionLayer = ({ layerManager, map, ready, selectedLvl, setMe
       }
 
       const Layer = layerManager.getLayer("areaLayer");
+      if (!Layer) {
+        return;
+      }
       if (Layer.layer instanceof VectorLayer) {
         const source = Layer.layer.getSource();
         if (source instanceof VectorSource) {

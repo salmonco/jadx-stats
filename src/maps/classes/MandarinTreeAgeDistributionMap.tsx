@@ -1,10 +1,14 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import { MapOptions } from "~/maps/components/BackgroundMap";
-import MandarinCultivationInfoChart from "~/maps/components/mandarinCultivationInfo/MandarinCultivationInfoChart";
-import MandarinCultivationInfoMapContent from "~/maps/components/mandarinCultivationInfo/MandarinCultivationInfoMapContent";
+import MandarinTreeAgeDistributionChart from "~/maps/components/mandarinTreeAgeDistribution/MandarinTreeAgeDistributionChart";
+import MandarinTreeAgeDistributionMapContent from "~/maps/components/mandarinTreeAgeDistribution/MandarinTreeAgeDistributionMapContent";
 import { DEFAULT_CROP_GROUP, DEFAULT_CROP_PUMMOK } from "~/maps/constants/cropDistribution";
 
-class MandarinCultivationInfoMap extends CommonBackgroundMap {
+const DEFAULT_TARGET_YEAR = 2025;
+
+class MandarinTreeAgeDistributionMap extends CommonBackgroundMap {
+  #selectedTargetYear = DEFAULT_TARGET_YEAR;
+
   #selectedCropPummok = DEFAULT_CROP_PUMMOK;
 
   #selectedCropGroup = DEFAULT_CROP_GROUP;
@@ -16,21 +20,31 @@ class MandarinCultivationInfoMap extends CommonBackgroundMap {
 
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.getSnapshot = this.getSnapshot.bind(this);
+    this.setSelectedTargetYear = this.setSelectedTargetYear.bind(this);
     this.setSelectedCropPummok = this.setSelectedCropPummok.bind(this);
     this.setSelectedCropGroup = this.setSelectedCropGroup.bind(this);
     this.setSelectedCropDetailGroup = this.setSelectedCropDetailGroup.bind(this);
   }
 
   renderMap() {
-    return <MandarinCultivationInfoMapContent mapId={this.mapId} />;
+    return <MandarinTreeAgeDistributionMapContent mapId={this.mapId} />;
   }
 
   renderChart() {
-    return <MandarinCultivationInfoChart />;
+    return <MandarinTreeAgeDistributionChart />;
   }
 
   getSnapshot() {
-    return `${super.getSnapshot()}-${this.#selectedCropPummok}-${this.#selectedCropGroup}-${this.#selectedCropDetailGroup}`;
+    return `${super.getSnapshot()}-${this.#selectedTargetYear}-${this.#selectedCropPummok}-${this.#selectedCropGroup}-${this.#selectedCropDetailGroup}`;
+  }
+
+  get selectedTargetYear() {
+    return this.#selectedTargetYear;
+  }
+
+  setSelectedTargetYear(year: number) {
+    this.#selectedTargetYear = year;
+    this.notifyListeners();
   }
 
   get selectedCropPummok() {
@@ -61,4 +75,4 @@ class MandarinCultivationInfoMap extends CommonBackgroundMap {
   }
 }
 
-export default MandarinCultivationInfoMap;
+export default MandarinTreeAgeDistributionMap;
