@@ -80,7 +80,7 @@ const RegionFilter = <F extends { properties: { vrbs_nm: string } }>({ selectedR
       isMulti: true,
     },
   ];
-
+  console.log("test");
   return (
     <div className="flex flex-col gap-2">
       <p className="text-[18px] font-semibold">지역선택</p>
