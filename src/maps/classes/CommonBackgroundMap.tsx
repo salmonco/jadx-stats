@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import { RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
-import { DEFAULT_REGION_LEVEL, RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
+import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
+import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { BackgroundMapType, DEFAULT_BACKGROUND_MAP_TYPE } from "~/maps/constants/backgroundMapType";
 import { MapOptions } from "~/maps/constants/mapOptions";
 import { DEFAULT_LABEL_OPTIONS, DEFAULT_LEGEND_OPTIONS, DEFAULT_TRANSPARENCY, DEFAULT_VISUAL_TYPE, VisualizationSetting } from "~/maps/constants/visualizationSetting";
@@ -15,13 +15,7 @@ class CommonBackgroundMap {
    * 지역 필터 설정
    * - 구분, 행정시, 권역, 읍면, 리동
    */
-  #regionFilterSetting: RegionFilterOptions = {
-    구분: DEFAULT_REGION_LEVEL,
-    행정시: null,
-    권역: [],
-    읍면: [],
-    리동: [],
-  };
+  #regionFilterSetting: RegionFilterOptions = DEFAULT_REGION_SETTING;
 
   /**
    * 시각화 설정
@@ -62,6 +56,7 @@ class CommonBackgroundMap {
     this.subscribe = this.subscribe.bind(this);
     this.getSnapshot = this.getSnapshot.bind(this);
     this.setSelectedRegionLevel = this.setSelectedRegionLevel.bind(this);
+    this.setRegionFilterSetting = this.setRegionFilterSetting.bind(this);
     this.setMapType = this.setMapType.bind(this);
   }
 
@@ -128,6 +123,10 @@ class CommonBackgroundMap {
     return this.#mapOptions;
   }
 
+  get excludeDong() {
+    return this.#excludeDong;
+  }
+
   get title() {
     return this.#title;
   }
@@ -136,8 +135,17 @@ class CommonBackgroundMap {
     return this.#tooltip;
   }
 
-  get excludeDong() {
-    return this.#excludeDong;
+  get regionFilterSetting() {
+    return this.#regionFilterSetting;
+  }
+
+  setRegionFilterSetting(setting: RegionFilterOptions) {
+    this.#regionFilterSetting = setting;
+    this.notifyListeners();
+  }
+
+  get visualizationSetting() {
+    return this.#visualizationSetting;
   }
 
   get mapType() {
@@ -147,10 +155,6 @@ class CommonBackgroundMap {
   setMapType(type: BackgroundMapType) {
     this.#mapType = type;
     this.notifyListeners();
-  }
-
-  get visualizationSetting() {
-    return this.#visualizationSetting;
   }
 
   /**
