@@ -1,20 +1,19 @@
-import { useEffect, useRef, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import InfoTooltip from "~/components/InfoTooltip";
-import BaseLegend from "~/features/visualization/components/common/BaseLegend";
+import { useEffect, useState, useRef } from "react";
+import visualizationApi from "~/services/apis/visualizationApi";
+import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
 import ChartContainer from "~/features/visualization/components/common/ChartContainer";
 import FilterContainer from "~/features/visualization/components/common/FilterContainer";
-import OneDepthScrollSelector from "~/features/visualization/components/common/OneDepthScrollSelector";
-import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
 import YearSelector from "~/features/visualization/components/common/YearSelector";
-import YearlyExportLineChart from "~/features/visualization/components/retail/YearlyExportLineChart";
+import BaseLegend from "~/features/visualization/components/common/BaseLegend";
+import OneDepthScrollSelector from "~/features/visualization/components/common/OneDepthScrollSelector";
 import { useGroupedExportData } from "~/features/visualization/hooks/useGroupedExportData";
+import YearlyExportLineChart from "~/features/visualization/components/retail/YearlyExportLineChart";
 import MandarinExportLayer, { RANK_COLORS } from "~/features/visualization/layers/MandarinExportLayer";
-import BackgroundMap from "~/maps/components/BackgroundMap";
-import { MapOptions } from "~/maps/constants/mapOptions";
+import InfoTooltip from "~/components/InfoTooltip";
+import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
 import useSetupOL from "~/maps/hooks/useSetupOL";
-import visualizationApi from "~/services/apis/visualizationApi";
 import { infoTooltipContents } from "~/utils/InfoTooltipContents";
+import { v4 as uuidv4 } from "uuid";
 
 interface MandarinExportData {
   agcode: string; // 농산물 코드

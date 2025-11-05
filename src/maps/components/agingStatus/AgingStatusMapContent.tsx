@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { AgingStatusLayer, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import AgingStatusLegend from "~/maps/components/agingStatus/AgingStatusLegend";
-import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
+import BackgroundMap from "~/maps/components/BackgroundMap";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import visualizationApi from "~/services/apis/visualizationApi";
@@ -45,9 +45,9 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <AgingStatusLegend features={features} />
-    </ListManagedBackgroundMap>
+    </BackgroundMap>
   );
 };
 

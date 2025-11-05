@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import useMarketRegions from "~/features/visualization/hooks/useMarketRegions";
-import BackgroundMap from "~/maps/components/BackgroundMap";
-import { MapOptions } from "~/maps/constants/mapOptions";
+import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
 import useSetupOL from "~/maps/hooks/useSetupOL";
+import useMarketRegions from "~/features/visualization/hooks/useMarketRegions";
 
 const mapOptions: MapOptions = {
   layerSwitcher: false,

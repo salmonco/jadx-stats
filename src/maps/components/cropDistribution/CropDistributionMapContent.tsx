@@ -7,7 +7,7 @@ import FloatingMenu from "~/features/visualization/components/common/FloatingMen
 import useCropDistributionLayer from "~/features/visualization/hooks/useCropDistributionLayer";
 import { getCropLegendItems } from "~/features/visualization/utils/getCropItems";
 import CropDistributionMap from "~/maps/classes/CropDistributionMap";
-import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
+import BackgroundMap from "~/maps/components/BackgroundMap";
 import { cropInfoOptions } from "~/maps/constants/cropDistribution";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
@@ -69,7 +69,7 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       {menuPosition && menuChildren && <FloatingMenu position={menuPosition} onClose={closeMenu} menuChildren={menuChildren as any} />}
       <div className="absolute left-4 top-4 z-10">
         <FilterContainer>
@@ -77,7 +77,7 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
           <BaseLegend title="범례" items={legendItems} direction="horizontal" itemsPerRow={3} />
         </FilterContainer>
       </div>
-    </ListManagedBackgroundMap>
+    </BackgroundMap>
   );
 };
 

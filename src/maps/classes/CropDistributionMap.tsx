@@ -1,8 +1,9 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
+import { MapOptions } from "~/maps/components/BackgroundMap";
 import CropDistributionChart from "~/maps/components/cropDistribution/CropDistributionChart";
 import CropDistributionMapContent from "~/maps/components/cropDistribution/CropDistributionMapContent";
 import { CropLevel, DEFAULT_CROP_LEVEL } from "~/maps/constants/cropDistribution";
-import { MapOptions } from "~/maps/constants/mapOptions";
+
 class CropDistributionMap extends CommonBackgroundMap {
   #selectedCropLevel: CropLevel = DEFAULT_CROP_LEVEL;
 

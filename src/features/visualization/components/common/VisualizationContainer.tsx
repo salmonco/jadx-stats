@@ -1,14 +1,16 @@
 import React from "react";
+import { useMapList } from "~/maps/hooks/useMapList";
 
 interface Props {
-  title: string | React.ReactNode;
+  // TODO: title 삭제
+  title?: string | React.ReactNode;
   tooltip?: React.ReactNode;
-  mapContent: React.ReactNode;
   filterContent?: React.ReactNode;
-  chartContent?: React.ReactNode;
 }
 
-const VisualizationContainer = ({ title, tooltip, mapContent, filterContent, chartContent }: Props) => {
+const VisualizationContainer = ({ title, tooltip, filterContent }: Props) => {
+  const mapList = useMapList();
+
   return (
     <div className="flex min-h-screen w-full flex-col gap-5 p-5">
       <div className="flex flex-col gap-5 rounded-lg bg-[#37445E] p-5">
@@ -27,7 +29,7 @@ const VisualizationContainer = ({ title, tooltip, mapContent, filterContent, cha
         <div className="flex h-[65%] min-h-[570px] gap-5 3xl:min-h-[800px] 4xl:min-h-[950px]">
           {/* 지도 */}
           <div style={{ flex: 7 }} className="rounded-lg">
-            {mapContent}
+            {mapList.renderMaps()}
           </div>
           {/* 필터 */}
           {filterContent && (
@@ -37,7 +39,7 @@ const VisualizationContainer = ({ title, tooltip, mapContent, filterContent, cha
           )}
         </div>
         {/* 차트 */}
-        {chartContent && <div className="w-full">{chartContent}</div>}
+        <div className="w-full">{mapList.renderFirstChart()}</div>
       </div>
     </div>
   );

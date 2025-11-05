@@ -1,8 +1,9 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
+import { MapOptions } from "~/maps/components/BackgroundMap";
 import HibernationVegetableCultivationChart from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationChart";
 import HibernationVegetableCultivationMapContent from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationMapContent";
 import { CropType, DEFAULT_CROP, DEFAULT_TARGET_YEAR } from "~/maps/constants/hibernationVegetableCultivation";
-import { MapOptions } from "~/maps/constants/mapOptions";
+
 class HibernationVegetableCultivationMap extends CommonBackgroundMap {
   #selectedTargetYear = DEFAULT_TARGET_YEAR;
 

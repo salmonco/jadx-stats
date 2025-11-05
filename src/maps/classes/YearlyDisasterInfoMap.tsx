@@ -1,8 +1,7 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
-
+import { MapOptions } from "~/maps/components/BackgroundMap";
 import YearlyDisasterInfoChart from "~/maps/components/yearlyDisasterInfo/YearlyDisasterInfoChart";
 import YearlyDisasterInfoMapContent from "~/maps/components/yearlyDisasterInfo/YearlyDisasterInfoMapContent";
-import { MapOptions } from "~/maps/constants/mapOptions";
 import { DEFAULT_DISASTER, DEFAULT_DISASTER_CATEGORY, DEFAULT_TARGET_YEAR, DisasterCategory } from "~/maps/constants/yearlyDisasterInfo";
 
 class YearlyDisasterInfoMap extends CommonBackgroundMap {

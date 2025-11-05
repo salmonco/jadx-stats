@@ -1,4 +1,4 @@
-import ListManagedVisualizationContainer from "~/features/visualization/components/common/ListManagedVisualizationContainer";
+import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
 import YearlyDisasterInfoMap from "~/maps/classes/YearlyDisasterInfoMap";
 import { MapListProvider } from "~/maps/contexts/MapListContext";
 import useMapInitializer from "~/maps/hooks/useMapInitializer";
@@ -13,7 +13,7 @@ const YearlyDisasterInfo = () => {
 
   return (
     <MapListProvider value={mapList}>
-      <ListManagedVisualizationContainer />
+      <VisualizationContainer />
     </MapListProvider>
   );
 };

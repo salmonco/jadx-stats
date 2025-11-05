@@ -1,7 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
-import BackgroundMap from "~/maps/components/BackgroundMap";
-import { MapOptions } from "~/maps/constants/mapOptions";
 import useSetupOL from "~/maps/hooks/useSetupOL";
+import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
+import { v4 as uuidv4 } from "uuid";
 
 const MAP_ID = uuidv4();
 

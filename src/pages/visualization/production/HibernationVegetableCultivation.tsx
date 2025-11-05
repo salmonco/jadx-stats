@@ -1,5 +1,5 @@
 import InfoTooltip from "~/components/InfoTooltip";
-import ListManagedVisualizationContainer from "~/features/visualization/components/common/ListManagedVisualizationContainer";
+import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
 import HibernationVegetableCultivationMap from "~/maps/classes/HibernationVegetableCultivationMap";
 import { MapListProvider } from "~/maps/contexts/MapListContext";
 import useMapInitializer from "~/maps/hooks/useMapInitializer";
@@ -16,7 +16,7 @@ const HibernationVegetableCultivation = () => {
 
   return (
     <MapListProvider value={mapList}>
-      <ListManagedVisualizationContainer />
+      <VisualizationContainer />
     </MapListProvider>
   );
 };

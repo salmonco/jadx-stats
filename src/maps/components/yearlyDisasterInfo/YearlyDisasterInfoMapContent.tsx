@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { InnerLayer, YearlyDisasterLayer } from "~/features/visualization/layers/YearlyDisasterLayer";
 import YearlyDisasterInfoMap from "~/maps/classes/YearlyDisasterInfoMap";
-import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
+import BackgroundMap from "~/maps/components/BackgroundMap";
 import YearlyDisasterInfoFilter from "~/maps/components/yearlyDisasterInfo/YearlyDisasterInfoFilter";
 import YearlyDisasterLegend from "~/maps/components/yearlyDisasterInfo/YearlyDisasterLegend";
 
@@ -58,12 +58,12 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
   }, [ready, features, map.selectedDisasterCategory]);
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <YearlyDisasterLegend mapId={mapId} features={features} />
       <div className="absolute left-4 top-4 z-10">
         <YearlyDisasterInfoFilter mapId={mapId} />
       </div>
-    </ListManagedBackgroundMap>
+    </BackgroundMap>
   );
 };
 

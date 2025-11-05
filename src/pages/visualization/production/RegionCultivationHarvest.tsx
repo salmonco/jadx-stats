@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import visualizationApi from "~/services/apis/visualizationApi";
 import RegionCumulativeStatus from "~/features/visualization/components/production/RegionCumulativeStatus";
 import RegionDailyStatus from "~/features/visualization/components/production/RegionDailyStatus";
-import BackgroundMap, { MapOptions } from "~/maps/components/ListManagedBackgroundMap";
+import BackgroundMap, { MapOptions } from "~/maps/components/BackgroundMap";
 import useContourLayer from "~/features/visualization/hooks/useContourLayer";
 import InfoTooltip from "~/components/InfoTooltip";
 import { Fill, Stroke, Style } from "ol/style";

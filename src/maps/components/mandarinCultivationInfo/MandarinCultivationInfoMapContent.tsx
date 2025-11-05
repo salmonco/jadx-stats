@@ -6,7 +6,7 @@ import ItemDepthScrollSelector from "~/features/visualization/components/common/
 import { InnerLayer, MandarinCultivationLayer } from "~/features/visualization/layers/MandarinCultivationLayer";
 import { regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import MandarinCultivationInfoMap from "~/maps/classes/MandarinCultivationInfoMap";
-import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
+import BackgroundMap from "~/maps/components/BackgroundMap";
 import MandarinTreeAgeDistributionLegend from "~/maps/components/mandarinCultivationInfo/MandarinTreeAgeDistributionLegend";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
@@ -56,7 +56,7 @@ const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
   }, [ready, features, map.selectedCropDetailGroup]);
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+    <BackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <MandarinTreeAgeDistributionLegend features={features} />
       <div className="absolute left-4 top-4 z-10">
         <FilterContainer>
@@ -84,7 +84,7 @@ const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
           />
         </FilterContainer>
       </div>
-    </ListManagedBackgroundMap>
+    </BackgroundMap>
   );
 };
 
