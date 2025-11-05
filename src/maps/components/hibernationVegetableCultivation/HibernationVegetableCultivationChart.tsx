@@ -30,9 +30,9 @@ const HibernationVegetableCultivationChart = () => {
 
   return (
     <ChartContainer cols={3} minHeight={500}>
-      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={firstMap.selectedCrop} year={firstMap.selectedTargetYear} viewType={"absolute"} />
-      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={firstMap.selectedCrop} year={firstMap.selectedTargetYear} viewType={"rate"} />
-      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={firstMap.selectedCrop} year={firstMap.selectedTargetYear} viewType={"area"} />
+      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrops={firstMap.selectedCrops} year={firstMap.selectedTargetYear} viewType={"absolute"} />
+      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrops={firstMap.selectedCrops} year={firstMap.selectedTargetYear} viewType={"rate"} />
+      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrops={firstMap.selectedCrops} year={firstMap.selectedTargetYear} viewType={"area"} />
     </ChartContainer>
   );
 };

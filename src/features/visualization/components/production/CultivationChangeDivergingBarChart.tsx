@@ -1,15 +1,15 @@
+import { useEffect, useRef, useState } from "react";
 import * as Plot from "@observablehq/plot";
 import * as d3 from "d3";
-import { useEffect, useRef, useState } from "react";
 
 interface Props {
   chartData: any;
-  selectedCrop: string;
+  selectedCrops: string;
   year: number;
   viewType: string;
 }
 
-const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, viewType }: Props) => {
+const CultivationChangeDivergingBarChart = ({ chartData, selectedCrops, year, viewType }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [size, setSize] = useState({ width: 800, height: 420 });
@@ -65,7 +65,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
 
     const regionTotals = Object.entries(chartData)
       .map(([region, products]) => {
-        const match = (products as any[]).find((p) => p.crop_nm === selectedCrop);
+        const match = (products as any[]).find((p) => p.crop_nm === selectedCrops);
         if (!match) return null;
 
         const value = viewType === "absolute" ? match.chg_cn : viewType === "rate" ? match.chg_pct : match.area_std;
@@ -194,16 +194,16 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
         containerRef.current.innerHTML = "";
       }
     };
-  }, [chartData, selectedCrop, size]);
+  }, [chartData, selectedCrops, size]);
 
   return (
     <div className="h-full w-full">
       <p className="mb-[8px] text-xl font-semibold">
         {viewType === "absolute"
-          ? `전년대비 ${selectedCrop} 재배면적 변화량`
+          ? `전년대비 ${selectedCrops} 재배면적 변화량`
           : viewType === "rate"
-            ? `전년대비 ${selectedCrop} 재배면적 변화율`
-            : `${year}년 ${selectedCrop} 재배면적`}
+            ? `전년대비 ${selectedCrops} 재배면적 변화율`
+            : `${year}년 ${selectedCrops} 재배면적`}
       </p>
       <div ref={containerRef} style={{ height: `${size.height}px` }} className="custom-dark-scroll min-w-full overflow-y-auto" />
     </div>

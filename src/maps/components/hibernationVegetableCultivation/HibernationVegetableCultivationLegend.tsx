@@ -5,10 +5,10 @@ import { CropType } from "~/maps/constants/hibernationVegetableCultivation";
 
 interface Props {
   features: HibernationVegetableCultivationFeatureCollection | null;
-  selectedCrop: CropType;
+  selectedCrops: CropType;
 }
 
-const HibernationVegetableCultivationLegend = ({ features, selectedCrop }: Props) => {
+const HibernationVegetableCultivationLegend = ({ features, selectedCrops }: Props) => {
   const maxAbsValue = useMemo(() => {
     if (!features || !Array.isArray(features.features)) return 0;
 
@@ -19,7 +19,7 @@ const HibernationVegetableCultivationLegend = ({ features, selectedCrop }: Props
       if (!Array.isArray(matters)) continue;
 
       for (const matter of matters) {
-        if (matter.crop_nm === selectedCrop) {
+        if (matter.crop_nm === selectedCrops) {
           const value = matter.chg_cn;
           if (typeof value === "number" && !isNaN(value)) {
             max = Math.max(max, Math.abs(value) / 10000);
@@ -29,7 +29,7 @@ const HibernationVegetableCultivationLegend = ({ features, selectedCrop }: Props
     }
 
     return max === -Infinity ? 0 : max;
-  }, [features, selectedCrop]);
+  }, [features, selectedCrops]);
 
   const minValue = -maxAbsValue;
   const maxValue = maxAbsValue;
