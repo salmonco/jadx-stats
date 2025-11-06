@@ -1,107 +1,104 @@
 import { Select } from "antd";
-import { useEffect } from "react";
-import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
-import { getKeyByValue } from "~/features/visualization/utils/getKeyByValue";
-import { DEFAULT_ALL_OPTION, REGION_LEVEL_LABEL, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
-import { REGION_LEVEL_OPTIONS, regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
-import { shouldShowRegionFilter } from "~/features/visualization/utils/shouldShowRegionFilter";
+import { useCallback, useMemo } from "react";
+import { DEFAULT_ALL_OPTION, REGION_LEVEL_LABEL, RegionFilterOptions, withAllOption } from "~/features/visualization/utils/regionFilterOptions";
+import { REGION_LEVEL_OPTIONS, RegionLevelOptions, regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { toOptions } from "~/features/visualization/utils/toOptions";
-import { FeatureCollection } from "~/maps/classes/interfaces";
 
-interface RegionFilterProps<F> {
+interface RegionFilterProps {
+  features: any;
   selectedRegion: RegionFilterOptions;
-  features: FeatureCollection<F>;
-  setSelectedRegion: (newSelection: RegionFilterOptions) => void;
-  setFilteredFeatures: (features: FeatureCollection<F>) => void;
+  setSelectedRegion: (value: RegionFilterOptions | ((prev: RegionFilterOptions) => RegionFilterOptions)) => void;
 }
 
-const RegionFilter = <F extends { properties: { vrbs_nm: string } }>({ selectedRegion, features, setSelectedRegion, setFilteredFeatures }: RegionFilterProps<F>) => {
-  const {
-    cityOptions,
-    regionOptions,
-    emdOptions,
-    riOptions,
-    isSelectedAll,
-    isSelectedAllStr,
-    handleCityChange,
-    handleRegionChange,
-    handleEmdChange,
-    handleRiChange,
-    handleLevelChange,
-    filterFeatures,
-  } = useRegionFilter({ selectedRegion, setSelectedRegion });
-
-  useEffect(() => {
-    if (!features) {
-      return;
+const processMultiSelect = (currentValues: string[]) => {
+  if (currentValues.includes(DEFAULT_ALL_OPTION)) {
+    if (currentValues[currentValues.length - 1] === DEFAULT_ALL_OPTION || currentValues.length === 1) {
+      return [];
+    } else {
+      return currentValues.filter((v) => v !== DEFAULT_ALL_OPTION);
     }
+  }
+  return currentValues;
+};
 
-    // 지금은 선택한 지역 구분에서만 필터링 됨
-    // TODO: 하위 선택 지역도 필터링되도록 수정 필요 (API 호출)
-    const filtered = {
-      ...features,
-      features: features.features.filter(filterFeatures),
-    };
+const RegionFilter = ({ features, selectedRegion, setSelectedRegion }: RegionFilterProps) => {
+  const currentOptions = useMemo(() => {
+    if (!features) {
+      return [];
+    }
+    const names: string[] = features.features.map((feature) => feature.properties.vrbs_nm).sort();
+    return withAllOption([...new Set(names)]);
+  }, [features]);
 
-    setFilteredFeatures(filtered);
-  }, [features, selectedRegion]);
+  const currentValue = (() => {
+    switch (selectedRegion.구분) {
+      case REGION_LEVEL_OPTIONS.행정시:
+        return selectedRegion.행정시 || DEFAULT_ALL_OPTION;
+      case REGION_LEVEL_OPTIONS.권역:
+        return selectedRegion.권역?.length ? selectedRegion.권역 : [DEFAULT_ALL_OPTION];
+      case REGION_LEVEL_OPTIONS.읍면:
+        return selectedRegion.읍면?.length ? selectedRegion.읍면 : [DEFAULT_ALL_OPTION];
+      case REGION_LEVEL_OPTIONS.리동:
+        return selectedRegion.리동?.length ? selectedRegion.리동 : [DEFAULT_ALL_OPTION];
+      default:
+        return DEFAULT_ALL_OPTION;
+    }
+  })();
 
-  const filters = [
-    {
-      level: REGION_LEVEL_OPTIONS.행정시,
-      title: getKeyByValue(REGION_LEVEL_OPTIONS, REGION_LEVEL_OPTIONS.행정시),
-      options: cityOptions,
-      selectedValue: selectedRegion.행정시 === null ? DEFAULT_ALL_OPTION : selectedRegion.행정시,
-      onSelect: handleCityChange,
-      isMulti: false,
+  const isMulti = selectedRegion.구분 !== REGION_LEVEL_OPTIONS.행정시;
+
+  const handleLevelChange = useCallback(
+    (newLevel: RegionLevelOptions) => {
+      setSelectedRegion(() => ({
+        구분: newLevel,
+        행정시: null,
+        권역: [],
+        읍면: [],
+        리동: [],
+      }));
     },
-    {
-      level: REGION_LEVEL_OPTIONS.권역,
-      title: getKeyByValue(REGION_LEVEL_OPTIONS, REGION_LEVEL_OPTIONS.권역),
-      options: regionOptions,
-      selectedValue: selectedRegion.권역.length > 0 ? selectedRegion.권역 : [DEFAULT_ALL_OPTION],
-      onSelect: handleRegionChange,
-      isMulti: true,
+    [setSelectedRegion]
+  );
+
+  const handleValueChange = useCallback(
+    (newValue: string | string[]) => {
+      setSelectedRegion((prev) => {
+        const newSelection = {
+          ...prev,
+          행정시: null,
+          권역: [],
+          읍면: [],
+          리동: [],
+        };
+
+        switch (prev.구분) {
+          case REGION_LEVEL_OPTIONS.행정시:
+            newSelection.행정시 = Array.isArray(newValue) ? newValue[0] : newValue;
+            break;
+          case REGION_LEVEL_OPTIONS.권역:
+            newSelection.권역 = processMultiSelect(Array.isArray(newValue) ? newValue : [newValue]);
+            break;
+          case REGION_LEVEL_OPTIONS.읍면:
+            newSelection.읍면 = processMultiSelect(Array.isArray(newValue) ? newValue : [newValue]);
+            break;
+          case REGION_LEVEL_OPTIONS.리동:
+            newSelection.리동 = processMultiSelect(Array.isArray(newValue) ? newValue : [newValue]);
+            break;
+        }
+        return newSelection;
+      });
     },
-    {
-      level: REGION_LEVEL_OPTIONS.읍면,
-      title: getKeyByValue(REGION_LEVEL_OPTIONS, REGION_LEVEL_OPTIONS.읍면),
-      options: emdOptions,
-      selectedValue: selectedRegion.읍면.length > 0 ? selectedRegion.읍면 : [DEFAULT_ALL_OPTION],
-      onSelect: handleEmdChange,
-      isMulti: true,
-    },
-    {
-      level: REGION_LEVEL_OPTIONS.리동,
-      title: getKeyByValue(REGION_LEVEL_OPTIONS, REGION_LEVEL_OPTIONS.리동),
-      options: riOptions,
-      selectedValue: selectedRegion.리동.length > 0 ? selectedRegion.리동 : [DEFAULT_ALL_OPTION],
-      onSelect: handleRiChange,
-      isMulti: true,
-    },
-  ];
-  console.log("test");
+    [setSelectedRegion]
+  );
+
   return (
     <div className="flex flex-col gap-2">
       <p className="text-[18px] font-semibold">지역선택</p>
       <Select title={REGION_LEVEL_LABEL} options={regionLevelOptions} value={selectedRegion.구분} onChange={handleLevelChange} size="large" />
 
-      {filters.map((filter) => {
-        if (shouldShowRegionFilter(filter.level, selectedRegion, isSelectedAll, isSelectedAllStr)) {
-          return (
-            <Select
-              key={filter.title}
-              title={filter.title}
-              options={toOptions(filter.options)}
-              value={filter.selectedValue}
-              onChange={filter.onSelect}
-              mode={filter.isMulti ? "multiple" : undefined}
-              size="large"
-            />
-          );
-        }
-        return null;
-      })}
+      {selectedRegion.구분 !== REGION_LEVEL_OPTIONS.제주도 && (
+        <Select options={toOptions(currentOptions)} value={currentValue} onChange={handleValueChange} mode={isMulti ? "multiple" : undefined} size="large" />
+      )}
     </div>
   );
 };
