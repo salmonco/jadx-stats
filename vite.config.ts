@@ -11,9 +11,25 @@ export default defineConfig({
       "~": `${path.resolve(__dirname, "src")}/`,
     },
   },
-  preview: {
-    host: true, // 0.0.0.0으로 바인딩
-    allowedHosts: ['hack.hypurrquant.com'], // 외부 접근 허용할 호스트 추가
-    port: 4173, // 기존 포트 유지
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://agri.jeju.go.kr',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   },
+  preview: {
+    host: true,
+    allowedHosts: ['hack.hypurrquant.com'],
+    port: 4173,
+    proxy: {
+      '/api': {
+        target: 'https://agri.jeju.go.kr',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 });
