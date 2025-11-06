@@ -11,4 +11,25 @@ export default defineConfig({
       "~": `${path.resolve(__dirname, "src")}/`,
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://agri.jeju.go.kr',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
+  preview: {
+    host: true,
+    allowedHosts: ['hack.hypurrquant.com'],
+    port: 4173,
+    proxy: {
+      '/api': {
+        target: 'https://agri.jeju.go.kr',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 });

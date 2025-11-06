@@ -1,24 +1,25 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { LoadingOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import visualizationApi from "~/services/apis/visualizationApi";
+import { DatePicker, Select, Spin } from "antd";
+import dayjs from "dayjs";
+import { transform } from "ol/proj";
+import { Fill, Stroke, Style } from "ol/style";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import InfoTooltip from "~/components/InfoTooltip";
 import RegionCumulativeStatus from "~/features/visualization/components/production/RegionCumulativeStatus";
 import RegionDailyStatus from "~/features/visualization/components/production/RegionDailyStatus";
-import BackgroundMap, { MapOptions } from "~/maps/components/ListManagedBackgroundMap";
 import useContourLayer from "~/features/visualization/hooks/useContourLayer";
-import InfoTooltip from "~/components/InfoTooltip";
-import { Fill, Stroke, Style } from "ol/style";
-import { transform } from "ol/proj";
-import useSetupOL from "~/maps/hooks/useSetupOL";
-import { useHighlightLayer } from "~/maps/hooks/useHighlightLayer";
+import BackgroundMap from "~/maps/components/BackgroundMap";
+import { MapOptions } from "~/maps/constants/mapOptions";
 import { useEventHandlers } from "~/maps/hooks/useEventHandlers";
+import { useHighlightLayer } from "~/maps/hooks/useHighlightLayer";
+import useSetupOL from "~/maps/hooks/useSetupOL";
+import MapboxVectorTileLayer from "~/maps/layers/MapboxVectorTileLayer";
 import FarmhouseDataService from "~/maps/services/FarmhouseDataService";
 import { baseUrl } from "~/maps/services/LayerDataService";
-import MapboxVectorTileLayer from "~/maps/layers/MapboxVectorTileLayer";
+import visualizationApi from "~/services/apis/visualizationApi";
 import { infoTooltipContents } from "~/utils/InfoTooltipContents";
-import { LoadingOutlined } from "@ant-design/icons";
-import { DatePicker, Select, Spin } from "antd";
-import { v4 as uuidv4 } from "uuid";
-import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -308,7 +309,7 @@ const RegionCultivationHarvest = () => {
         </div>
         <div className="flex h-full flex-1 gap-5 rounded-lg bg-[#37445E] 3xl:max-h-[1000px] 4xl:max-h-[1200px]">
           <div className="relative flex-1">
-            <BackgroundMap layerManager={layerManager} ready={ready} mapId={MAP_ID} mapOptions={mapOptions}>
+            <BackgroundMap layerManager={layerManager} ready={ready} mapId={MAP_ID}>
               {selectedFeature?.getProperties()?.ltlnd_mst_uid && (
                 <>
                   {isBaseInfoLoading || isDetailDataLoading ? (
