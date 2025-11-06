@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useMemo, useSyncExternalStore } from "react";
 import BackgroundMapList from "~/maps/classes/BackgroundMapList";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
-import { MapOptions } from "~/maps/components/ListManagedBackgroundMap";
+import { MapOptions } from "~/maps/constants/mapOptions";
 import useMapSharedStateInitializer from "~/maps/hooks/useMapSharedStateInitializer";
 
 interface Params<M> {
