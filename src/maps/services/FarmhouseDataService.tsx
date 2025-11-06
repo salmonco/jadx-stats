@@ -4,7 +4,7 @@ import { OpenAPI } from "~/maps/services/core/OpenAPI";
 import QueryClientSingleton from "~/maps/classes/QueryClientSingleton";
 import { Farmhouse, FarmhouseSearhResult } from "~/maps/classes/interfaces";
 
-const apiBase = import.meta.env.VITE_API_URL || "http://43.202.8.244:8001";
+const apiBase = import.meta.env.VITE_API_URL || "https://agri.jeju.go.kr";
 export const baseUrl = `${apiBase}/api/guidance/v0/farmhouse`;
 
 export const getRequest = async (url: string, options?: { params?: Record<string, string | number> }) => {

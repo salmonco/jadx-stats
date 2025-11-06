@@ -5,12 +5,12 @@ import ItemDepthScrollSelector from "~/features/visualization/components/common/
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
 import MandarinTreeAgeChange from "~/features/visualization/components/observation/MandarinTreeAgeChange";
 import useOffsetCounter from "~/features/visualization/hooks/useOffsetCounter";
+import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
 import {
   InnerLayer,
   MandarinTreeAgeDistributionFeatureCollection,
   MandarinTreeAgeDistributionLayer,
 } from "~/features/visualization/layers/MandarinTreeAgeDistributionLayer";
-import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
 import MandarinTreeAgeDistributionMap from "~/maps/classes/MandarinTreeAgeDistributionMap";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import MandarinTreeAgeDistributionLegend from "~/maps/components/mandarinTreeAgeDistribution/MandarinTreeAgeDistributionLegend";
@@ -49,8 +49,7 @@ const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
     retry: 1,
   });
 
-  const [filteredFeatures, setFilteredFeatures] = useState<MandarinTreeAgeDistributionFeatureCollection>(features);
-  const [selectedRegion, setSelectedRegion] = useState<RegionFilterOptions>(map.regionFilterSetting || DEFAULT_REGION_SETTING);
+  const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
   const [offset, setOffset] = useState<OffsetRange>("0");
   const { autoplay, setAutoplay } = useOffsetCounter({ length: 11, setOffset, setSelectedTargetYear: map.setSelectedTargetYear });
@@ -61,25 +60,30 @@ const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
   }, [map.getSelectedRegionLevel(), map.selectedCropPummok, map.selectedCropDetailGroup]);
 
   useEffect(() => {
-    if (!ready || !filteredFeatures) return;
+    if (!ready || !features) return;
     const layerWrapper = layerManager.getLayer("mandarinTreeAgeDistribution");
     const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
+
+    const filtered = {
+      ...features,
+      features: features.features.filter(filterFeatures),
+    };
 
     if (existingLayer && typeof existingLayer.updateFeatures === "function") {
       existingLayer.updatePummok(map.selectedCropPummok);
       existingLayer.updateVariety(map.selectedCropDetailGroup);
-      existingLayer.updateFeatures(filteredFeatures);
+      existingLayer.updateFeatures(filtered);
     } else {
-      MandarinTreeAgeDistributionLayer.createLayer(filteredFeatures, map.selectedCropPummok, map.selectedCropDetailGroup).then((layer) => {
+      MandarinTreeAgeDistributionLayer.createLayer(features, map.selectedCropPummok, map.selectedCropDetailGroup).then((layer) => {
         layerManager.addLayer(layer, "mandarinTreeAgeDistribution", 1);
       });
     }
-  }, [ready, filteredFeatures]);
+  }, [ready, features, selectedRegion]);
 
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <FilterContainer isFixed>
-        <RegionFilter selectedRegion={selectedRegion} features={features} setSelectedRegion={setSelectedRegion} setFilteredFeatures={setFilteredFeatures} />
+        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
         <ItemDepthScrollSelector
           optionGroups={varietyList ?? []}
           onSelectionChange={(group, first, second) => {

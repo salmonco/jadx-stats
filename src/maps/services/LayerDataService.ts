@@ -7,7 +7,7 @@ import { LayerStyle } from "~/maps/hooks/useLayerExportTools";
 import { FilterDefault, FilterInfo } from "~/maps/components/FilterLayerTab";
 import { Filter } from "~/maps/components/LoadFilterModal";
 
-const apiBase = import.meta.env.VITE_API_URL || "http://43.202.8.244:8001";
+const apiBase = import.meta.env.VITE_API_URL || "https://agri.jeju.go.kr";
 export const baseUrl = `${apiBase}/api`;
 
 export const getRequest = async <T>(url: string, options?: { params?: Record<string, string | number>; token?: string }): Promise<T> => {

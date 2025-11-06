@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
 import FilterContainer from "~/features/visualization/components/common/FilterContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
 import TwoDepthScrollSelector from "~/features/visualization/components/common/TwoDepthScrollSelector";
 import YearFilter from "~/features/visualization/components/common/YearFilter";
-import { InnerLayer, YearlyDisasterFeatureCollection, YearlyDisasterLayer } from "~/features/visualization/layers/YearlyDisasterLayer";
-import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
+import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
+import { InnerLayer, YearlyDisasterLayer } from "~/features/visualization/layers/YearlyDisasterLayer";
 import YearlyDisasterInfoMap from "~/maps/classes/YearlyDisasterInfoMap";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import YearlyDisasterLegend from "~/maps/components/yearlyDisasterInfo/YearlyDisasterLegend";
@@ -39,8 +39,7 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
     retry: false,
   });
 
-  const [filteredFeatures, setFilteredFeatures] = useState<YearlyDisasterFeatureCollection>(features);
-  const [selectedRegion, setSelectedRegion] = useState<RegionFilterOptions>(map.regionFilterSetting || DEFAULT_REGION_SETTING);
+  const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
   const disasterOptionsMap: Record<string, string[]> = useMemo(() => {
     const result: Record<string, string[]> = {};
@@ -59,27 +58,32 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
   }, [disasterName]);
 
   useEffect(() => {
-    if (!ready || !filteredFeatures) return;
+    if (!ready || !features) return;
 
     const layerWrapper = layerManager.getLayer("yearlyDisasterLayer");
     const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
 
+    const filtered = {
+      ...features,
+      features: features.features.filter(filterFeatures),
+    };
+
     if (existingLayer && typeof existingLayer.updateFeatures === "function") {
-      existingLayer.updateFeatures(filteredFeatures);
+      existingLayer.updateFeatures(filtered);
       existingLayer.updateSelectedCategory(map.selectedDisasterCategory);
       existingLayer.changed();
     } else {
-      YearlyDisasterLayer.createLayer(filteredFeatures, map.selectedDisasterCategory).then((layer) => {
+      YearlyDisasterLayer.createLayer(features, map.selectedDisasterCategory).then((layer) => {
         layerManager.addLayer(layer, "yearlyDisasterLayer", 1);
       });
     }
-  }, [ready, filteredFeatures, map.selectedDisasterCategory]);
+  }, [ready, features, selectedRegion, map.selectedDisasterCategory]);
 
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <FilterContainer isFixed>
         <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
-        <RegionFilter selectedRegion={selectedRegion} features={features} setSelectedRegion={setSelectedRegion} setFilteredFeatures={setFilteredFeatures} />
+        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
         <ButtonGroupSelector
           title="항목"
           cols={2}
