@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import FilterContainer from "~/features/visualization/components/common/FilterContainer";
 import ItemDepthScrollSelector from "~/features/visualization/components/common/ItemDepthScrollSelector";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
-import { InnerLayer, MandarinCultivationFeatureCollection, MandarinCultivationLayer } from "~/features/visualization/layers/MandarinCultivationLayer";
-import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
+import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
+import { InnerLayer, MandarinCultivationLayer } from "~/features/visualization/layers/MandarinCultivationLayer";
 import MandarinCultivationInfoMap from "~/maps/classes/MandarinCultivationInfoMap";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import MandarinTreeAgeDistributionLegend from "~/maps/components/mandarinCultivationInfo/MandarinTreeAgeDistributionLegend";
@@ -38,30 +38,34 @@ const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
       ),
   });
 
-  const [filteredFeatures, setFilteredFeatures] = useState<MandarinCultivationFeatureCollection>(features);
-  const [selectedRegion, setSelectedRegion] = useState<RegionFilterOptions>(map.regionFilterSetting || DEFAULT_REGION_SETTING);
+  const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
   useEffect(() => {
-    if (!ready || !filteredFeatures) return;
+    if (!ready || !features) return;
+
+    const filtered = {
+      ...features,
+      features: features.features.filter(filterFeatures),
+    };
 
     const layerWrapper = layerManager.getLayer("mandarinCultivationLayer");
     const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
 
     if (existingLayer && typeof existingLayer.updateFeatures === "function") {
-      existingLayer.updateFeatures(filteredFeatures);
+      existingLayer.updateFeatures(filtered);
       existingLayer.updateSelectedVariety(map.selectedCropDetailGroup);
       existingLayer.changed();
     } else {
-      MandarinCultivationLayer.createLayer(filteredFeatures, map.selectedCropDetailGroup).then((layer) => {
+      MandarinCultivationLayer.createLayer(features, map.selectedCropDetailGroup).then((layer) => {
         layerManager.addLayer(layer, "mandarinCultivationLayer", 1);
       });
     }
-  }, [ready, filteredFeatures, map.selectedCropDetailGroup]);
+  }, [ready, features, selectedRegion, map.selectedCropDetailGroup]);
 
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <FilterContainer isFixed>
-        <RegionFilter selectedRegion={selectedRegion} features={features} setSelectedRegion={setSelectedRegion} setFilteredFeatures={setFilteredFeatures} />
+        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
         <ItemDepthScrollSelector
           optionGroups={varietyList ?? []}
           onSelectionChange={(group, first, second) => {

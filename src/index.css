@@ -18,6 +18,15 @@ body,
   border-radius: 10px; /* 스크롤바 둥글게 설정 */
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 *::-webkit-scrollbar-thumb:hover {
   background-color: #838383; /* 스크롤바 호버 시 색상 변경 */
 }
