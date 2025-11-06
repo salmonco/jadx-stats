@@ -25,7 +25,7 @@ const AgingStatusLegend = ({ features }) => {
   const gradientColors = [...colorsRed].reverse().join(", ");
 
   return (
-    <div className="flex w-[280px] flex-col gap-2 rounded-lg">
+    <div className="flex flex-col gap-2 rounded-lg">
       <div className="rounded-lg border border-[#d9d9d9] bg-[#fff] px-[8px] py-[8px] pb-[4px]">
         <div
           className="h-[15px] rounded-md"
