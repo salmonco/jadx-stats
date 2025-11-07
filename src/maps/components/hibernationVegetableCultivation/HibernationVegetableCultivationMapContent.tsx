@@ -54,13 +54,14 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
     if (existingLayer) {
       existingLayer.updateFeatures(filtered);
       existingLayer.updateSelectedCrop(map.selectedCrop);
+      existingLayer.updateLegendOptions(map.visualizationSetting.legendOptions);
       existingLayer.changed();
     } else {
-      HibernationVegetableCultivationLayer.createLayer(features, map.selectedCrop).then((layer) => {
+      HibernationVegetableCultivationLayer.createLayer(features, map.selectedCrop, map.visualizationSetting.legendOptions).then((layer) => {
         layerManager.addLayer(layer, "HibernationVegetableCultivationLayer", 1);
       });
     }
-  }, [ready, features, selectedRegion, map.selectedCrop]);
+  }, [ready, features, map.getSnapshot()]);
 
   if (!map) {
     return null;
@@ -76,7 +77,16 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
             <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} setSelectedValues={map.setSelectedCrop} />
           </>
         }
-        visualizationSetting={<HibernationVegetableCultivationLegend features={features} selectedCrop={map.selectedCrop} />}
+        visualizationSetting={
+          <HibernationVegetableCultivationLegend
+            features={features}
+            selectedCrop={map.selectedCrop}
+            legendOptions={map.visualizationSetting.legendOptions}
+            onLevelChange={map.setLegendLevel}
+            onColorChange={map.setLegendColor}
+            onPivotPointsChange={map.setLegendPivotPoints}
+          />
+        }
       />
     </ListManagedBackgroundMap>
   );
