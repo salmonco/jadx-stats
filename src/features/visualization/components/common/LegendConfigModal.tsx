@@ -162,7 +162,10 @@ const LegendConfigModal = ({ isOpen, onClose, level, color, pivotPoints, minValu
                       <div
                         key={index}
                         className={`absolute top-0 h-full w-1 border border-gray-400 bg-white ${canDrag ? "cursor-ew-resize" : "cursor-default"}`}
-                        style={{ left: `${percentage}%`, transform: "translateX(-50%)" }}
+                        style={{
+                          left: index === 0 ? "0%" : index === localPivotPoints.length - 1 ? "100%" : `${percentage}%`,
+                          transform: index === 0 || index === localPivotPoints.length - 1 ? "translateX(0)" : "translateX(-50%)",
+                        }}
                         onMouseDown={canDrag ? (e) => handleMouseDown(index, e) : undefined}
                       />
                     );

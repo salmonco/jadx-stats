@@ -138,15 +138,34 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
       const value = matter.chg_cn / 10_000;
       if (value === undefined || value === null) return "#f9f9f9";
 
-      /** 값을 0-1 범위로 정규화 */
-      const normalizedValue = (value - valueRange.min) / (valueRange.max - valueRange.min);
+      // 사용자 정의 구간이 있는 경우
+      if (legendOptions.pivotPoints.length > 0) {
+        const pivotPoints = legendOptions.pivotPoints;
+        let stepIndex = 0;
 
-      /** 범례 단계에 따른 색상 단계 계산 */
-      const stepSize = 1 / legendOptions.level;
-      const stepIndex = Math.min(Math.floor(normalizedValue / stepSize), legendOptions.level - 1);
-      const stepNormalized = stepIndex / (legendOptions.level - 1);
+        // 값이 어느 구간에 속하는지 찾기
+        for (let i = 0; i < pivotPoints.length - 1; i++) {
+          if (value > pivotPoints[i]) {
+            stepIndex = i;
+          }
+        }
 
-      return colorGradient(stepNormalized);
+        // 높은 값이 진한 색상이 되도록 역순으로 계산
+        const stepNormalized = pivotPoints.length > 1 ? (pivotPoints.length - 2 - stepIndex) / (pivotPoints.length - 2) : 0;
+        return colorGradient(stepNormalized);
+      } else {
+        // 자동 구간인 경우
+        /** 값을 0-1 범위로 정규화 */
+        const normalizedValue = (value - valueRange.min) / (valueRange.max - valueRange.min);
+
+        /** 범례 단계에 따른 색상 단계 계산 */
+        const stepSize = 1 / legendOptions.level;
+        const stepIndex = Math.min(Math.floor(normalizedValue / stepSize), legendOptions.level - 1);
+        // 높은 값이 진한 색상이 되도록 역순으로 계산
+        const stepNormalized = legendOptions.level > 1 ? (legendOptions.level - 1 - stepIndex) / (legendOptions.level - 1) : 0;
+
+        return colorGradient(stepNormalized);
+      }
     };
 
     svg
@@ -281,7 +300,7 @@ export class InnerLayer extends VectorLayer<VectorSource> {
   }
 
   updateLegendOptions(newLegendOptions: LegendOptions) {
-    this.legendOptions = newLegendOptions;
+    this.legendOptions = { ...newLegendOptions };
   }
 
   render(frameState: any) {
