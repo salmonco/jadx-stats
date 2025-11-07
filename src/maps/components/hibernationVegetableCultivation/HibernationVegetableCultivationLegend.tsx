@@ -20,7 +20,7 @@ const COLOR_OPTIONS: { value: LegendColor; baseColor: string }[] = [
   { value: "blue", baseColor: "#3b82f6" },
   { value: "purple", baseColor: "#a855f7" },
   { value: "indigo", baseColor: "#6366f1" },
-  { value: "brown", baseColor: "#a3a3a3" },
+  { value: "brown", baseColor: "#8b4513" },
 ];
 
 const HibernationVegetableCultivationLegend = ({ features, selectedCrop, legendOptions, onLevelChange, onColorChange, onPivotPointsChange }: Props) => {
@@ -108,16 +108,31 @@ const HibernationVegetableCultivationLegend = ({ features, selectedCrop, legendO
 
   return (
     <div className="flex gap-3">
+      {/* 범례 */}
+      <div className="flex-1">
+        <div className="flex flex-col">
+          {steps.map((step, index) => (
+            <div key={index} className="flex items-center">
+              <span className="w-full px-2 py-1 text-right text-xs" style={{ backgroundColor: step.color, color: "white" }}>
+                {step.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* 색상 선택 */}
       <div className="flex flex-col gap-2">
         {COLOR_OPTIONS.map((option) => (
           <button
             key={option.value}
             onClick={() => onColorChange?.(option.value)}
-            className={`h-6 w-6 rounded-full border-2 ${color === option.value ? "border-blue-500" : "border-gray-300"}`}
+            className={`relative h-6 w-6 rounded-full border-2 ${color === option.value ? "border-blue-500" : "border-gray-300"}`}
             style={{ backgroundColor: option.baseColor }}
             title={option.value}
-          />
+          >
+            {color === option.value && <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-white">✓</span>}
+          </button>
         ))}
 
         {/* 범례 설정 버튼 */}
@@ -128,19 +143,6 @@ const HibernationVegetableCultivationLegend = ({ features, selectedCrop, legendO
         >
           범례
         </button>
-      </div>
-
-      {/* 범례 */}
-      <div className="flex-1 rounded-lg border border-[#d9d9d9] bg-[#fff] px-[8px] py-[8px]">
-        <div className="mb-2 text-center text-sm font-medium">범례</div>
-        <div className="flex flex-col gap-1">
-          {steps.map((step, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <div className="h-4 w-6 border border-gray-300" style={{ backgroundColor: step.color }} />
-              <span className="text-xs">{step.value}</span>
-            </div>
-          ))}
-        </div>
       </div>
 
       {onLevelChange && onPivotPointsChange && (
