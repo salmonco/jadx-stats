@@ -5,7 +5,7 @@ import VisualizationSettingContainer from "./VisualizationSettingContainer";
 
 interface Props {
   filter?: React.ReactNode;
-  visualizationSetting?: React.ReactNode;
+  visualizationSetting: React.ReactNode;
 }
 
 const FloatingContainer = ({ filter, visualizationSetting }: Props) => {
@@ -17,13 +17,12 @@ const FloatingContainer = ({ filter, visualizationSetting }: Props) => {
       {filter && <FilterContainer isFixed>{filter}</FilterContainer>}
 
       {/* 비주얼세팅 컨테이너 영역 */}
-      <VisualizationSettingContainer isOpen={isVisualizationOpen}>
-        <div className="flex h-full flex-col">
-          <div className="scrollbar-hide flex-1 overflow-y-auto">{isVisualizationOpen && visualizationSetting}</div>
+      <VisualizationSettingContainer isOpen={isVisualizationOpen}>{isVisualizationOpen && visualizationSetting}</VisualizationSettingContainer>
 
-          <DataVisualizationButton onMenuClick={() => setIsVisualizationOpen((prev) => !prev)} isMenuOpen={isVisualizationOpen} />
-        </div>
-      </VisualizationSettingContainer>
+      {/* 데이터 시각화 버튼 - 절대 위치로 하단 고정 */}
+      <div className="absolute bottom-3 left-0 right-0">
+        <DataVisualizationButton onMenuClick={() => setIsVisualizationOpen((prev) => !prev)} />
+      </div>
     </div>
   );
 };
