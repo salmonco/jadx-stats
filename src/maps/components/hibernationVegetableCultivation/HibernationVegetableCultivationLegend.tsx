@@ -122,7 +122,7 @@ const HibernationVegetableCultivationLegend = ({ features, selectedCrop, legendO
       </div>
 
       {/* 색상 선택 */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         {COLOR_OPTIONS.map((option) => (
           <button
             key={option.value}
@@ -138,7 +138,7 @@ const HibernationVegetableCultivationLegend = ({ features, selectedCrop, legendO
         {/* 범례 설정 버튼 */}
         <button
           onClick={() => setIsModalOpen(true)}
-          className="mt-2 flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 text-xs text-white hover:bg-gray-600"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 text-xs text-white hover:bg-gray-600"
           title="범례 설정"
         >
           범례
