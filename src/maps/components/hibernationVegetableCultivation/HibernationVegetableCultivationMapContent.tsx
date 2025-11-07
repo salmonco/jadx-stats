@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
-import FilterContainer from "~/features/visualization/components/common/FilterContainer";
+import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
 import YearFilter from "~/features/visualization/components/common/YearFilter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
@@ -68,12 +68,16 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
 
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
-      <FilterContainer isFixed>
-        <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
-        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
-        <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} setSelectedValues={map.setSelectedCrop} />
-        <HibernationVegetableCultivationLegend features={features} selectedCrop={map.selectedCrop} />
-      </FilterContainer>
+      <FloatingContainer
+        filter={
+          <>
+            <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
+            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
+            <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} setSelectedValues={map.setSelectedCrop} />
+          </>
+        }
+        visualizationSetting={<HibernationVegetableCultivationLegend features={features} selectedCrop={map.selectedCrop} />}
+      />
     </ListManagedBackgroundMap>
   );
 };
