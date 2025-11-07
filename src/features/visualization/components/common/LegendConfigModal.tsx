@@ -28,6 +28,11 @@ const LegendConfigModal = ({ isOpen, onClose, level, color, pivotPoints, minValu
       setIsAuto(pivotPoints.length === 0);
       if (pivotPoints.length > 0) {
         setLocalPivotPoints([...pivotPoints]);
+      } else {
+        // 자동 모드일 때도 현재 level에 맞는 구간 생성
+        const stepSize = (maxValue - minValue) / level;
+        const points = Array.from({ length: level + 1 }, (_, i) => minValue + i * stepSize);
+        setLocalPivotPoints(points);
       }
     }
   }, [isOpen, level, pivotPoints]);
@@ -43,7 +48,7 @@ const LegendConfigModal = ({ isOpen, onClose, level, color, pivotPoints, minValu
         setLocalPivotPoints(points);
       }
     }
-  }, [isAuto, localLevel, minValue, maxValue]);
+  }, [isAuto, localLevel]);
 
   const colorGradient = getColorGradient(color);
 
@@ -98,6 +103,7 @@ const LegendConfigModal = ({ isOpen, onClose, level, color, pivotPoints, minValu
   };
 
   const handleApply = () => {
+    onLevelChange(localLevel);
     onPivotPointsChange(isAuto ? [] : localPivotPoints);
     onClose();
   };
