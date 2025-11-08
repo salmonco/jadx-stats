@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LABEL_TYPES, LabelOptions } from "~/maps/constants/visualizationSetting";
 
 interface Params {
@@ -13,6 +13,14 @@ export const useLabelSettings = ({ labelOptions, setLabelOptions }: Params) => {
     if (labelOptions.isShowRegion) labels.push(LABEL_TYPES.지역);
     return labels;
   });
+
+  // labelOptions가 외부에서 변경될 때 selectedLabels 동기화
+  useEffect(() => {
+    const labels = [];
+    if (labelOptions.isShowValue) labels.push(LABEL_TYPES.값);
+    if (labelOptions.isShowRegion) labels.push(LABEL_TYPES.지역);
+    setSelectedLabels(labels);
+  }, [labelOptions]);
 
   const labelTypes = Object.entries(LABEL_TYPES).map(([label, id]) => ({ id, label }));
 

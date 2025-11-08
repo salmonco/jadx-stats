@@ -8,9 +8,10 @@ interface Props {
   visualizationSetting: React.ReactNode;
   setLabelOptions: (isShowValue: boolean, isShowRegion: boolean) => void;
   labelOptions: { isShowValue: boolean; isShowRegion: boolean };
+  resetVisualizationSetting: () => void;
 }
 
-const FloatingContainer = ({ filter, visualizationSetting, setLabelOptions, labelOptions }: Props) => {
+const FloatingContainer = ({ filter, visualizationSetting, setLabelOptions, labelOptions, resetVisualizationSetting }: Props) => {
   const [isVisualizationOpen, setIsVisualizationOpen] = useState(false);
 
   return (
@@ -23,7 +24,12 @@ const FloatingContainer = ({ filter, visualizationSetting, setLabelOptions, labe
 
       {/* 데이터 시각화 버튼 - 절대 위치로 하단 고정 */}
       <div className="absolute bottom-3 left-0 right-0">
-        <DataVisualizationButton onMenuClick={() => setIsVisualizationOpen((prev) => !prev)} setLabelOptions={setLabelOptions} labelOptions={labelOptions} />
+        <DataVisualizationButton
+          onMenuClick={() => setIsVisualizationOpen((prev) => !prev)}
+          setLabelOptions={setLabelOptions}
+          labelOptions={labelOptions}
+          resetVisualizationSetting={resetVisualizationSetting}
+        />
       </div>
     </div>
   );

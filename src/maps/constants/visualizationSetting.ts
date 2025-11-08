@@ -34,6 +34,14 @@ export const DEFAULT_LABEL_OPTIONS: LabelOptions = {
 /** 투명도 기본값 */
 export const DEFAULT_TRANSPARENCY = 0.8;
 
+/** 시각화 설정 기본값 */
+export const DEFAULT_VISUALIZATION_SETTING: VisualizationSetting = {
+  legendOptions: DEFAULT_LEGEND_OPTIONS,
+  visualType: DEFAULT_VISUAL_TYPE,
+  labelOptions: DEFAULT_LABEL_OPTIONS,
+  transparency: DEFAULT_TRANSPARENCY,
+};
+
 export const SETTING_BUTTONS = {
   타입: "type",
   레이블: "label",

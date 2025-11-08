@@ -1,16 +1,17 @@
 import { useRef, useState } from "react";
 import { useLabelSettings } from "~/features/visualization/hooks/useLabelSettings";
-import { SETTING_BUTTONS } from "~/maps/constants/visualizationSetting";
+import { SETTING_BUTTONS, SettingButtonId } from "~/maps/constants/visualizationSetting";
 
 interface Props {
   onMenuClick: () => void;
   setLabelOptions: (isShowValue: boolean, isShowRegion: boolean) => void;
   labelOptions: { isShowValue: boolean; isShowRegion: boolean };
+  resetVisualizationSetting: () => void;
 }
 
-const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions }: Props) => {
+const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, resetVisualizationSetting }: Props) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
+  const [openSubMenu, setOpenSubMenu] = useState<SettingButtonId | null>(null);
   const [selectedVisualType, setSelectedVisualType] = useState("color");
 
   const { labelTypes, onClickLabelItem, checkIsLabelSelected } = useLabelSettings({
@@ -27,13 +28,13 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions }:
     { id: "color", label: "색상" },
   ];
 
-  const handleButtonClick = (buttonId: string) => {
-    if (buttonId === "reset") {
-      // 초기화 로직
+  const handleButtonClick = (buttonId: SettingButtonId) => {
+    if (buttonId === SETTING_BUTTONS.초기화) {
+      resetVisualizationSetting();
       return;
     }
 
-    if (buttonId === "transparency") {
+    if (buttonId === SETTING_BUTTONS["투명도 설정"]) {
       // 투명도 설정 창 토글
       return;
     }
@@ -42,28 +43,28 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions }:
     setOpenSubMenu(openSubMenu === buttonId ? null : buttonId);
   };
 
-  const renderSubMenu = (buttonId: string) => {
+  const renderSubMenu = (buttonId: SettingButtonId) => {
     if (openSubMenu !== buttonId) return null;
 
     let items = [];
-    if (buttonId === "type") {
+    if (buttonId === SETTING_BUTTONS.타입) {
       items = visualTypes;
-    } else if (buttonId === "label") {
+    } else if (buttonId === SETTING_BUTTONS.레이블) {
       items = labelTypes;
     }
 
     const handleItemClick = (itemId: string) => {
-      if (buttonId === "type") {
+      if (buttonId === SETTING_BUTTONS.타입) {
         setSelectedVisualType(itemId);
-      } else if (buttonId === "label") {
+      } else if (buttonId === SETTING_BUTTONS.레이블) {
         onClickLabelItem(itemId);
       }
     };
 
     const isSelected = (itemId: string) => {
-      if (buttonId === "type") {
+      if (buttonId === SETTING_BUTTONS.타입) {
         return selectedVisualType === itemId;
-      } else if (buttonId === "label") {
+      } else if (buttonId === SETTING_BUTTONS.레이블) {
         return checkIsLabelSelected(itemId);
       }
       return false;
