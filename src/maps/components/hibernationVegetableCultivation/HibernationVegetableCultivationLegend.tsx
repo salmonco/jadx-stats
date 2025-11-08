@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import LegendConfigModal from "~/features/visualization/components/common/LegendConfigModal";
-import { HibernationVegetableCultivationFeatureCollection } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
+import { HibernationFeatureCollection } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
 import { CropType } from "~/maps/constants/hibernationVegetableCultivation";
 import type { LegendColor, LegendOptions } from "~/maps/constants/visualizationSetting";
 import { getColorGradient } from "~/utils/colorGradient";
 
 interface Props {
-  features: HibernationVegetableCultivationFeatureCollection | null;
+  features: HibernationFeatureCollection | null;
   selectedCrop: CropType;
   legendOptions: LegendOptions;
   onLevelChange?: (level: number) => void;
@@ -73,7 +73,7 @@ const HibernationVegetableCultivationLegend = ({ features, selectedCrop, legendO
 
         return {
           value: rangeText,
-          color: colorGradient(i / (actualLevel - 1)),
+          color: colorGradient(1 - i / (actualLevel - 1)),
           step: actualLevel - i,
         };
       });
@@ -99,7 +99,7 @@ const HibernationVegetableCultivationLegend = ({ features, selectedCrop, legendO
 
         return {
           value: rangeText,
-          color: colorGradient(i / (level - 1)),
+          color: colorGradient(1 - i / (level - 1)),
           step: level - i,
         };
       });

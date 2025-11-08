@@ -5,11 +5,8 @@ import FloatingContainer from "~/features/visualization/components/common/Floati
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
 import YearFilter from "~/features/visualization/components/common/YearFilter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
-import {
-  HibernationVegetableCultivationFeatureCollection,
-  HibernationVegetableCultivationLayer,
-  InnerLayer,
-} from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
+import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
+import { HibernationVegetableCultivationLayer } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
 import HibernationVegetableCultivationMap from "~/maps/classes/HibernationVegetableCultivationMap";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import HibernationVegetableCultivationLegend from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationLegend";
@@ -30,7 +27,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
 
   const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
-  const { data: features } = useQuery<HibernationVegetableCultivationFeatureCollection>({
+  const { data: features } = useQuery({
     queryKey: ["hibernationVegetableCultivationFeatures", map.selectedTargetYear, selectedRegion.구분],
     queryFn: () => visualizationApi.getHinatVgtblCltvarDclrFile(map.selectedTargetYear, map.selectedTargetYear - 1, selectedRegion.구분),
     enabled: !!ready,
@@ -40,28 +37,28 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
     map.setRegionFilterSetting(selectedRegion);
   }, [selectedRegion]);
 
-  useEffect(() => {
-    if (!ready || !features) return;
+  const filteredFeatures = features
+    ? {
+        ...features,
+        features: features.features.filter(filterFeatures),
+      }
+    : null;
 
-    const filtered = {
-      ...features,
-      features: features.features.filter(filterFeatures),
-    };
+  const createHibernationLayer = async (features: any, visualizationSetting: any) => {
+    return HibernationVegetableCultivationLayer.createLayer(features, visualizationSetting, map.selectedCrop);
+  };
 
-    const layerWrapper = layerManager.getLayer("HibernationVegetableCultivationLayer");
-    const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
-
-    if (existingLayer) {
-      existingLayer.updateFeatures(filtered);
-      existingLayer.updateSelectedCrop(map.selectedCrop);
-      existingLayer.updateVisualizationSetting(map.visualizationSetting);
-      existingLayer.changed();
-    } else {
-      HibernationVegetableCultivationLayer.createLayer(features, map.selectedCrop, map.visualizationSetting).then((layer) => {
-        layerManager.addLayer(layer, "HibernationVegetableCultivationLayer", 1);
-      });
-    }
-  }, [ready, features, map.getSnapshot()]);
+  useVisualizationLayer({
+    ready,
+    features: filteredFeatures,
+    layerManager,
+    layerName: "HibernationVegetableCultivationLayer",
+    createLayer: createHibernationLayer,
+    map,
+    updateProps: {
+      selectedCrop: map.selectedCrop,
+    },
+  });
 
   if (!map) {
     return null;
