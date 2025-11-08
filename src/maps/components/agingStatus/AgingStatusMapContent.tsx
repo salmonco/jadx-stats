@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import FilterContainer from "~/features/visualization/components/common/FilterContainer";
+import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
-import { AgingStatusLayer, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
+import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
+import { AgingStatusLayer } from "~/features/visualization/layers/AgingStatusLayer";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import AgingStatusLegend from "~/maps/components/agingStatus/AgingStatusLegend";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
@@ -34,25 +35,27 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
     map.setRegionFilterSetting(selectedRegion);
   }, [selectedRegion]);
 
-  useEffect(() => {
-    if (!ready || !features) return;
+  const filteredFeatures = features
+    ? {
+        ...features,
+        features: features.features.filter(filterFeatures),
+      }
+    : null;
 
-    const filtered = {
-      ...features,
-      features: features.features.filter(filterFeatures),
-    };
+  // AgingStatusLayer.createLayer는 (features, visualizationSetting) 파라미터를 받음
+  const createAgingStatusLayer = async (features: any, visualizationSetting: any) => {
+    return AgingStatusLayer.createLayer(features, visualizationSetting);
+  };
 
-    const layerWrapper = layerManager.getLayer("agingStatusLayer");
-    const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
-
-    if (existingLayer && typeof existingLayer.updateFeatures === "function") {
-      existingLayer.updateFeatures(filtered);
-    } else {
-      AgingStatusLayer.createLayer(features).then((layer) => {
-        layerManager.addLayer(layer, "agingStatusLayer", 1);
-      });
-    }
-  }, [ready, features, selectedRegion]);
+  useVisualizationLayer({
+    ready,
+    features: filteredFeatures,
+    layerManager,
+    layerName: "agingStatusLayer",
+    createLayer: createAgingStatusLayer,
+    map,
+    dependencies: [selectedRegion, map.visualizationSetting],
+  });
 
   if (!map) {
     return null;
@@ -60,10 +63,23 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
 
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
-      <FilterContainer isFixed>
-        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
-        <AgingStatusLegend features={features} />
-      </FilterContainer>
+      <FloatingContainer
+        filter={<RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />}
+        visualizationSetting={
+          <AgingStatusLegend
+            features={features}
+            legendOptions={map.visualizationSetting.legendOptions}
+            onLevelChange={map.setLegendLevel}
+            onColorChange={map.setLegendColor}
+            onPivotPointsChange={map.setLegendPivotPoints}
+          />
+        }
+        setLabelOptions={map.setLabelOptions}
+        labelOptions={map.visualizationSetting.labelOptions}
+        resetVisualizationSetting={map.resetVisualizationSetting}
+        setOpacity={map.setOpacity}
+        opacity={map.visualizationSetting.opacity}
+      />
     </ListManagedBackgroundMap>
   );
 };

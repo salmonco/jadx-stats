@@ -3,7 +3,6 @@ import HibernationVegetableCultivationChart from "~/maps/components/hibernationV
 import HibernationVegetableCultivationMapContent from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationMapContent";
 import { CropType, DEFAULT_CROP, DEFAULT_TARGET_YEAR } from "~/maps/constants/hibernationVegetableCultivation";
 import { MapOptions } from "~/maps/constants/mapOptions";
-import type { LegendColor } from "~/maps/constants/visualizationSetting";
 
 class HibernationVegetableCultivationMap extends CommonBackgroundMap {
   #selectedTargetYear = DEFAULT_TARGET_YEAR;
@@ -17,9 +16,6 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
     this.getSnapshot = this.getSnapshot.bind(this);
     this.setSelectedTargetYear = this.setSelectedTargetYear.bind(this);
     this.setSelectedCrop = this.setSelectedCrop.bind(this);
-    this.setLegendLevel = this.setLegendLevel.bind(this);
-    this.setLegendColor = this.setLegendColor.bind(this);
-    this.setLegendPivotPoints = this.setLegendPivotPoints.bind(this);
   }
 
   getShareableState() {
@@ -80,21 +76,6 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
    */
   setSelectedCrop(crop: CropType) {
     this.#selectedCrop = crop;
-    this.notifyListeners();
-  }
-
-  setLegendLevel(level: number) {
-    this.visualizationSetting.legendOptions.level = level;
-    this.notifyListeners();
-  }
-
-  setLegendColor(color: LegendColor) {
-    this.visualizationSetting.legendOptions.color = color;
-    this.notifyListeners();
-  }
-
-  setLegendPivotPoints(pivotPoints: number[]) {
-    this.visualizationSetting.legendOptions.pivotPoints = pivotPoints;
     this.notifyListeners();
   }
 }
