@@ -1,6 +1,4 @@
-import * as d3 from "d3";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
-import { getColorGradient } from "~/utils/colorGradient";
 import { formatAreaHa } from "~/utils/format";
 import { BaseFeature, BaseFeatureCollection, BaseVisualizationLayer } from "./BaseVisualizationLayer";
 
@@ -33,55 +31,10 @@ export class HibernationVegetableCultivationLayer extends BaseVisualizationLayer
     (this.layer as any)?.changed();
   }
 
-  public createColorScale(
-    features: HibernationFeatureCollection,
-    visualizationSetting: VisualizationSetting
-  ): d3.ScaleSequential<string> | d3.ScaleThreshold<number, string> {
-    const values = features.features
-      .map((d) => {
-        const matter = d.properties.area_chg.chg_mttr.find((m) => m.crop_nm === this.selectedCrop);
-        return matter ? matter.chg_cn / 10_000 : null;
-      })
-      .filter((v) => v != null) as number[];
-
-    const { legendOptions } = visualizationSetting;
-    const [minValue, maxValue] = values.length > 0 ? (d3.extent(values) as [number, number]) : [0, 100];
-    const colorGradient = getColorGradient(legendOptions.color);
-
-    if (legendOptions.pivotPoints && legendOptions.pivotPoints.length > 1) {
-      const pivotPoints = legendOptions.pivotPoints.slice(1, -1);
-      const numSteps = pivotPoints.length + 1;
-      const colors = Array.from({ length: numSteps }, (_, i) => colorGradient(1 - i / (numSteps - 1)));
-
-      return d3.scaleThreshold<number, string>().domain(pivotPoints).range(colors);
-    } else {
-      return d3.scaleSequential(colorGradient).domain([minValue, maxValue]);
-    }
-  }
-
-  public getAreaFill(feature: HibernationFeature, colorScale: (value: number) => string): string {
-    const matter = feature.properties.area_chg.chg_mttr.find((m: AreaChange) => m.crop_nm === this.selectedCrop);
-    if (!matter) return "#ccc";
-
-    const value = matter.chg_cn / 10_000;
-    return colorScale(value);
-  }
-
-  public getLabels(feature: HibernationFeature, labelOptions: any): string[] {
-    const labels = [];
-
-    if (labelOptions.isShowRegion) {
-      labels.push(feature.properties.vrbs_nm);
-    }
-
-    if (labelOptions.isShowValue) {
-      const matter = feature.properties.area_chg.chg_mttr.find((m: AreaChange) => m.crop_nm === this.selectedCrop);
-      if (matter) {
-        labels.push((matter.chg_cn / 10_000).toFixed(1));
-      }
-    }
-
-    return labels;
+  public getValue(feature: HibernationFeature): number | null {
+    const matter = feature.properties.area_chg.chg_mttr.find((m) => m.crop_nm === this.selectedCrop);
+    if (!matter) return null;
+    return matter.chg_cn / 10_000;
   }
 
   public getTooltipContent(feature: HibernationFeature): string {

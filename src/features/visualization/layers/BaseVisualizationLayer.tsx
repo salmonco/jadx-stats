@@ -7,6 +7,7 @@ import { createRoot, Root } from "react-dom/client";
 import { FeatureCollection, Geometry } from "~/maps/classes/interfaces";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import BaseLayer from "~/maps/layers/BaseLayer";
+import { getColorGradient } from "~/utils/colorGradient";
 
 interface BaseProperties {
   FID: number;
@@ -251,11 +252,49 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
     (this as any).layer = layer;
   }
 
-  public abstract createColorScale(
+  public abstract getValue(feature: BaseFeature<T>): number | null;
+  public abstract getTooltipContent(feature: BaseFeature<T>): string;
+
+  public createColorScale(
     features: BaseFeatureCollection<T>,
     visualizationSetting: VisualizationSetting
-  ): d3.ScaleSequential<string> | d3.ScaleThreshold<number, string>;
-  public abstract getAreaFill(feature: BaseFeature<T>, colorScale: (value: number) => string): string;
-  public abstract getLabels(feature: BaseFeature<T>, labelOptions: any): string[];
-  public abstract getTooltipContent(feature: BaseFeature<T>): string;
+  ): d3.ScaleSequential<string> | d3.ScaleThreshold<number, string> {
+    const values = features.features.map((d) => this.getValue(d)).filter((v): v is number => v != null && typeof v === "number");
+
+    const { legendOptions } = visualizationSetting;
+    const [minValue, maxValue] = values.length > 0 ? (d3.extent(values) as [number, number]) : [0, 100];
+    const colorGradient = getColorGradient(legendOptions.color);
+
+    if (legendOptions.pivotPoints && legendOptions.pivotPoints.length > 1) {
+      const pivotPoints = legendOptions.pivotPoints.slice(1, -1);
+      const numSteps = pivotPoints.length + 1;
+      const colors = Array.from({ length: numSteps }, (_, i) => colorGradient(1 - i / (numSteps - 1)));
+
+      return d3.scaleThreshold<number, string>().domain(pivotPoints).range(colors);
+    } else {
+      return d3.scaleSequential(colorGradient).domain([minValue, maxValue]);
+    }
+  }
+
+  public getAreaFill(feature: BaseFeature<T>, colorScale: (value: number) => string): string {
+    const value = this.getValue(feature);
+    return value != null ? colorScale(value) : "#ccc";
+  }
+
+  public getLabels(feature: BaseFeature<T>, labelOptions: any): string[] {
+    const labels = [];
+
+    if (labelOptions.isShowRegion) {
+      labels.push(feature.properties.vrbs_nm);
+    }
+
+    if (labelOptions.isShowValue) {
+      const value = this.getValue(feature);
+      if (value != null) {
+        labels.push(value.toFixed(1));
+      }
+    }
+
+    return labels;
+  }
 }
