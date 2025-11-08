@@ -7,11 +7,10 @@ interface Params {
   layerName: string;
   createLayer: (features: any, visualizationSetting: any) => Promise<any>;
   map: any;
-  dependencies?: any[];
   updateProps?: Record<string, any>;
 }
 
-export const useVisualizationLayer = ({ ready, features, layerManager, layerName, createLayer, map, dependencies = [], updateProps }: Params) => {
+export const useVisualizationLayer = ({ ready, features, layerManager, layerName, createLayer, map, updateProps }: Params) => {
   useEffect(() => {
     if (!ready || !features) return;
 
@@ -43,5 +42,5 @@ export const useVisualizationLayer = ({ ready, features, layerManager, layerName
           console.error(`useVisualizationLayer [${layerName}]: 레이어 생성 실패`, error);
         });
     }
-  }, [ready, features, map.getSnapshot(), ...dependencies]);
+  }, [ready, features, map.getSnapshot()]);
 };

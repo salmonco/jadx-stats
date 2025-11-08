@@ -54,7 +54,6 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
     layerName: "agingStatusLayer",
     createLayer: createAgingStatusLayer,
     map,
-    dependencies: [selectedRegion, map.visualizationSetting],
   });
 
   if (!map) {
