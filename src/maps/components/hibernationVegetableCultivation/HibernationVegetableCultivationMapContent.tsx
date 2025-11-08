@@ -54,10 +54,10 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
     if (existingLayer) {
       existingLayer.updateFeatures(filtered);
       existingLayer.updateSelectedCrop(map.selectedCrop);
-      existingLayer.updateLegendOptions(map.visualizationSetting.legendOptions);
+      existingLayer.updateVisualizationSetting(map.visualizationSetting);
       existingLayer.changed();
     } else {
-      HibernationVegetableCultivationLayer.createLayer(features, map.selectedCrop, map.visualizationSetting.legendOptions).then((layer) => {
+      HibernationVegetableCultivationLayer.createLayer(features, map.selectedCrop, map.visualizationSetting).then((layer) => {
         layerManager.addLayer(layer, "HibernationVegetableCultivationLayer", 1);
       });
     }
@@ -87,6 +87,8 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
             onPivotPointsChange={map.setLegendPivotPoints}
           />
         }
+        setLabelOptions={map.setLabelOptions}
+        labelOptions={map.visualizationSetting.labelOptions}
       />
     </ListManagedBackgroundMap>
   );

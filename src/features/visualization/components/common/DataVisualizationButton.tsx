@@ -1,19 +1,90 @@
 import { useRef, useState } from "react";
+import { useLabelSettings } from "~/features/visualization/hooks/useLabelSettings";
+import { SETTING_BUTTONS } from "~/maps/constants/visualizationSetting";
 
 interface Props {
   onMenuClick: () => void;
+  setLabelOptions: (isShowValue: boolean, isShowRegion: boolean) => void;
+  labelOptions: { isShowValue: boolean; isShowRegion: boolean };
 }
 
-const DataVisualizationButton = ({ onMenuClick }: Props) => {
+const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions }: Props) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
+  const [selectedVisualType, setSelectedVisualType] = useState("color");
+
+  const { labelTypes, onClickLabelItem, checkIsLabelSelected } = useLabelSettings({
+    labelOptions,
+    setLabelOptions,
+  });
+
   const buttonRef = useRef<HTMLDivElement>(null);
 
-  const settingButtons = [
-    { id: "type", label: "타입" },
-    { id: "label", label: "레이블" },
-    { id: "reset", label: "초기화" },
-    { id: "transparency", label: "투명도 설정" },
+  const visualTypes = [
+    { id: "heat", label: "히트" },
+    { id: "bubble", label: "버블" },
+    { id: "dot", label: "점" },
+    { id: "color", label: "색상" },
   ];
+
+  const handleButtonClick = (buttonId: string) => {
+    if (buttonId === "reset") {
+      // 초기화 로직
+      return;
+    }
+
+    if (buttonId === "transparency") {
+      // 투명도 설정 창 토글
+      return;
+    }
+
+    // 타입, 레이블 버튼은 서브메뉴 토글
+    setOpenSubMenu(openSubMenu === buttonId ? null : buttonId);
+  };
+
+  const renderSubMenu = (buttonId: string) => {
+    if (openSubMenu !== buttonId) return null;
+
+    let items = [];
+    if (buttonId === "type") {
+      items = visualTypes;
+    } else if (buttonId === "label") {
+      items = labelTypes;
+    }
+
+    const handleItemClick = (itemId: string) => {
+      if (buttonId === "type") {
+        setSelectedVisualType(itemId);
+      } else if (buttonId === "label") {
+        onClickLabelItem(itemId);
+      }
+    };
+
+    const isSelected = (itemId: string) => {
+      if (buttonId === "type") {
+        return selectedVisualType === itemId;
+      } else if (buttonId === "label") {
+        return checkIsLabelSelected(itemId);
+      }
+      return false;
+    };
+
+    return (
+      <div className="absolute bottom-14 left-1/2 flex -translate-x-1/2 transform flex-col gap-2">
+        {items.map((item) => (
+          <button
+            key={item.id}
+            className={`flex h-10 w-10 items-center justify-center rounded-full text-xs text-white shadow-lg transition-transform hover:scale-105 ${
+              isSelected(item.id) ? "bg-blue-500" : "bg-gray-400"
+            }`}
+            onClick={() => handleItemClick(item.id)}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -39,14 +110,16 @@ const DataVisualizationButton = ({ onMenuClick }: Props) => {
       {/* 설정 버튼들 */}
       {isSettingsOpen && (
         <div className="absolute bottom-0 left-[240px] flex gap-2">
-          {settingButtons.map((button) => (
-            <button
-              key={button.id}
-              className="flex h-16 w-16 items-center justify-center rounded-full border border-gray-300 bg-white text-xs font-medium text-gray-700 shadow-lg hover:shadow-xl"
-              onClick={() => console.log(`${button.label} clicked`)}
-            >
-              {button.label}
-            </button>
+          {Object.entries(SETTING_BUTTONS).map(([label, id]) => (
+            <div key={id} className="relative">
+              <button
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-700 text-sm text-white shadow-lg transition-transform hover:scale-105"
+                onClick={() => handleButtonClick(id)}
+              >
+                {label}
+              </button>
+              {renderSubMenu(id)}
+            </div>
           ))}
         </div>
       )}

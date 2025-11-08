@@ -34,6 +34,20 @@ export const DEFAULT_LABEL_OPTIONS: LabelOptions = {
 /** 투명도 기본값 */
 export const DEFAULT_TRANSPARENCY = 0.8;
 
+export const SETTING_BUTTONS = {
+  타입: "type",
+  레이블: "label",
+  초기화: "reset",
+  "투명도 설정": "transparency",
+} as const;
+
+export const LABEL_TYPES = {
+  값: "value",
+  지역: "region",
+} as const;
+
+export type SettingButtonId = (typeof SETTING_BUTTONS)[keyof typeof SETTING_BUTTONS];
+
 export type LegendOptions = {
   level: number;
   color: LegendColor;
@@ -45,7 +59,7 @@ export type LegendColor = "red" | "green" | "blue" | "purple" | "indigo" | "brow
 
 type VisualType = "color" | "dot" | "bubble" | "hit";
 
-type LabelOptions = {
+export type LabelOptions = {
   isShowValue: boolean;
   isShowRegion: boolean;
 };

@@ -6,9 +6,11 @@ import VisualizationSettingContainer from "./VisualizationSettingContainer";
 interface Props {
   filter?: React.ReactNode;
   visualizationSetting: React.ReactNode;
+  setLabelOptions: (isShowValue: boolean, isShowRegion: boolean) => void;
+  labelOptions: { isShowValue: boolean; isShowRegion: boolean };
 }
 
-const FloatingContainer = ({ filter, visualizationSetting }: Props) => {
+const FloatingContainer = ({ filter, visualizationSetting, setLabelOptions, labelOptions }: Props) => {
   const [isVisualizationOpen, setIsVisualizationOpen] = useState(false);
 
   return (
@@ -21,7 +23,7 @@ const FloatingContainer = ({ filter, visualizationSetting }: Props) => {
 
       {/* 데이터 시각화 버튼 - 절대 위치로 하단 고정 */}
       <div className="absolute bottom-3 left-0 right-0">
-        <DataVisualizationButton onMenuClick={() => setIsVisualizationOpen((prev) => !prev)} />
+        <DataVisualizationButton onMenuClick={() => setIsVisualizationOpen((prev) => !prev)} setLabelOptions={setLabelOptions} labelOptions={labelOptions} />
       </div>
     </div>
   );
