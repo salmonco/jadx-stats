@@ -1,18 +1,22 @@
 import { useRef, useState } from "react";
 import { useLabelSettings } from "~/features/visualization/hooks/useLabelSettings";
 import { SETTING_BUTTONS, SettingButtonId } from "~/maps/constants/visualizationSetting";
+import OpacityModal from "./OpacityModal";
 
 interface Props {
   onMenuClick: () => void;
   setLabelOptions: (isShowValue: boolean, isShowRegion: boolean) => void;
   labelOptions: { isShowValue: boolean; isShowRegion: boolean };
   resetVisualizationSetting: () => void;
+  setOpacity: (opacity: number) => void;
+  opacity: number;
 }
 
-const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, resetVisualizationSetting }: Props) => {
+const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, resetVisualizationSetting, setOpacity, opacity }: Props) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [openSubMenu, setOpenSubMenu] = useState<SettingButtonId | null>(null);
   const [selectedVisualType, setSelectedVisualType] = useState("color");
+  const [isOpacityModalOpen, setIsOpacityModalOpen] = useState(false);
 
   const { labelTypes, onClickLabelItem, checkIsLabelSelected } = useLabelSettings({
     labelOptions,
@@ -35,7 +39,7 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
     }
 
     if (buttonId === SETTING_BUTTONS["투명도 설정"]) {
-      // 투명도 설정 창 토글
+      setIsOpacityModalOpen(true);
       return;
     }
 
@@ -124,6 +128,8 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
           ))}
         </div>
       )}
+
+      <OpacityModal isOpen={isOpacityModalOpen} onClose={() => setIsOpacityModalOpen(false)} opacity={opacity} onApply={setOpacity} />
     </>
   );
 };

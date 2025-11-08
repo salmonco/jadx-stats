@@ -55,6 +55,7 @@ class CommonBackgroundMap {
     this.setRegionFilterSetting = this.setRegionFilterSetting.bind(this);
     this.setMapType = this.setMapType.bind(this);
     this.setLabelOptions = this.setLabelOptions.bind(this);
+    this.setOpacity = this.setOpacity.bind(this);
     this.resetVisualizationSetting = this.resetVisualizationSetting.bind(this);
   }
 
@@ -185,6 +186,15 @@ class CommonBackgroundMap {
   setLabelOptions(isShowValue: boolean, isShowRegion: boolean) {
     this.#visualizationSetting.labelOptions.isShowValue = isShowValue;
     this.#visualizationSetting.labelOptions.isShowRegion = isShowRegion;
+    this.notifyListeners();
+  }
+
+  /**
+   * 투명도 설정
+   * @param opacity - 투명도 값 (0-1)
+   */
+  setOpacity(opacity: number) {
+    this.#visualizationSetting.opacity = opacity;
     this.notifyListeners();
   }
 

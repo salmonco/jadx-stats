@@ -9,9 +9,11 @@ interface Props {
   setLabelOptions: (isShowValue: boolean, isShowRegion: boolean) => void;
   labelOptions: { isShowValue: boolean; isShowRegion: boolean };
   resetVisualizationSetting: () => void;
+  setOpacity: (opacity: number) => void;
+  opacity: number;
 }
 
-const FloatingContainer = ({ filter, visualizationSetting, setLabelOptions, labelOptions, resetVisualizationSetting }: Props) => {
+const FloatingContainer = ({ filter, visualizationSetting, setLabelOptions, labelOptions, resetVisualizationSetting, setOpacity, opacity }: Props) => {
   const [isVisualizationOpen, setIsVisualizationOpen] = useState(false);
 
   return (
@@ -29,6 +31,8 @@ const FloatingContainer = ({ filter, visualizationSetting, setLabelOptions, labe
           setLabelOptions={setLabelOptions}
           labelOptions={labelOptions}
           resetVisualizationSetting={resetVisualizationSetting}
+          setOpacity={setOpacity}
+          opacity={opacity}
         />
       </div>
     </div>
