@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 import CropFilter from "~/features/visualization/components/common/CropFilter";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
@@ -44,10 +43,6 @@ const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
     enabled: !!ready,
   });
 
-  useEffect(() => {
-    map.setRegionFilterSetting(selectedRegion);
-  }, [selectedRegion]);
-
   const filteredFeatures = features
     ? {
         ...features,
@@ -80,7 +75,7 @@ const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
       <FloatingContainer
         filter={
           <>
-            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
+            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
             <CropFilter cropList={cropList} map={map} />
           </>
         }

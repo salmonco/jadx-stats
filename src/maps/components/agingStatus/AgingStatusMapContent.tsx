@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
@@ -31,10 +30,6 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
     retry: false,
   });
 
-  useEffect(() => {
-    map.setRegionFilterSetting(selectedRegion);
-  }, [selectedRegion]);
-
   const filteredFeatures = features
     ? {
         ...features,
@@ -42,7 +37,6 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
       }
     : null;
 
-  // AgingStatusLayer.createLayer는 (features, visualizationSetting) 파라미터를 받음
   const createAgingStatusLayer = async (features: any, visualizationSetting: any) => {
     return AgingStatusLayer.createLayer(features, visualizationSetting);
   };
@@ -63,7 +57,7 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <FloatingContainer
-        filter={<RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />}
+        filter={<RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />}
         visualizationSetting={
           <AgingStatusLegend
             features={features}
