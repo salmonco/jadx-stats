@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import CropFilter from "~/features/visualization/components/common/CropFilter";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
-import ItemDepthScrollSelector from "~/features/visualization/components/common/ItemDepthScrollSelector";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
 import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
@@ -27,7 +27,7 @@ const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
 
   const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
-  const { data: varietyList } = useQuery({
+  const { data: cropList } = useQuery({
     queryKey: ["mandarinVarietyList"],
     queryFn: () => visualizationApi.getMandarinVarietyList(),
     retry: 1,
@@ -81,21 +81,7 @@ const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
         filter={
           <>
             <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
-            <ItemDepthScrollSelector
-              optionGroups={varietyList ?? []}
-              onSelectionChange={(group, first, second) => {
-                map.setSelectedCropPummok(group);
-                map.setSelectedCropGroup(first);
-
-                let secondVal = second;
-                if (second === "유라실생") secondVal = "YN-26";
-                if (second === "레드향") secondVal = "감평";
-                if (second === "천혜향") secondVal = "세토카";
-                if (second === "한라봉") secondVal = "부지화";
-
-                map.setSelectedCropDetailGroup(secondVal);
-              }}
-            />
+            <CropFilter cropList={cropList} map={map} />
           </>
         }
         visualizationSetting={
