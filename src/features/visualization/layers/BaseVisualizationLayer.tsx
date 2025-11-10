@@ -278,7 +278,7 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
 
   public getAreaFill(feature: BaseFeature<T>, colorScale: (value: number) => string): string {
     const value = this.getValue(feature);
-    return value != null ? colorScale(value) : "#ccc";
+    return value !== null ? colorScale(value) : "#ccc";
   }
 
   public getLabels(feature: BaseFeature<T>, labelOptions: any): string[] {
