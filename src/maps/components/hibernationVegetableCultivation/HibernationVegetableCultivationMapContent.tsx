@@ -22,7 +22,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
   const mapList = useMapList<HibernationVegetableCultivationMap>();
   const map = mapList.getMapById(mapId);
 
-  const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju");
+  const { layerManager, ready, map: olMap } = useSetupOL(mapId, 10.5, "jeju");
 
   const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
@@ -60,7 +60,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
       <FloatingContainer
         filter={
           <>

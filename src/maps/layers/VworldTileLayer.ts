@@ -16,6 +16,7 @@ const TILE_SIZE = 256;
 class VworldTileSource extends XYZ {
   constructor(mapType: string) {
     super({
+      crossOrigin: "anonymous",
       projection: getProjection(PROJECTION),
       tileGrid: new TileGrid({
         extent: EXTENT,

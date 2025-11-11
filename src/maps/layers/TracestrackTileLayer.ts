@@ -13,6 +13,7 @@ const TILE_SIZE = 256;
 class TracestrackTileSource extends XYZ {
   constructor() {
     super({
+      crossOrigin: "anonymous",
       projection: getProjection(PROJECTION),
       tileGrid: new TileGrid({
         extent: EXTENT,

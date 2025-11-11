@@ -12,6 +12,7 @@ const TILE_SIZE = 256;
 class OSMTileSource extends XYZ {
   constructor() {
     super({
+      crossOrigin: "anonymous",
       projection: getProjection(PROJECTION),
       tileGrid: new TileGrid({
         extent: EXTENT,
