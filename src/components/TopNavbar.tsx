@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { Avatar, Button, Dropdown, type MenuProps } from "antd";
+import { ChevronDown, LogIn, LogOut } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import logo from "~/assets/logo.png";
-import menuLogo from "~/assets/menu-logo.png";
 import menuImage from "~/assets/menu-dropdown-image.png";
+import menuLogo from "~/assets/menu-logo.png";
 import { useAuth } from "~/contexts/AuthContext";
-import { PRIV_AUTH, ADMIN_AUTH } from "~/utils/common";
-import { Button, Dropdown, Avatar, type MenuProps } from "antd";
-import { LogIn, LogOut, ChevronDown } from "lucide-react";
+import { ADMIN_AUTH, PRIV_AUTH } from "~/utils/common";
 
 export interface MenuItem {
   label: string;
@@ -132,6 +132,7 @@ export const menuItems: MenuItem[] = [
           { label: "관정별 지하수 분석 대시보드", key: "gwt-anls-dsbrd" },
           { label: "제주 품목별 피해액 및 피해원인", key: "item-dam-cs" },
           { label: "농업재해 연도별 현황", key: "yrly-agrclt-dstdmg" },
+          { label: "농업재해 유형별 과거통계", key: "dstdmg-type-stats" },
         ],
       },
       {
