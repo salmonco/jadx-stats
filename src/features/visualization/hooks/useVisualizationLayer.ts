@@ -1,11 +1,12 @@
 import { useEffect } from "react";
+import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 
 interface Params {
   ready: boolean;
   features: any;
   layerManager: any;
   layerName: string;
-  createLayer: (features: any, visualizationSetting: any) => Promise<any>;
+  createLayer: (features: any, visualizationSetting: VisualizationSetting) => Promise<any>;
   map: any;
   updateProps?: Record<string, any>;
 }

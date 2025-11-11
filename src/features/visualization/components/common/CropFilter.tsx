@@ -1,14 +1,23 @@
 import { Select } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
-import MandarinCultivationInfoMap from "~/maps/classes/MandarinCultivationInfoMap";
+import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 
-interface Props {
-  cropList: Record<string, Record<string, string[]>>;
-  map: MandarinCultivationInfoMap;
+interface CropMapProps {
+  selectedCropPummok: string;
+  selectedCropGroup: string;
+  selectedCropDetailGroup: string;
+  setSelectedCropPummok: (pummok: string) => void;
+  setSelectedCropGroup: (group: string) => void;
+  setSelectedCropDetailGroup: (detailGroup: string) => void;
 }
 
-const CropFilter = ({ cropList, map }: Props) => {
+interface Props<M> {
+  cropList: Record<string, Record<string, string[]>>;
+  map: M;
+}
+
+const CropFilter = <M extends CommonBackgroundMap & CropMapProps>({ cropList, map }: Props<M>) => {
   const [selectedCropPummok, setSelectedCropPummok] = useState<string>(map.selectedCropPummok);
   const [selectedCropGroup, setSelectedCropGroup] = useState<string>(map.selectedCropGroup);
   const [selectedCropDetailGroup, setSelectedCropDetailGroup] = useState<string>(map.selectedCropDetailGroup);

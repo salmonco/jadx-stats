@@ -1,22 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import FilterContainer from "~/features/visualization/components/common/FilterContainer";
-import ItemDepthScrollSelector from "~/features/visualization/components/common/ItemDepthScrollSelector";
+import CropFilter from "~/features/visualization/components/common/CropFilter";
+import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
-import MandarinTreeAgeChange from "~/features/visualization/components/observation/MandarinTreeAgeChange";
-import useOffsetCounter from "~/features/visualization/hooks/useOffsetCounter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
-import {
-  InnerLayer,
-  MandarinTreeAgeDistributionFeatureCollection,
-  MandarinTreeAgeDistributionLayer,
-} from "~/features/visualization/layers/MandarinTreeAgeDistributionLayer";
+import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
+import { MandarinTreeAgeDistributionFeatureCollection, MandarinTreeAgeDistributionLayer } from "~/features/visualization/layers/MandarinTreeAgeDistributionLayer";
+import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
 import MandarinTreeAgeDistributionMap from "~/maps/classes/MandarinTreeAgeDistributionMap";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import MandarinTreeAgeDistributionLegend from "~/maps/components/mandarinTreeAgeDistribution/MandarinTreeAgeDistributionLegend";
+import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
-import { OffsetRange } from "~/pages/visualization/observation/MandarinTreeAgeDistribution";
 import visualizationApi from "~/services/apis/visualizationApi";
 
 const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
@@ -25,90 +20,101 @@ const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
 
   const { layerManager, ready } = useSetupOL(mapId, 10.7, "jeju");
 
-  const { data: features } = useQuery<MandarinTreeAgeDistributionFeatureCollection>({
-    queryKey: [
-      "treeAgeDistributionFeatures",
-      map.selectedTargetYear,
-      map.getSelectedRegionLevel(),
-      map.selectedCropPummok,
-      map.selectedCropDetailGroup === "전체" ? undefined : map.selectedCropDetailGroup,
-    ],
-    queryFn: () =>
-      visualizationApi.getMandarinTreeAgeDistribution(
-        map.selectedTargetYear,
-        map.getSelectedRegionLevel(),
-        map.selectedCropPummok,
-        map.selectedCropDetailGroup === "전체" ? undefined : map.selectedCropDetailGroup
-      ),
-    enabled: !!ready,
-  });
+  const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
-  const { data: varietyList } = useQuery({
+  const { data: cropList } = useQuery({
     queryKey: ["mandarinVarietyList"],
     queryFn: () => visualizationApi.getMandarinVarietyList(),
     retry: 1,
   });
 
-  const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
+  const { data: features } = useQuery<MandarinTreeAgeDistributionFeatureCollection>({
+    queryKey: [
+      "treeAgeDistributionFeatures",
+      map.selectedTargetYear,
+      map.getSelectedRegionLevel(),
+      map.selectedCropGroup,
+      map.selectedCropDetailGroup === DEFAULT_ALL_OPTION ? null : map.selectedCropDetailGroup,
+    ],
+    queryFn: () =>
+      visualizationApi.getMandarinTreeAgeDistribution(
+        map.selectedTargetYear,
+        map.getSelectedRegionLevel(),
+        map.selectedCropGroup,
+        map.selectedCropDetailGroup === DEFAULT_ALL_OPTION ? null : map.selectedCropDetailGroup
+      ),
+    enabled: !!ready,
+  });
 
-  const [offset, setOffset] = useState<OffsetRange>("0");
-  const { autoplay, setAutoplay } = useOffsetCounter({ length: 11, setOffset, setSelectedTargetYear: map.setSelectedTargetYear });
+  const filteredFeatures = features
+    ? {
+        ...features,
+        features: features.features.filter(filterFeatures),
+      }
+    : null;
 
-  useEffect(() => {
-    setOffset("0");
-    setAutoplay(false);
-  }, [map.getSelectedRegionLevel(), map.selectedCropPummok, map.selectedCropDetailGroup]);
+  // NOTE: 시뮬레이션 기능 관련 주석 처리
+  // const [offset, setOffset] = useState<OffsetRange>("0");
+  // const { autoplay, setAutoplay } = useOffsetCounter({ length: 11, setOffset, setSelectedTargetYear: map.setSelectedTargetYear });
 
-  useEffect(() => {
-    if (!ready || !features) return;
-    const layerWrapper = layerManager.getLayer("mandarinTreeAgeDistribution");
-    const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
+  // useEffect(() => {
+  //   setOffset("0");
+  //   setAutoplay(false);
+  // }, [map.getSelectedRegionLevel(), map.selectedCropGroup, map.selectedCropDetailGroup]);
 
-    const filtered = {
-      ...features,
-      features: features.features.filter(filterFeatures),
-    };
+  const createTreeAgeDistributionLayer = async (features: MandarinTreeAgeDistributionFeatureCollection, visualizationSetting: VisualizationSetting) => {
+    return MandarinTreeAgeDistributionLayer.createLayer(features, visualizationSetting, map.selectedCropGroup, map.selectedCropDetailGroup);
+  };
 
-    if (existingLayer && typeof existingLayer.updateFeatures === "function") {
-      existingLayer.updatePummok(map.selectedCropPummok);
-      existingLayer.updateVariety(map.selectedCropDetailGroup);
-      existingLayer.updateFeatures(filtered);
-    } else {
-      MandarinTreeAgeDistributionLayer.createLayer(features, map.selectedCropPummok, map.selectedCropDetailGroup).then((layer) => {
-        layerManager.addLayer(layer, "mandarinTreeAgeDistribution", 1);
-      });
-    }
-  }, [ready, features, selectedRegion]);
+  useVisualizationLayer({
+    ready,
+    features: filteredFeatures,
+    layerManager,
+    layerName: "mandarinTreeAgeDistribution",
+    createLayer: createTreeAgeDistributionLayer,
+    map,
+    updateProps: {
+      selectedCropGroup: map.selectedCropGroup,
+      selectedCropDetailGroup: map.selectedCropDetailGroup,
+    },
+  });
+
+  if (!map) {
+    return null;
+  }
 
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
-      <FilterContainer isFixed>
-        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
-        <ItemDepthScrollSelector
-          optionGroups={varietyList ?? []}
-          onSelectionChange={(group, first, second) => {
-            map.setSelectedCropGroup(group);
-            map.setSelectedCropPummok(first);
-
-            let secondVal = second;
-            if (second === "유라실생") secondVal = "YN-26";
-            if (second === "레드향") secondVal = "감평";
-            if (second === "천혜향") secondVal = "세토카";
-            if (second === "한라봉") secondVal = "부지화";
-
-            map.setSelectedCropDetailGroup(secondVal);
-          }}
-        />
-        <MandarinTreeAgeChange
+      <FloatingContainer
+        filter={
+          <>
+            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
+            <CropFilter cropList={cropList} map={map} />
+          </>
+        }
+        visualizationSetting={
+          <MandarinTreeAgeDistributionLegend
+            features={features}
+            legendOptions={map.visualizationSetting.legendOptions}
+            onLevelChange={map.setLegendLevel}
+            onColorChange={map.setLegendColor}
+            onPivotPointsChange={map.setLegendPivotPoints}
+          />
+        }
+        setLabelOptions={map.setLabelOptions}
+        labelOptions={map.visualizationSetting.labelOptions}
+        resetVisualizationSetting={map.resetVisualizationSetting}
+        setOpacity={map.setOpacity}
+        opacity={map.visualizationSetting.opacity}
+      />
+      {/* <MandarinTreeAgeChange
           autoplay={autoplay}
           setAutoplay={setAutoplay}
           offset={offset}
           setOffset={setOffset}
           selectedTargetYear={map.selectedTargetYear}
           setSelectedTargetYear={map.setSelectedTargetYear}
-        />
-        <MandarinTreeAgeDistributionLegend features={features} />
-      </FilterContainer>
+        /> */}
     </ListManagedBackgroundMap>
   );
 };
