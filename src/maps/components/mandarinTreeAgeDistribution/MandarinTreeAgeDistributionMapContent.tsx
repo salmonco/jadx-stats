@@ -83,7 +83,7 @@ const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <FilterContainer isFixed>
-        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
+        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
         <ItemDepthScrollSelector
           optionGroups={varietyList ?? []}
           onSelectionChange={(group, first, second) => {

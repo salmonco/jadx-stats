@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
@@ -32,10 +31,6 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
     queryFn: () => visualizationApi.getHinatVgtblCltvarDclrFile(map.selectedTargetYear, map.selectedTargetYear - 1, selectedRegion.구분),
     enabled: !!ready,
   });
-
-  useEffect(() => {
-    map.setRegionFilterSetting(selectedRegion);
-  }, [selectedRegion]);
 
   const filteredFeatures = features
     ? {
@@ -70,7 +65,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
         filter={
           <>
             <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
-            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
+            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
             <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} setSelectedValues={map.setSelectedCrop} />
           </>
         }

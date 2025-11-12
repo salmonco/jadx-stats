@@ -83,7 +83,7 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
       <FilterContainer isFixed>
         <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
-        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
+        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
         <ButtonGroupSelector
           title="항목"
           cols={2}
