@@ -4,6 +4,7 @@ import ChartContainer from "~/features/visualization/components/common/ChartCont
 import SimulatorResult from "~/features/visualization/components/observation/SimulatorResult";
 import TreeAgeSimulationChart from "~/features/visualization/components/observation/TreeAgeSimulationChart";
 import { MandarinTreeAgeDistributionFeatureCollection } from "~/features/visualization/layers/MandarinTreeAgeDistributionLayer";
+import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
 import MandarinTreeAgeDistributionMap from "~/maps/classes/MandarinTreeAgeDistributionMap";
 import { useMapList } from "~/maps/hooks/useMapList";
 import visualizationApi from "~/services/apis/visualizationApi";
@@ -17,17 +18,16 @@ const MandarinTreeAgeDistributionChart = () => {
       "treeAgeDistributionFeatures",
       map.selectedTargetYear,
       map.getSelectedRegionLevel(),
-      map.selectedCropPummok,
-      map.selectedCropDetailGroup === "전체" ? undefined : map.selectedCropDetailGroup,
+      map.selectedCropGroup,
+      map.selectedCropDetailGroup === DEFAULT_ALL_OPTION ? null : map.selectedCropDetailGroup,
     ],
     queryFn: () =>
       visualizationApi.getMandarinTreeAgeDistribution(
         map.selectedTargetYear,
         map.getSelectedRegionLevel(),
-        map.selectedCropPummok,
-        map.selectedCropDetailGroup === "전체" ? undefined : map.selectedCropDetailGroup
+        map.selectedCropGroup,
+        map.selectedCropDetailGroup === DEFAULT_ALL_OPTION ? null : map.selectedCropDetailGroup
       ),
-    // enabled: !!ready,
   });
 
   const chartData = useMemo(() => {
@@ -50,7 +50,7 @@ const MandarinTreeAgeDistributionChart = () => {
 
   return (
     <ChartContainer minHeight={480} cols={2}>
-      <TreeAgeSimulationChart selectedTargetYear={map.selectedTargetYear} selectedPummok={map.selectedCropPummok} selectedVariety={map.selectedCropDetailGroup} />
+      <TreeAgeSimulationChart selectedTargetYear={map.selectedTargetYear} selectedPummok={map.selectedCropGroup} selectedVariety={map.selectedCropDetailGroup} />
       <SimulatorResult chartData={chartData} />
     </ChartContainer>
   );

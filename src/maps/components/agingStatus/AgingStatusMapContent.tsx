@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import FilterContainer from "~/features/visualization/components/common/FilterContainer";
+import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
-import { AgingStatusLayer, InnerLayer } from "~/features/visualization/layers/AgingStatusLayer";
+import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
+import { AgingStatusLayer } from "~/features/visualization/layers/AgingStatusLayer";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import AgingStatusLegend from "~/maps/components/agingStatus/AgingStatusLegend";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
@@ -19,7 +19,7 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
   const mapList = useMapList<AgingStatusMap>();
   const map = mapList.getMapById(mapId);
 
-  const { layerManager, ready } = useSetupOL(mapId, 10.5, "jeju");
+  const { layerManager, ready, map: olMap } = useSetupOL(mapId, 10.5, "jeju");
 
   const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
@@ -30,40 +30,49 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
     retry: false,
   });
 
-  useEffect(() => {
-    map.setRegionFilterSetting(selectedRegion);
-  }, [selectedRegion]);
+  const filteredFeatures = features
+    ? {
+        ...features,
+        features: features.features.filter(filterFeatures),
+      }
+    : null;
 
-  useEffect(() => {
-    if (!ready || !features) return;
+  const createAgingStatusLayer = async (features: any, visualizationSetting: any) => {
+    return AgingStatusLayer.createLayer(features, visualizationSetting);
+  };
 
-    const filtered = {
-      ...features,
-      features: features.features.filter(filterFeatures),
-    };
-
-    const layerWrapper = layerManager.getLayer("agingStatusLayer");
-    const existingLayer = layerWrapper?.layer as InnerLayer | undefined;
-
-    if (existingLayer && typeof existingLayer.updateFeatures === "function") {
-      existingLayer.updateFeatures(filtered);
-    } else {
-      AgingStatusLayer.createLayer(features).then((layer) => {
-        layerManager.addLayer(layer, "agingStatusLayer", 1);
-      });
-    }
-  }, [ready, features, selectedRegion]);
+  useVisualizationLayer({
+    ready,
+    features: filteredFeatures,
+    layerManager,
+    layerName: "agingStatusLayer",
+    createLayer: createAgingStatusLayer,
+    map,
+  });
 
   if (!map) {
     return null;
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
-      <FilterContainer isFixed>
-        <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
-        <AgingStatusLegend features={features} />
-      </FilterContainer>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+      <FloatingContainer
+        filter={<RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />}
+        visualizationSetting={
+          <AgingStatusLegend
+            features={features}
+            legendOptions={map.visualizationSetting.legendOptions}
+            onLevelChange={map.setLegendLevel}
+            onColorChange={map.setLegendColor}
+            onPivotPointsChange={map.setLegendPivotPoints}
+          />
+        }
+        setLabelOptions={map.setLabelOptions}
+        labelOptions={map.visualizationSetting.labelOptions}
+        resetVisualizationSetting={map.resetVisualizationSetting}
+        setOpacity={map.setOpacity}
+        opacity={map.visualizationSetting.opacity}
+      />
     </ListManagedBackgroundMap>
   );
 };

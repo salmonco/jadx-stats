@@ -1,63 +1,45 @@
-import { interpolateRdYlBu } from "d3";
 import { useMemo } from "react";
-import { HibernationVegetableCultivationFeatureCollection } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
+import VisualizationLegend from "~/features/visualization/components/common/VisualizationLegend";
+import { HibernationFeatureCollection } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
 import { CropType } from "~/maps/constants/hibernationVegetableCultivation";
+import type { LegendColor, LegendOptions } from "~/maps/constants/visualizationSetting";
 
 interface Props {
-  features: HibernationVegetableCultivationFeatureCollection | null;
+  features: HibernationFeatureCollection | null;
   selectedCrop: CropType;
+  legendOptions: LegendOptions;
+  onLevelChange?: (level: number) => void;
+  onColorChange?: (color: LegendColor) => void;
+  onPivotPointsChange?: (pivotPoints: number[]) => void;
 }
 
-const HibernationVegetableCultivationLegend = ({ features, selectedCrop }: Props) => {
-  const maxAbsValue = useMemo(() => {
-    if (!features || !Array.isArray(features.features)) return 0;
+const HibernationVegetableCultivationLegend = ({ features, selectedCrop, legendOptions, onLevelChange, onColorChange, onPivotPointsChange }: Props) => {
+  const { minValue, maxValue } = useMemo(() => {
+    if (!features || !Array.isArray(features.features)) return { minValue: 0, maxValue: 0 };
 
-    let max = -Infinity;
+    const values = features.features
+      .map((feature) => {
+        const matter = feature?.properties?.area_chg.chg_mttr.find((m) => m.crop_nm === selectedCrop);
+        if (!matter) return null;
+        return matter.chg_cn / 10000;
+      })
+      .filter((v): v is number => v !== null);
 
-    for (const feature of features.features) {
-      const matters = feature?.properties?.area_chg.chg_mttr;
-      if (!Array.isArray(matters)) continue;
+    if (values.length === 0) return { minValue: 0, maxValue: 0 };
 
-      for (const matter of matters) {
-        if (matter.crop_nm === selectedCrop) {
-          const value = matter.chg_cn;
-          if (typeof value === "number" && !isNaN(value)) {
-            max = Math.max(max, Math.abs(value) / 10000);
-          }
-        }
-      }
-    }
-
-    return max === -Infinity ? 0 : max;
+    const maxAbs = Math.max(...values.map(Math.abs));
+    return { minValue: -maxAbs, maxValue: maxAbs };
   }, [features, selectedCrop]);
 
-  const minValue = -maxAbsValue;
-  const maxValue = maxAbsValue;
-  const colorScale1 = (t) => interpolateRdYlBu(1 - t);
-
-  const gradientSteps1 = Array.from({ length: 100 }, (_, i) => (
-    <div
-      key={i}
-      style={{
-        width: "1%",
-        height: "15px",
-        backgroundColor: colorScale1(i / 100),
-        display: "inline-block",
-      }}
-    />
-  ));
-
   return (
-    <div className="flex flex-col gap-2 rounded-lg">
-      <div className="rounded-lg border border-[#d9d9d9] bg-[#fff] px-[8px] py-[8px] pb-[4px]">
-        <div className="flex justify-center">{gradientSteps1}</div>
-        <div className="flex justify-between px-[2px] text-[14px] text-[#222]">
-          <span>{minValue.toFixed(1)}</span>
-          <span>0</span>
-          <span>{maxValue.toFixed(1)}</span>
-        </div>
-      </div>
-    </div>
+    <VisualizationLegend
+      minValue={minValue}
+      maxValue={maxValue}
+      legendOptions={legendOptions}
+      onLevelChange={onLevelChange}
+      onColorChange={onColorChange}
+      onPivotPointsChange={onPivotPointsChange}
+    />
   );
 };
 

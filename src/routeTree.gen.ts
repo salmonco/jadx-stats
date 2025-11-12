@@ -8,1047 +8,1028 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as LoginImport } from './routes/login'
-import { Route as GisImport } from './routes/gis'
-import { Route as R403Import } from './routes/403'
-import { Route as IndexImport } from './routes/index'
-import { Route as JejuAgriIndexImport } from './routes/jeju-agri/index'
-import { Route as SpcLayoutImport } from './routes/spc/_layout'
-import { Route as BscLayoutImport } from './routes/bsc/_layout'
-import { Route as JejuAgriDetailIdIndexImport } from './routes/jeju-agri/detail/$id/index'
-import { Route as SpcLayoutRtlWhlslMrktShareImport } from './routes/spc/_layout/rtl/whlsl-mrkt-share'
-import { Route as SpcLayoutRtlPrcPredcImport } from './routes/spc/_layout/rtl/prc-predc'
-import { Route as SpcLayoutRtlPrcDsbrdImport } from './routes/spc/_layout/rtl/prc-dsbrd'
-import { Route as SpcLayoutRtlGarakPrcImport } from './routes/spc/_layout/rtl/garak-prc'
-import { Route as SpcLayoutRtlExpImport } from './routes/spc/_layout/rtl/exp'
-import { Route as SpcLayoutRtlCropTradeImport } from './routes/spc/_layout/rtl/crop-trade'
-import { Route as SpcLayoutProdRgnCltvtnHarvImport } from './routes/spc/_layout/prod/rgn-cltvtn-harv'
-import { Route as SpcLayoutProdRgnCifruCltvtnImport } from './routes/spc/_layout/prod/rgn-cifru-cltvtn'
-import { Route as SpcLayoutProdCropCltvtnMapImport } from './routes/spc/_layout/prod/crop-cltvtn-map'
-import { Route as SpcLayoutProdCltvarChagImport } from './routes/spc/_layout/prod/cltvar-chag'
-import { Route as SpcLayoutProdAgingImport } from './routes/spc/_layout/prod/aging'
-import { Route as SpcLayoutObsrvnQltyImport } from './routes/spc/_layout/obsrvn/qlty'
-import { Route as SpcLayoutObsrvnObsrvnInfoCmpImport } from './routes/spc/_layout/obsrvn/obsrvn-info-cmp'
-import { Route as SpcLayoutObsrvnFlntImport } from './routes/spc/_layout/obsrvn/flnt'
-import { Route as SpcLayoutObsrvnCifruTrageDistImport } from './routes/spc/_layout/obsrvn/cifru-trage-dist'
-import { Route as SpcLayoutAgrcltEnvYrlyAgrcltDstdmgImport } from './routes/spc/_layout/agrclt-env/yrly-agrclt-dstdmg'
-import { Route as SpcLayoutAgrcltEnvWethrImport } from './routes/spc/_layout/agrclt-env/wethr'
-import { Route as SpcLayoutAgrcltEnvItemDamCsImport } from './routes/spc/_layout/agrclt-env/item-dam-cs'
-import { Route as SpcLayoutAgrcltEnvGwtWtrqltyChagImport } from './routes/spc/_layout/agrclt-env/gwt-wtrqlty-chag'
-import { Route as SpcLayoutAgrcltEnvGwtAnlsDsbrdImport } from './routes/spc/_layout/agrclt-env/gwt-anls-dsbrd'
-import { Route as SpcLayoutAgrcltEnvAgrcltDstdmgImport } from './routes/spc/_layout/agrclt-env/agrclt-dstdmg'
-import { Route as BscLayoutPrdctnMtrlFrmcnHldImport } from './routes/bsc/_layout/prdctn-mtrl/frmcn-hld'
-import { Route as BscLayoutPrdctnMtrlAgrchmFrtlzrNtslImport } from './routes/bsc/_layout/prdctn-mtrl/agrchm-frtlzr-ntsl'
-import { Route as BscLayoutFrmlndUtztnImport } from './routes/bsc/_layout/frmlnd/utztn'
-import { Route as BscLayoutFrmlndAreaImport } from './routes/bsc/_layout/frmlnd/area'
-import { Route as BscLayoutFrmhsPpltnImport } from './routes/bsc/_layout/frmhs/ppltn'
-import { Route as BscLayoutFrmhsFrmlndSclImport } from './routes/bsc/_layout/frmhs/frmlnd-scl'
-import { Route as BscLayoutFrmhsAgeRtrrlImport } from './routes/bsc/_layout/frmhs/age-rtrrl'
-import { Route as BscLayoutFrmhsAgeRtfrmImport } from './routes/bsc/_layout/frmhs/age-rtfrm'
-import { Route as BscLayoutFrmhsAgePpltnImport } from './routes/bsc/_layout/frmhs/age-ppltn'
-import { Route as BscLayoutEcnmPrdtvIdctImport } from './routes/bsc/_layout/ecnm/prdtv-idct'
-import { Route as BscLayoutEcnmMngmtCostImport } from './routes/bsc/_layout/ecnm/mngmt-cost'
-import { Route as BscLayoutEcnmLbrinpImport } from './routes/bsc/_layout/ecnm/lbrinp'
-import { Route as BscLayoutEcnmLbltImport } from './routes/bsc/_layout/ecnm/lblt'
-import { Route as BscLayoutEcnmKeyIdctImport } from './routes/bsc/_layout/ecnm/key-idct'
-import { Route as BscLayoutEcnmGrsincmImport } from './routes/bsc/_layout/ecnm/grsincm'
-import { Route as BscLayoutEcnmEarnImport } from './routes/bsc/_layout/ecnm/earn'
-import { Route as BscLayoutEcnmCrastImport } from './routes/bsc/_layout/ecnm/crast'
-import { Route as BscLayoutEcnmAstImport } from './routes/bsc/_layout/ecnm/ast'
-import { Route as BscLayoutCltvarYieldWhtbrlRghgrnImport } from './routes/bsc/_layout/cltvar-yield/whtbrl-rghgrn'
-import { Route as BscLayoutCltvarYieldWhtbrlMldgrnImport } from './routes/bsc/_layout/cltvar-yield/whtbrl-mldgrn'
-import { Route as BscLayoutCltvarYieldRtvgtImport } from './routes/bsc/_layout/cltvar-yield/rtvgt'
-import { Route as BscLayoutCltvarYieldRtcrpImport } from './routes/bsc/_layout/cltvar-yield/rtcrp'
-import { Route as BscLayoutCltvarYieldPlsImport } from './routes/bsc/_layout/cltvar-yield/pls'
-import { Route as BscLayoutCltvarYieldMldgrnImport } from './routes/bsc/_layout/cltvar-yield/mldgrn'
-import { Route as BscLayoutCltvarYieldMiscgrnImport } from './routes/bsc/_layout/cltvar-yield/miscgrn'
-import { Route as BscLayoutCltvarYieldLfyvgtImport } from './routes/bsc/_layout/cltvar-yield/lfyvgt'
-import { Route as BscLayoutCltvarYieldIndcrpImport } from './routes/bsc/_layout/cltvar-yield/indcrp'
-import { Route as BscLayoutCltvarYieldFrtvgtImport } from './routes/bsc/_layout/cltvar-yield/frtvgt'
-import { Route as BscLayoutCltvarYieldCnvgtImport } from './routes/bsc/_layout/cltvar-yield/cnvgt'
-import { Route as BscLayoutCltvarYieldAdlfrtImtfrtImport } from './routes/bsc/_layout/cltvar-yield/adlfrt-imtfrt'
-import { Route as BscLayoutCltvarYieldAdlfrtImport } from './routes/bsc/_layout/cltvar-yield/adlfrt'
-import { Route as BscLayoutCifruRtlPrdstsVrtyImport } from './routes/bsc/_layout/cifru-rtl/prdsts-vrty'
-import { Route as BscLayoutCifruRtlOpfCifruImport } from './routes/bsc/_layout/cifru-rtl/opf-cifru'
-import { Route as BscLayoutCifruRtlHouseCifruImport } from './routes/bsc/_layout/cifru-rtl/house-cifru'
-import { Route as BscLayoutCifruRtlHinatCifruImport } from './routes/bsc/_layout/cifru-rtl/hinat-cifru'
-import { Route as BscLayoutCifruRtlCifruhybImport } from './routes/bsc/_layout/cifru-rtl/cifruhyb'
-import { Route as BscLayoutCifruRtlBscStatsImport } from './routes/bsc/_layout/cifru-rtl/bsc-stats'
+import { Route as rootRoute } from "./routes/__root";
+import { Route as LoginImport } from "./routes/login";
+import { Route as GisImport } from "./routes/gis";
+import { Route as R403Import } from "./routes/403";
+import { Route as IndexImport } from "./routes/index";
+import { Route as JejuAgriIndexImport } from "./routes/jeju-agri/index";
+import { Route as SpcLayoutImport } from "./routes/spc/_layout";
+import { Route as BscLayoutImport } from "./routes/bsc/_layout";
+import { Route as JejuAgriDetailIdIndexImport } from "./routes/jeju-agri/detail/$id/index";
+import { Route as SpcLayoutRtlWhlslMrktShareImport } from "./routes/spc/_layout/rtl/whlsl-mrkt-share";
+import { Route as SpcLayoutRtlPrcPredcImport } from "./routes/spc/_layout/rtl/prc-predc";
+import { Route as SpcLayoutRtlPrcDsbrdImport } from "./routes/spc/_layout/rtl/prc-dsbrd";
+import { Route as SpcLayoutRtlGarakPrcImport } from "./routes/spc/_layout/rtl/garak-prc";
+import { Route as SpcLayoutRtlExpImport } from "./routes/spc/_layout/rtl/exp";
+import { Route as SpcLayoutRtlCropTradeImport } from "./routes/spc/_layout/rtl/crop-trade";
+import { Route as SpcLayoutProdRgnCltvtnHarvImport } from "./routes/spc/_layout/prod/rgn-cltvtn-harv";
+import { Route as SpcLayoutProdRgnCifruCltvtnImport } from "./routes/spc/_layout/prod/rgn-cifru-cltvtn";
+import { Route as SpcLayoutProdCropCltvtnMapImport } from "./routes/spc/_layout/prod/crop-cltvtn-map";
+import { Route as SpcLayoutProdCltvarChagImport } from "./routes/spc/_layout/prod/cltvar-chag";
+import { Route as SpcLayoutProdAgingImport } from "./routes/spc/_layout/prod/aging";
+import { Route as SpcLayoutObsrvnQltyImport } from "./routes/spc/_layout/obsrvn/qlty";
+import { Route as SpcLayoutObsrvnObsrvnInfoCmpImport } from "./routes/spc/_layout/obsrvn/obsrvn-info-cmp";
+import { Route as SpcLayoutObsrvnFlntImport } from "./routes/spc/_layout/obsrvn/flnt";
+import { Route as SpcLayoutObsrvnCifruTrageDistImport } from "./routes/spc/_layout/obsrvn/cifru-trage-dist";
+import { Route as SpcLayoutAgrcltEnvYrlyAgrcltDstdmgImport } from "./routes/spc/_layout/agrclt-env/yrly-agrclt-dstdmg";
+import { Route as SpcLayoutAgrcltEnvWethrImport } from "./routes/spc/_layout/agrclt-env/wethr";
+import { Route as SpcLayoutAgrcltEnvItemDamCsImport } from "./routes/spc/_layout/agrclt-env/item-dam-cs";
+import { Route as SpcLayoutAgrcltEnvGwtWtrqltyChagImport } from "./routes/spc/_layout/agrclt-env/gwt-wtrqlty-chag";
+import { Route as SpcLayoutAgrcltEnvGwtAnlsDsbrdImport } from "./routes/spc/_layout/agrclt-env/gwt-anls-dsbrd";
+import { Route as SpcLayoutAgrcltEnvDstdmgTypeStatsImport } from "./routes/spc/_layout/agrclt-env/dstdmg-type-stats";
+import { Route as SpcLayoutAgrcltEnvAgrcltDstdmgImport } from "./routes/spc/_layout/agrclt-env/agrclt-dstdmg";
+import { Route as BscLayoutPrdctnMtrlFrmcnHldImport } from "./routes/bsc/_layout/prdctn-mtrl/frmcn-hld";
+import { Route as BscLayoutPrdctnMtrlAgrchmFrtlzrNtslImport } from "./routes/bsc/_layout/prdctn-mtrl/agrchm-frtlzr-ntsl";
+import { Route as BscLayoutFrmlndUtztnImport } from "./routes/bsc/_layout/frmlnd/utztn";
+import { Route as BscLayoutFrmlndAreaImport } from "./routes/bsc/_layout/frmlnd/area";
+import { Route as BscLayoutFrmhsPpltnImport } from "./routes/bsc/_layout/frmhs/ppltn";
+import { Route as BscLayoutFrmhsFrmlndSclImport } from "./routes/bsc/_layout/frmhs/frmlnd-scl";
+import { Route as BscLayoutFrmhsAgeRtrrlImport } from "./routes/bsc/_layout/frmhs/age-rtrrl";
+import { Route as BscLayoutFrmhsAgeRtfrmImport } from "./routes/bsc/_layout/frmhs/age-rtfrm";
+import { Route as BscLayoutFrmhsAgePpltnImport } from "./routes/bsc/_layout/frmhs/age-ppltn";
+import { Route as BscLayoutEcnmPrdtvIdctImport } from "./routes/bsc/_layout/ecnm/prdtv-idct";
+import { Route as BscLayoutEcnmMngmtCostImport } from "./routes/bsc/_layout/ecnm/mngmt-cost";
+import { Route as BscLayoutEcnmLbrinpImport } from "./routes/bsc/_layout/ecnm/lbrinp";
+import { Route as BscLayoutEcnmLbltImport } from "./routes/bsc/_layout/ecnm/lblt";
+import { Route as BscLayoutEcnmKeyIdctImport } from "./routes/bsc/_layout/ecnm/key-idct";
+import { Route as BscLayoutEcnmGrsincmImport } from "./routes/bsc/_layout/ecnm/grsincm";
+import { Route as BscLayoutEcnmEarnImport } from "./routes/bsc/_layout/ecnm/earn";
+import { Route as BscLayoutEcnmCrastImport } from "./routes/bsc/_layout/ecnm/crast";
+import { Route as BscLayoutEcnmAstImport } from "./routes/bsc/_layout/ecnm/ast";
+import { Route as BscLayoutCltvarYieldWhtbrlRghgrnImport } from "./routes/bsc/_layout/cltvar-yield/whtbrl-rghgrn";
+import { Route as BscLayoutCltvarYieldWhtbrlMldgrnImport } from "./routes/bsc/_layout/cltvar-yield/whtbrl-mldgrn";
+import { Route as BscLayoutCltvarYieldRtvgtImport } from "./routes/bsc/_layout/cltvar-yield/rtvgt";
+import { Route as BscLayoutCltvarYieldRtcrpImport } from "./routes/bsc/_layout/cltvar-yield/rtcrp";
+import { Route as BscLayoutCltvarYieldPlsImport } from "./routes/bsc/_layout/cltvar-yield/pls";
+import { Route as BscLayoutCltvarYieldMldgrnImport } from "./routes/bsc/_layout/cltvar-yield/mldgrn";
+import { Route as BscLayoutCltvarYieldMiscgrnImport } from "./routes/bsc/_layout/cltvar-yield/miscgrn";
+import { Route as BscLayoutCltvarYieldLfyvgtImport } from "./routes/bsc/_layout/cltvar-yield/lfyvgt";
+import { Route as BscLayoutCltvarYieldIndcrpImport } from "./routes/bsc/_layout/cltvar-yield/indcrp";
+import { Route as BscLayoutCltvarYieldFrtvgtImport } from "./routes/bsc/_layout/cltvar-yield/frtvgt";
+import { Route as BscLayoutCltvarYieldCnvgtImport } from "./routes/bsc/_layout/cltvar-yield/cnvgt";
+import { Route as BscLayoutCltvarYieldAdlfrtImtfrtImport } from "./routes/bsc/_layout/cltvar-yield/adlfrt-imtfrt";
+import { Route as BscLayoutCltvarYieldAdlfrtImport } from "./routes/bsc/_layout/cltvar-yield/adlfrt";
+import { Route as BscLayoutCifruRtlPrdstsVrtyImport } from "./routes/bsc/_layout/cifru-rtl/prdsts-vrty";
+import { Route as BscLayoutCifruRtlOpfCifruImport } from "./routes/bsc/_layout/cifru-rtl/opf-cifru";
+import { Route as BscLayoutCifruRtlHouseCifruImport } from "./routes/bsc/_layout/cifru-rtl/house-cifru";
+import { Route as BscLayoutCifruRtlHinatCifruImport } from "./routes/bsc/_layout/cifru-rtl/hinat-cifru";
+import { Route as BscLayoutCifruRtlCifruhybImport } from "./routes/bsc/_layout/cifru-rtl/cifruhyb";
+import { Route as BscLayoutCifruRtlBscStatsImport } from "./routes/bsc/_layout/cifru-rtl/bsc-stats";
 
 // Create Virtual Routes
 
-const SpcImport = createFileRoute('/spc')()
-const BscImport = createFileRoute('/bsc')()
+const SpcImport = createFileRoute("/spc")();
+const BscImport = createFileRoute("/bsc")();
 
 // Create/Update Routes
 
 const SpcRoute = SpcImport.update({
-  id: '/spc',
-  path: '/spc',
+  id: "/spc",
+  path: "/spc",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const BscRoute = BscImport.update({
-  id: '/bsc',
-  path: '/bsc',
+  id: "/bsc",
+  path: "/bsc",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const LoginRoute = LoginImport.update({
-  id: '/login',
-  path: '/login',
+  id: "/login",
+  path: "/login",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const GisRoute = GisImport.update({
-  id: '/gis',
-  path: '/gis',
+  id: "/gis",
+  path: "/gis",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const R403Route = R403Import.update({
-  id: '/403',
-  path: '/403',
+  id: "/403",
+  path: "/403",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const IndexRoute = IndexImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const JejuAgriIndexRoute = JejuAgriIndexImport.update({
-  id: '/jeju-agri/',
-  path: '/jeju-agri/',
+  id: "/jeju-agri/",
+  path: "/jeju-agri/",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
 const SpcLayoutRoute = SpcLayoutImport.update({
-  id: '/_layout',
+  id: "/_layout",
   getParentRoute: () => SpcRoute,
-} as any)
+} as any);
 
 const BscLayoutRoute = BscLayoutImport.update({
-  id: '/_layout',
+  id: "/_layout",
   getParentRoute: () => BscRoute,
-} as any)
+} as any);
 
 const JejuAgriDetailIdIndexRoute = JejuAgriDetailIdIndexImport.update({
-  id: '/jeju-agri/detail/$id/',
-  path: '/jeju-agri/detail/$id/',
+  id: "/jeju-agri/detail/$id/",
+  path: "/jeju-agri/detail/$id/",
   getParentRoute: () => rootRoute,
-} as any)
+} as any);
 
-const SpcLayoutRtlWhlslMrktShareRoute = SpcLayoutRtlWhlslMrktShareImport.update(
-  {
-    id: '/rtl/whlsl-mrkt-share',
-    path: '/rtl/whlsl-mrkt-share',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any,
-)
+const SpcLayoutRtlWhlslMrktShareRoute = SpcLayoutRtlWhlslMrktShareImport.update({
+  id: "/rtl/whlsl-mrkt-share",
+  path: "/rtl/whlsl-mrkt-share",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
 const SpcLayoutRtlPrcPredcRoute = SpcLayoutRtlPrcPredcImport.update({
-  id: '/rtl/prc-predc',
-  path: '/rtl/prc-predc',
+  id: "/rtl/prc-predc",
+  path: "/rtl/prc-predc",
   getParentRoute: () => SpcLayoutRoute,
-} as any)
+} as any);
 
 const SpcLayoutRtlPrcDsbrdRoute = SpcLayoutRtlPrcDsbrdImport.update({
-  id: '/rtl/prc-dsbrd',
-  path: '/rtl/prc-dsbrd',
+  id: "/rtl/prc-dsbrd",
+  path: "/rtl/prc-dsbrd",
   getParentRoute: () => SpcLayoutRoute,
-} as any)
+} as any);
 
 const SpcLayoutRtlGarakPrcRoute = SpcLayoutRtlGarakPrcImport.update({
-  id: '/rtl/garak-prc',
-  path: '/rtl/garak-prc',
+  id: "/rtl/garak-prc",
+  path: "/rtl/garak-prc",
   getParentRoute: () => SpcLayoutRoute,
-} as any)
+} as any);
 
 const SpcLayoutRtlExpRoute = SpcLayoutRtlExpImport.update({
-  id: '/rtl/exp',
-  path: '/rtl/exp',
+  id: "/rtl/exp",
+  path: "/rtl/exp",
   getParentRoute: () => SpcLayoutRoute,
-} as any)
+} as any);
 
 const SpcLayoutRtlCropTradeRoute = SpcLayoutRtlCropTradeImport.update({
-  id: '/rtl/crop-trade',
-  path: '/rtl/crop-trade',
+  id: "/rtl/crop-trade",
+  path: "/rtl/crop-trade",
   getParentRoute: () => SpcLayoutRoute,
-} as any)
+} as any);
 
-const SpcLayoutProdRgnCltvtnHarvRoute = SpcLayoutProdRgnCltvtnHarvImport.update(
-  {
-    id: '/prod/rgn-cltvtn-harv',
-    path: '/prod/rgn-cltvtn-harv',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any,
-)
+const SpcLayoutProdRgnCltvtnHarvRoute = SpcLayoutProdRgnCltvtnHarvImport.update({
+  id: "/prod/rgn-cltvtn-harv",
+  path: "/prod/rgn-cltvtn-harv",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
-const SpcLayoutProdRgnCifruCltvtnRoute =
-  SpcLayoutProdRgnCifruCltvtnImport.update({
-    id: '/prod/rgn-cifru-cltvtn',
-    path: '/prod/rgn-cifru-cltvtn',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any)
+const SpcLayoutProdRgnCifruCltvtnRoute = SpcLayoutProdRgnCifruCltvtnImport.update({
+  id: "/prod/rgn-cifru-cltvtn",
+  path: "/prod/rgn-cifru-cltvtn",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
-const SpcLayoutProdCropCltvtnMapRoute = SpcLayoutProdCropCltvtnMapImport.update(
-  {
-    id: '/prod/crop-cltvtn-map',
-    path: '/prod/crop-cltvtn-map',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any,
-)
+const SpcLayoutProdCropCltvtnMapRoute = SpcLayoutProdCropCltvtnMapImport.update({
+  id: "/prod/crop-cltvtn-map",
+  path: "/prod/crop-cltvtn-map",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
 const SpcLayoutProdCltvarChagRoute = SpcLayoutProdCltvarChagImport.update({
-  id: '/prod/cltvar-chag',
-  path: '/prod/cltvar-chag',
+  id: "/prod/cltvar-chag",
+  path: "/prod/cltvar-chag",
   getParentRoute: () => SpcLayoutRoute,
-} as any)
+} as any);
 
 const SpcLayoutProdAgingRoute = SpcLayoutProdAgingImport.update({
-  id: '/prod/aging',
-  path: '/prod/aging',
+  id: "/prod/aging",
+  path: "/prod/aging",
   getParentRoute: () => SpcLayoutRoute,
-} as any)
+} as any);
 
 const SpcLayoutObsrvnQltyRoute = SpcLayoutObsrvnQltyImport.update({
-  id: '/obsrvn/qlty',
-  path: '/obsrvn/qlty',
+  id: "/obsrvn/qlty",
+  path: "/obsrvn/qlty",
   getParentRoute: () => SpcLayoutRoute,
-} as any)
+} as any);
 
-const SpcLayoutObsrvnObsrvnInfoCmpRoute =
-  SpcLayoutObsrvnObsrvnInfoCmpImport.update({
-    id: '/obsrvn/obsrvn-info-cmp',
-    path: '/obsrvn/obsrvn-info-cmp',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any)
+const SpcLayoutObsrvnObsrvnInfoCmpRoute = SpcLayoutObsrvnObsrvnInfoCmpImport.update({
+  id: "/obsrvn/obsrvn-info-cmp",
+  path: "/obsrvn/obsrvn-info-cmp",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
 const SpcLayoutObsrvnFlntRoute = SpcLayoutObsrvnFlntImport.update({
-  id: '/obsrvn/flnt',
-  path: '/obsrvn/flnt',
+  id: "/obsrvn/flnt",
+  path: "/obsrvn/flnt",
   getParentRoute: () => SpcLayoutRoute,
-} as any)
+} as any);
 
-const SpcLayoutObsrvnCifruTrageDistRoute =
-  SpcLayoutObsrvnCifruTrageDistImport.update({
-    id: '/obsrvn/cifru-trage-dist',
-    path: '/obsrvn/cifru-trage-dist',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any)
+const SpcLayoutObsrvnCifruTrageDistRoute = SpcLayoutObsrvnCifruTrageDistImport.update({
+  id: "/obsrvn/cifru-trage-dist",
+  path: "/obsrvn/cifru-trage-dist",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
-const SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute =
-  SpcLayoutAgrcltEnvYrlyAgrcltDstdmgImport.update({
-    id: '/agrclt-env/yrly-agrclt-dstdmg',
-    path: '/agrclt-env/yrly-agrclt-dstdmg',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any)
+const SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute = SpcLayoutAgrcltEnvYrlyAgrcltDstdmgImport.update({
+  id: "/agrclt-env/yrly-agrclt-dstdmg",
+  path: "/agrclt-env/yrly-agrclt-dstdmg",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
 const SpcLayoutAgrcltEnvWethrRoute = SpcLayoutAgrcltEnvWethrImport.update({
-  id: '/agrclt-env/wethr',
-  path: '/agrclt-env/wethr',
+  id: "/agrclt-env/wethr",
+  path: "/agrclt-env/wethr",
   getParentRoute: () => SpcLayoutRoute,
-} as any)
+} as any);
 
-const SpcLayoutAgrcltEnvItemDamCsRoute =
-  SpcLayoutAgrcltEnvItemDamCsImport.update({
-    id: '/agrclt-env/item-dam-cs',
-    path: '/agrclt-env/item-dam-cs',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any)
+const SpcLayoutAgrcltEnvItemDamCsRoute = SpcLayoutAgrcltEnvItemDamCsImport.update({
+  id: "/agrclt-env/item-dam-cs",
+  path: "/agrclt-env/item-dam-cs",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
-const SpcLayoutAgrcltEnvGwtWtrqltyChagRoute =
-  SpcLayoutAgrcltEnvGwtWtrqltyChagImport.update({
-    id: '/agrclt-env/gwt-wtrqlty-chag',
-    path: '/agrclt-env/gwt-wtrqlty-chag',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any)
+const SpcLayoutAgrcltEnvGwtWtrqltyChagRoute = SpcLayoutAgrcltEnvGwtWtrqltyChagImport.update({
+  id: "/agrclt-env/gwt-wtrqlty-chag",
+  path: "/agrclt-env/gwt-wtrqlty-chag",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
-const SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute =
-  SpcLayoutAgrcltEnvGwtAnlsDsbrdImport.update({
-    id: '/agrclt-env/gwt-anls-dsbrd',
-    path: '/agrclt-env/gwt-anls-dsbrd',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any)
+const SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute = SpcLayoutAgrcltEnvGwtAnlsDsbrdImport.update({
+  id: "/agrclt-env/gwt-anls-dsbrd",
+  path: "/agrclt-env/gwt-anls-dsbrd",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
-const SpcLayoutAgrcltEnvAgrcltDstdmgRoute =
-  SpcLayoutAgrcltEnvAgrcltDstdmgImport.update({
-    id: '/agrclt-env/agrclt-dstdmg',
-    path: '/agrclt-env/agrclt-dstdmg',
-    getParentRoute: () => SpcLayoutRoute,
-  } as any)
+const SpcLayoutAgrcltEnvDstdmgTypeStatsRoute = SpcLayoutAgrcltEnvDstdmgTypeStatsImport.update({
+  id: "/agrclt-env/dstdmg-type-stats",
+  path: "/agrclt-env/dstdmg-type-stats",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
-const BscLayoutPrdctnMtrlFrmcnHldRoute =
-  BscLayoutPrdctnMtrlFrmcnHldImport.update({
-    id: '/prdctn-mtrl/frmcn-hld',
-    path: '/prdctn-mtrl/frmcn-hld',
-    getParentRoute: () => BscLayoutRoute,
-  } as any)
+const SpcLayoutAgrcltEnvAgrcltDstdmgRoute = SpcLayoutAgrcltEnvAgrcltDstdmgImport.update({
+  id: "/agrclt-env/agrclt-dstdmg",
+  path: "/agrclt-env/agrclt-dstdmg",
+  getParentRoute: () => SpcLayoutRoute,
+} as any);
 
-const BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute =
-  BscLayoutPrdctnMtrlAgrchmFrtlzrNtslImport.update({
-    id: '/prdctn-mtrl/agrchm-frtlzr-ntsl',
-    path: '/prdctn-mtrl/agrchm-frtlzr-ntsl',
-    getParentRoute: () => BscLayoutRoute,
-  } as any)
+const BscLayoutPrdctnMtrlFrmcnHldRoute = BscLayoutPrdctnMtrlFrmcnHldImport.update({
+  id: "/prdctn-mtrl/frmcn-hld",
+  path: "/prdctn-mtrl/frmcn-hld",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
+
+const BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute = BscLayoutPrdctnMtrlAgrchmFrtlzrNtslImport.update({
+  id: "/prdctn-mtrl/agrchm-frtlzr-ntsl",
+  path: "/prdctn-mtrl/agrchm-frtlzr-ntsl",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
 const BscLayoutFrmlndUtztnRoute = BscLayoutFrmlndUtztnImport.update({
-  id: '/frmlnd/utztn',
-  path: '/frmlnd/utztn',
+  id: "/frmlnd/utztn",
+  path: "/frmlnd/utztn",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutFrmlndAreaRoute = BscLayoutFrmlndAreaImport.update({
-  id: '/frmlnd/area',
-  path: '/frmlnd/area',
+  id: "/frmlnd/area",
+  path: "/frmlnd/area",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutFrmhsPpltnRoute = BscLayoutFrmhsPpltnImport.update({
-  id: '/frmhs/ppltn',
-  path: '/frmhs/ppltn',
+  id: "/frmhs/ppltn",
+  path: "/frmhs/ppltn",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutFrmhsFrmlndSclRoute = BscLayoutFrmhsFrmlndSclImport.update({
-  id: '/frmhs/frmlnd-scl',
-  path: '/frmhs/frmlnd-scl',
+  id: "/frmhs/frmlnd-scl",
+  path: "/frmhs/frmlnd-scl",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutFrmhsAgeRtrrlRoute = BscLayoutFrmhsAgeRtrrlImport.update({
-  id: '/frmhs/age-rtrrl',
-  path: '/frmhs/age-rtrrl',
+  id: "/frmhs/age-rtrrl",
+  path: "/frmhs/age-rtrrl",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutFrmhsAgeRtfrmRoute = BscLayoutFrmhsAgeRtfrmImport.update({
-  id: '/frmhs/age-rtfrm',
-  path: '/frmhs/age-rtfrm',
+  id: "/frmhs/age-rtfrm",
+  path: "/frmhs/age-rtfrm",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutFrmhsAgePpltnRoute = BscLayoutFrmhsAgePpltnImport.update({
-  id: '/frmhs/age-ppltn',
-  path: '/frmhs/age-ppltn',
+  id: "/frmhs/age-ppltn",
+  path: "/frmhs/age-ppltn",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutEcnmPrdtvIdctRoute = BscLayoutEcnmPrdtvIdctImport.update({
-  id: '/ecnm/prdtv-idct',
-  path: '/ecnm/prdtv-idct',
+  id: "/ecnm/prdtv-idct",
+  path: "/ecnm/prdtv-idct",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutEcnmMngmtCostRoute = BscLayoutEcnmMngmtCostImport.update({
-  id: '/ecnm/mngmt-cost',
-  path: '/ecnm/mngmt-cost',
+  id: "/ecnm/mngmt-cost",
+  path: "/ecnm/mngmt-cost",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutEcnmLbrinpRoute = BscLayoutEcnmLbrinpImport.update({
-  id: '/ecnm/lbrinp',
-  path: '/ecnm/lbrinp',
+  id: "/ecnm/lbrinp",
+  path: "/ecnm/lbrinp",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutEcnmLbltRoute = BscLayoutEcnmLbltImport.update({
-  id: '/ecnm/lblt',
-  path: '/ecnm/lblt',
+  id: "/ecnm/lblt",
+  path: "/ecnm/lblt",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutEcnmKeyIdctRoute = BscLayoutEcnmKeyIdctImport.update({
-  id: '/ecnm/key-idct',
-  path: '/ecnm/key-idct',
+  id: "/ecnm/key-idct",
+  path: "/ecnm/key-idct",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutEcnmGrsincmRoute = BscLayoutEcnmGrsincmImport.update({
-  id: '/ecnm/grsincm',
-  path: '/ecnm/grsincm',
+  id: "/ecnm/grsincm",
+  path: "/ecnm/grsincm",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutEcnmEarnRoute = BscLayoutEcnmEarnImport.update({
-  id: '/ecnm/earn',
-  path: '/ecnm/earn',
+  id: "/ecnm/earn",
+  path: "/ecnm/earn",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutEcnmCrastRoute = BscLayoutEcnmCrastImport.update({
-  id: '/ecnm/crast',
-  path: '/ecnm/crast',
+  id: "/ecnm/crast",
+  path: "/ecnm/crast",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutEcnmAstRoute = BscLayoutEcnmAstImport.update({
-  id: '/ecnm/ast',
-  path: '/ecnm/ast',
+  id: "/ecnm/ast",
+  path: "/ecnm/ast",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
-const BscLayoutCltvarYieldWhtbrlRghgrnRoute =
-  BscLayoutCltvarYieldWhtbrlRghgrnImport.update({
-    id: '/cltvar-yield/whtbrl-rghgrn',
-    path: '/cltvar-yield/whtbrl-rghgrn',
-    getParentRoute: () => BscLayoutRoute,
-  } as any)
+const BscLayoutCltvarYieldWhtbrlRghgrnRoute = BscLayoutCltvarYieldWhtbrlRghgrnImport.update({
+  id: "/cltvar-yield/whtbrl-rghgrn",
+  path: "/cltvar-yield/whtbrl-rghgrn",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
-const BscLayoutCltvarYieldWhtbrlMldgrnRoute =
-  BscLayoutCltvarYieldWhtbrlMldgrnImport.update({
-    id: '/cltvar-yield/whtbrl-mldgrn',
-    path: '/cltvar-yield/whtbrl-mldgrn',
-    getParentRoute: () => BscLayoutRoute,
-  } as any)
+const BscLayoutCltvarYieldWhtbrlMldgrnRoute = BscLayoutCltvarYieldWhtbrlMldgrnImport.update({
+  id: "/cltvar-yield/whtbrl-mldgrn",
+  path: "/cltvar-yield/whtbrl-mldgrn",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
 const BscLayoutCltvarYieldRtvgtRoute = BscLayoutCltvarYieldRtvgtImport.update({
-  id: '/cltvar-yield/rtvgt',
-  path: '/cltvar-yield/rtvgt',
+  id: "/cltvar-yield/rtvgt",
+  path: "/cltvar-yield/rtvgt",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutCltvarYieldRtcrpRoute = BscLayoutCltvarYieldRtcrpImport.update({
-  id: '/cltvar-yield/rtcrp',
-  path: '/cltvar-yield/rtcrp',
+  id: "/cltvar-yield/rtcrp",
+  path: "/cltvar-yield/rtcrp",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutCltvarYieldPlsRoute = BscLayoutCltvarYieldPlsImport.update({
-  id: '/cltvar-yield/pls',
-  path: '/cltvar-yield/pls',
+  id: "/cltvar-yield/pls",
+  path: "/cltvar-yield/pls",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
-const BscLayoutCltvarYieldMldgrnRoute = BscLayoutCltvarYieldMldgrnImport.update(
-  {
-    id: '/cltvar-yield/mldgrn',
-    path: '/cltvar-yield/mldgrn',
-    getParentRoute: () => BscLayoutRoute,
-  } as any,
-)
+const BscLayoutCltvarYieldMldgrnRoute = BscLayoutCltvarYieldMldgrnImport.update({
+  id: "/cltvar-yield/mldgrn",
+  path: "/cltvar-yield/mldgrn",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
-const BscLayoutCltvarYieldMiscgrnRoute =
-  BscLayoutCltvarYieldMiscgrnImport.update({
-    id: '/cltvar-yield/miscgrn',
-    path: '/cltvar-yield/miscgrn',
-    getParentRoute: () => BscLayoutRoute,
-  } as any)
+const BscLayoutCltvarYieldMiscgrnRoute = BscLayoutCltvarYieldMiscgrnImport.update({
+  id: "/cltvar-yield/miscgrn",
+  path: "/cltvar-yield/miscgrn",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
-const BscLayoutCltvarYieldLfyvgtRoute = BscLayoutCltvarYieldLfyvgtImport.update(
-  {
-    id: '/cltvar-yield/lfyvgt',
-    path: '/cltvar-yield/lfyvgt',
-    getParentRoute: () => BscLayoutRoute,
-  } as any,
-)
+const BscLayoutCltvarYieldLfyvgtRoute = BscLayoutCltvarYieldLfyvgtImport.update({
+  id: "/cltvar-yield/lfyvgt",
+  path: "/cltvar-yield/lfyvgt",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
-const BscLayoutCltvarYieldIndcrpRoute = BscLayoutCltvarYieldIndcrpImport.update(
-  {
-    id: '/cltvar-yield/indcrp',
-    path: '/cltvar-yield/indcrp',
-    getParentRoute: () => BscLayoutRoute,
-  } as any,
-)
+const BscLayoutCltvarYieldIndcrpRoute = BscLayoutCltvarYieldIndcrpImport.update({
+  id: "/cltvar-yield/indcrp",
+  path: "/cltvar-yield/indcrp",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
-const BscLayoutCltvarYieldFrtvgtRoute = BscLayoutCltvarYieldFrtvgtImport.update(
-  {
-    id: '/cltvar-yield/frtvgt',
-    path: '/cltvar-yield/frtvgt',
-    getParentRoute: () => BscLayoutRoute,
-  } as any,
-)
+const BscLayoutCltvarYieldFrtvgtRoute = BscLayoutCltvarYieldFrtvgtImport.update({
+  id: "/cltvar-yield/frtvgt",
+  path: "/cltvar-yield/frtvgt",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
 const BscLayoutCltvarYieldCnvgtRoute = BscLayoutCltvarYieldCnvgtImport.update({
-  id: '/cltvar-yield/cnvgt',
-  path: '/cltvar-yield/cnvgt',
+  id: "/cltvar-yield/cnvgt",
+  path: "/cltvar-yield/cnvgt",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
-const BscLayoutCltvarYieldAdlfrtImtfrtRoute =
-  BscLayoutCltvarYieldAdlfrtImtfrtImport.update({
-    id: '/cltvar-yield/adlfrt-imtfrt',
-    path: '/cltvar-yield/adlfrt-imtfrt',
-    getParentRoute: () => BscLayoutRoute,
-  } as any)
+const BscLayoutCltvarYieldAdlfrtImtfrtRoute = BscLayoutCltvarYieldAdlfrtImtfrtImport.update({
+  id: "/cltvar-yield/adlfrt-imtfrt",
+  path: "/cltvar-yield/adlfrt-imtfrt",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
-const BscLayoutCltvarYieldAdlfrtRoute = BscLayoutCltvarYieldAdlfrtImport.update(
-  {
-    id: '/cltvar-yield/adlfrt',
-    path: '/cltvar-yield/adlfrt',
-    getParentRoute: () => BscLayoutRoute,
-  } as any,
-)
+const BscLayoutCltvarYieldAdlfrtRoute = BscLayoutCltvarYieldAdlfrtImport.update({
+  id: "/cltvar-yield/adlfrt",
+  path: "/cltvar-yield/adlfrt",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
-const BscLayoutCifruRtlPrdstsVrtyRoute =
-  BscLayoutCifruRtlPrdstsVrtyImport.update({
-    id: '/cifru-rtl/prdsts-vrty',
-    path: '/cifru-rtl/prdsts-vrty',
-    getParentRoute: () => BscLayoutRoute,
-  } as any)
+const BscLayoutCifruRtlPrdstsVrtyRoute = BscLayoutCifruRtlPrdstsVrtyImport.update({
+  id: "/cifru-rtl/prdsts-vrty",
+  path: "/cifru-rtl/prdsts-vrty",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
 const BscLayoutCifruRtlOpfCifruRoute = BscLayoutCifruRtlOpfCifruImport.update({
-  id: '/cifru-rtl/opf-cifru',
-  path: '/cifru-rtl/opf-cifru',
+  id: "/cifru-rtl/opf-cifru",
+  path: "/cifru-rtl/opf-cifru",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
-const BscLayoutCifruRtlHouseCifruRoute =
-  BscLayoutCifruRtlHouseCifruImport.update({
-    id: '/cifru-rtl/house-cifru',
-    path: '/cifru-rtl/house-cifru',
-    getParentRoute: () => BscLayoutRoute,
-  } as any)
+const BscLayoutCifruRtlHouseCifruRoute = BscLayoutCifruRtlHouseCifruImport.update({
+  id: "/cifru-rtl/house-cifru",
+  path: "/cifru-rtl/house-cifru",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
-const BscLayoutCifruRtlHinatCifruRoute =
-  BscLayoutCifruRtlHinatCifruImport.update({
-    id: '/cifru-rtl/hinat-cifru',
-    path: '/cifru-rtl/hinat-cifru',
-    getParentRoute: () => BscLayoutRoute,
-  } as any)
+const BscLayoutCifruRtlHinatCifruRoute = BscLayoutCifruRtlHinatCifruImport.update({
+  id: "/cifru-rtl/hinat-cifru",
+  path: "/cifru-rtl/hinat-cifru",
+  getParentRoute: () => BscLayoutRoute,
+} as any);
 
 const BscLayoutCifruRtlCifruhybRoute = BscLayoutCifruRtlCifruhybImport.update({
-  id: '/cifru-rtl/cifruhyb',
-  path: '/cifru-rtl/cifruhyb',
+  id: "/cifru-rtl/cifruhyb",
+  path: "/cifru-rtl/cifruhyb",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 const BscLayoutCifruRtlBscStatsRoute = BscLayoutCifruRtlBscStatsImport.update({
-  id: '/cifru-rtl/bsc-stats',
-  path: '/cifru-rtl/bsc-stats',
+  id: "/cifru-rtl/bsc-stats",
+  path: "/cifru-rtl/bsc-stats",
   getParentRoute: () => BscLayoutRoute,
-} as any)
+} as any);
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/403': {
-      id: '/403'
-      path: '/403'
-      fullPath: '/403'
-      preLoaderRoute: typeof R403Import
-      parentRoute: typeof rootRoute
-    }
-    '/gis': {
-      id: '/gis'
-      path: '/gis'
-      fullPath: '/gis'
-      preLoaderRoute: typeof GisImport
-      parentRoute: typeof rootRoute
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
-    }
-    '/bsc': {
-      id: '/bsc'
-      path: '/bsc'
-      fullPath: '/bsc'
-      preLoaderRoute: typeof BscImport
-      parentRoute: typeof rootRoute
-    }
-    '/bsc/_layout': {
-      id: '/bsc/_layout'
-      path: '/bsc'
-      fullPath: '/bsc'
-      preLoaderRoute: typeof BscLayoutImport
-      parentRoute: typeof BscRoute
-    }
-    '/spc': {
-      id: '/spc'
-      path: '/spc'
-      fullPath: '/spc'
-      preLoaderRoute: typeof SpcImport
-      parentRoute: typeof rootRoute
-    }
-    '/spc/_layout': {
-      id: '/spc/_layout'
-      path: '/spc'
-      fullPath: '/spc'
-      preLoaderRoute: typeof SpcLayoutImport
-      parentRoute: typeof SpcRoute
-    }
-    '/jeju-agri/': {
-      id: '/jeju-agri/'
-      path: '/jeju-agri'
-      fullPath: '/jeju-agri'
-      preLoaderRoute: typeof JejuAgriIndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/bsc/_layout/cifru-rtl/bsc-stats': {
-      id: '/bsc/_layout/cifru-rtl/bsc-stats'
-      path: '/cifru-rtl/bsc-stats'
-      fullPath: '/bsc/cifru-rtl/bsc-stats'
-      preLoaderRoute: typeof BscLayoutCifruRtlBscStatsImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cifru-rtl/cifruhyb': {
-      id: '/bsc/_layout/cifru-rtl/cifruhyb'
-      path: '/cifru-rtl/cifruhyb'
-      fullPath: '/bsc/cifru-rtl/cifruhyb'
-      preLoaderRoute: typeof BscLayoutCifruRtlCifruhybImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cifru-rtl/hinat-cifru': {
-      id: '/bsc/_layout/cifru-rtl/hinat-cifru'
-      path: '/cifru-rtl/hinat-cifru'
-      fullPath: '/bsc/cifru-rtl/hinat-cifru'
-      preLoaderRoute: typeof BscLayoutCifruRtlHinatCifruImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cifru-rtl/house-cifru': {
-      id: '/bsc/_layout/cifru-rtl/house-cifru'
-      path: '/cifru-rtl/house-cifru'
-      fullPath: '/bsc/cifru-rtl/house-cifru'
-      preLoaderRoute: typeof BscLayoutCifruRtlHouseCifruImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cifru-rtl/opf-cifru': {
-      id: '/bsc/_layout/cifru-rtl/opf-cifru'
-      path: '/cifru-rtl/opf-cifru'
-      fullPath: '/bsc/cifru-rtl/opf-cifru'
-      preLoaderRoute: typeof BscLayoutCifruRtlOpfCifruImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cifru-rtl/prdsts-vrty': {
-      id: '/bsc/_layout/cifru-rtl/prdsts-vrty'
-      path: '/cifru-rtl/prdsts-vrty'
-      fullPath: '/bsc/cifru-rtl/prdsts-vrty'
-      preLoaderRoute: typeof BscLayoutCifruRtlPrdstsVrtyImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/adlfrt': {
-      id: '/bsc/_layout/cltvar-yield/adlfrt'
-      path: '/cltvar-yield/adlfrt'
-      fullPath: '/bsc/cltvar-yield/adlfrt'
-      preLoaderRoute: typeof BscLayoutCltvarYieldAdlfrtImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/adlfrt-imtfrt': {
-      id: '/bsc/_layout/cltvar-yield/adlfrt-imtfrt'
-      path: '/cltvar-yield/adlfrt-imtfrt'
-      fullPath: '/bsc/cltvar-yield/adlfrt-imtfrt'
-      preLoaderRoute: typeof BscLayoutCltvarYieldAdlfrtImtfrtImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/cnvgt': {
-      id: '/bsc/_layout/cltvar-yield/cnvgt'
-      path: '/cltvar-yield/cnvgt'
-      fullPath: '/bsc/cltvar-yield/cnvgt'
-      preLoaderRoute: typeof BscLayoutCltvarYieldCnvgtImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/frtvgt': {
-      id: '/bsc/_layout/cltvar-yield/frtvgt'
-      path: '/cltvar-yield/frtvgt'
-      fullPath: '/bsc/cltvar-yield/frtvgt'
-      preLoaderRoute: typeof BscLayoutCltvarYieldFrtvgtImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/indcrp': {
-      id: '/bsc/_layout/cltvar-yield/indcrp'
-      path: '/cltvar-yield/indcrp'
-      fullPath: '/bsc/cltvar-yield/indcrp'
-      preLoaderRoute: typeof BscLayoutCltvarYieldIndcrpImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/lfyvgt': {
-      id: '/bsc/_layout/cltvar-yield/lfyvgt'
-      path: '/cltvar-yield/lfyvgt'
-      fullPath: '/bsc/cltvar-yield/lfyvgt'
-      preLoaderRoute: typeof BscLayoutCltvarYieldLfyvgtImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/miscgrn': {
-      id: '/bsc/_layout/cltvar-yield/miscgrn'
-      path: '/cltvar-yield/miscgrn'
-      fullPath: '/bsc/cltvar-yield/miscgrn'
-      preLoaderRoute: typeof BscLayoutCltvarYieldMiscgrnImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/mldgrn': {
-      id: '/bsc/_layout/cltvar-yield/mldgrn'
-      path: '/cltvar-yield/mldgrn'
-      fullPath: '/bsc/cltvar-yield/mldgrn'
-      preLoaderRoute: typeof BscLayoutCltvarYieldMldgrnImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/pls': {
-      id: '/bsc/_layout/cltvar-yield/pls'
-      path: '/cltvar-yield/pls'
-      fullPath: '/bsc/cltvar-yield/pls'
-      preLoaderRoute: typeof BscLayoutCltvarYieldPlsImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/rtcrp': {
-      id: '/bsc/_layout/cltvar-yield/rtcrp'
-      path: '/cltvar-yield/rtcrp'
-      fullPath: '/bsc/cltvar-yield/rtcrp'
-      preLoaderRoute: typeof BscLayoutCltvarYieldRtcrpImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/rtvgt': {
-      id: '/bsc/_layout/cltvar-yield/rtvgt'
-      path: '/cltvar-yield/rtvgt'
-      fullPath: '/bsc/cltvar-yield/rtvgt'
-      preLoaderRoute: typeof BscLayoutCltvarYieldRtvgtImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/whtbrl-mldgrn': {
-      id: '/bsc/_layout/cltvar-yield/whtbrl-mldgrn'
-      path: '/cltvar-yield/whtbrl-mldgrn'
-      fullPath: '/bsc/cltvar-yield/whtbrl-mldgrn'
-      preLoaderRoute: typeof BscLayoutCltvarYieldWhtbrlMldgrnImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/cltvar-yield/whtbrl-rghgrn': {
-      id: '/bsc/_layout/cltvar-yield/whtbrl-rghgrn'
-      path: '/cltvar-yield/whtbrl-rghgrn'
-      fullPath: '/bsc/cltvar-yield/whtbrl-rghgrn'
-      preLoaderRoute: typeof BscLayoutCltvarYieldWhtbrlRghgrnImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/ecnm/ast': {
-      id: '/bsc/_layout/ecnm/ast'
-      path: '/ecnm/ast'
-      fullPath: '/bsc/ecnm/ast'
-      preLoaderRoute: typeof BscLayoutEcnmAstImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/ecnm/crast': {
-      id: '/bsc/_layout/ecnm/crast'
-      path: '/ecnm/crast'
-      fullPath: '/bsc/ecnm/crast'
-      preLoaderRoute: typeof BscLayoutEcnmCrastImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/ecnm/earn': {
-      id: '/bsc/_layout/ecnm/earn'
-      path: '/ecnm/earn'
-      fullPath: '/bsc/ecnm/earn'
-      preLoaderRoute: typeof BscLayoutEcnmEarnImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/ecnm/grsincm': {
-      id: '/bsc/_layout/ecnm/grsincm'
-      path: '/ecnm/grsincm'
-      fullPath: '/bsc/ecnm/grsincm'
-      preLoaderRoute: typeof BscLayoutEcnmGrsincmImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/ecnm/key-idct': {
-      id: '/bsc/_layout/ecnm/key-idct'
-      path: '/ecnm/key-idct'
-      fullPath: '/bsc/ecnm/key-idct'
-      preLoaderRoute: typeof BscLayoutEcnmKeyIdctImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/ecnm/lblt': {
-      id: '/bsc/_layout/ecnm/lblt'
-      path: '/ecnm/lblt'
-      fullPath: '/bsc/ecnm/lblt'
-      preLoaderRoute: typeof BscLayoutEcnmLbltImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/ecnm/lbrinp': {
-      id: '/bsc/_layout/ecnm/lbrinp'
-      path: '/ecnm/lbrinp'
-      fullPath: '/bsc/ecnm/lbrinp'
-      preLoaderRoute: typeof BscLayoutEcnmLbrinpImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/ecnm/mngmt-cost': {
-      id: '/bsc/_layout/ecnm/mngmt-cost'
-      path: '/ecnm/mngmt-cost'
-      fullPath: '/bsc/ecnm/mngmt-cost'
-      preLoaderRoute: typeof BscLayoutEcnmMngmtCostImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/ecnm/prdtv-idct': {
-      id: '/bsc/_layout/ecnm/prdtv-idct'
-      path: '/ecnm/prdtv-idct'
-      fullPath: '/bsc/ecnm/prdtv-idct'
-      preLoaderRoute: typeof BscLayoutEcnmPrdtvIdctImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/frmhs/age-ppltn': {
-      id: '/bsc/_layout/frmhs/age-ppltn'
-      path: '/frmhs/age-ppltn'
-      fullPath: '/bsc/frmhs/age-ppltn'
-      preLoaderRoute: typeof BscLayoutFrmhsAgePpltnImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/frmhs/age-rtfrm': {
-      id: '/bsc/_layout/frmhs/age-rtfrm'
-      path: '/frmhs/age-rtfrm'
-      fullPath: '/bsc/frmhs/age-rtfrm'
-      preLoaderRoute: typeof BscLayoutFrmhsAgeRtfrmImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/frmhs/age-rtrrl': {
-      id: '/bsc/_layout/frmhs/age-rtrrl'
-      path: '/frmhs/age-rtrrl'
-      fullPath: '/bsc/frmhs/age-rtrrl'
-      preLoaderRoute: typeof BscLayoutFrmhsAgeRtrrlImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/frmhs/frmlnd-scl': {
-      id: '/bsc/_layout/frmhs/frmlnd-scl'
-      path: '/frmhs/frmlnd-scl'
-      fullPath: '/bsc/frmhs/frmlnd-scl'
-      preLoaderRoute: typeof BscLayoutFrmhsFrmlndSclImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/frmhs/ppltn': {
-      id: '/bsc/_layout/frmhs/ppltn'
-      path: '/frmhs/ppltn'
-      fullPath: '/bsc/frmhs/ppltn'
-      preLoaderRoute: typeof BscLayoutFrmhsPpltnImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/frmlnd/area': {
-      id: '/bsc/_layout/frmlnd/area'
-      path: '/frmlnd/area'
-      fullPath: '/bsc/frmlnd/area'
-      preLoaderRoute: typeof BscLayoutFrmlndAreaImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/frmlnd/utztn': {
-      id: '/bsc/_layout/frmlnd/utztn'
-      path: '/frmlnd/utztn'
-      fullPath: '/bsc/frmlnd/utztn'
-      preLoaderRoute: typeof BscLayoutFrmlndUtztnImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/prdctn-mtrl/agrchm-frtlzr-ntsl': {
-      id: '/bsc/_layout/prdctn-mtrl/agrchm-frtlzr-ntsl'
-      path: '/prdctn-mtrl/agrchm-frtlzr-ntsl'
-      fullPath: '/bsc/prdctn-mtrl/agrchm-frtlzr-ntsl'
-      preLoaderRoute: typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/bsc/_layout/prdctn-mtrl/frmcn-hld': {
-      id: '/bsc/_layout/prdctn-mtrl/frmcn-hld'
-      path: '/prdctn-mtrl/frmcn-hld'
-      fullPath: '/bsc/prdctn-mtrl/frmcn-hld'
-      preLoaderRoute: typeof BscLayoutPrdctnMtrlFrmcnHldImport
-      parentRoute: typeof BscLayoutImport
-    }
-    '/spc/_layout/agrclt-env/agrclt-dstdmg': {
-      id: '/spc/_layout/agrclt-env/agrclt-dstdmg'
-      path: '/agrclt-env/agrclt-dstdmg'
-      fullPath: '/spc/agrclt-env/agrclt-dstdmg'
-      preLoaderRoute: typeof SpcLayoutAgrcltEnvAgrcltDstdmgImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/agrclt-env/gwt-anls-dsbrd': {
-      id: '/spc/_layout/agrclt-env/gwt-anls-dsbrd'
-      path: '/agrclt-env/gwt-anls-dsbrd'
-      fullPath: '/spc/agrclt-env/gwt-anls-dsbrd'
-      preLoaderRoute: typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/agrclt-env/gwt-wtrqlty-chag': {
-      id: '/spc/_layout/agrclt-env/gwt-wtrqlty-chag'
-      path: '/agrclt-env/gwt-wtrqlty-chag'
-      fullPath: '/spc/agrclt-env/gwt-wtrqlty-chag'
-      preLoaderRoute: typeof SpcLayoutAgrcltEnvGwtWtrqltyChagImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/agrclt-env/item-dam-cs': {
-      id: '/spc/_layout/agrclt-env/item-dam-cs'
-      path: '/agrclt-env/item-dam-cs'
-      fullPath: '/spc/agrclt-env/item-dam-cs'
-      preLoaderRoute: typeof SpcLayoutAgrcltEnvItemDamCsImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/agrclt-env/wethr': {
-      id: '/spc/_layout/agrclt-env/wethr'
-      path: '/agrclt-env/wethr'
-      fullPath: '/spc/agrclt-env/wethr'
-      preLoaderRoute: typeof SpcLayoutAgrcltEnvWethrImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/agrclt-env/yrly-agrclt-dstdmg': {
-      id: '/spc/_layout/agrclt-env/yrly-agrclt-dstdmg'
-      path: '/agrclt-env/yrly-agrclt-dstdmg'
-      fullPath: '/spc/agrclt-env/yrly-agrclt-dstdmg'
-      preLoaderRoute: typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/obsrvn/cifru-trage-dist': {
-      id: '/spc/_layout/obsrvn/cifru-trage-dist'
-      path: '/obsrvn/cifru-trage-dist'
-      fullPath: '/spc/obsrvn/cifru-trage-dist'
-      preLoaderRoute: typeof SpcLayoutObsrvnCifruTrageDistImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/obsrvn/flnt': {
-      id: '/spc/_layout/obsrvn/flnt'
-      path: '/obsrvn/flnt'
-      fullPath: '/spc/obsrvn/flnt'
-      preLoaderRoute: typeof SpcLayoutObsrvnFlntImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/obsrvn/obsrvn-info-cmp': {
-      id: '/spc/_layout/obsrvn/obsrvn-info-cmp'
-      path: '/obsrvn/obsrvn-info-cmp'
-      fullPath: '/spc/obsrvn/obsrvn-info-cmp'
-      preLoaderRoute: typeof SpcLayoutObsrvnObsrvnInfoCmpImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/obsrvn/qlty': {
-      id: '/spc/_layout/obsrvn/qlty'
-      path: '/obsrvn/qlty'
-      fullPath: '/spc/obsrvn/qlty'
-      preLoaderRoute: typeof SpcLayoutObsrvnQltyImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/prod/aging': {
-      id: '/spc/_layout/prod/aging'
-      path: '/prod/aging'
-      fullPath: '/spc/prod/aging'
-      preLoaderRoute: typeof SpcLayoutProdAgingImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/prod/cltvar-chag': {
-      id: '/spc/_layout/prod/cltvar-chag'
-      path: '/prod/cltvar-chag'
-      fullPath: '/spc/prod/cltvar-chag'
-      preLoaderRoute: typeof SpcLayoutProdCltvarChagImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/prod/crop-cltvtn-map': {
-      id: '/spc/_layout/prod/crop-cltvtn-map'
-      path: '/prod/crop-cltvtn-map'
-      fullPath: '/spc/prod/crop-cltvtn-map'
-      preLoaderRoute: typeof SpcLayoutProdCropCltvtnMapImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/prod/rgn-cifru-cltvtn': {
-      id: '/spc/_layout/prod/rgn-cifru-cltvtn'
-      path: '/prod/rgn-cifru-cltvtn'
-      fullPath: '/spc/prod/rgn-cifru-cltvtn'
-      preLoaderRoute: typeof SpcLayoutProdRgnCifruCltvtnImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/prod/rgn-cltvtn-harv': {
-      id: '/spc/_layout/prod/rgn-cltvtn-harv'
-      path: '/prod/rgn-cltvtn-harv'
-      fullPath: '/spc/prod/rgn-cltvtn-harv'
-      preLoaderRoute: typeof SpcLayoutProdRgnCltvtnHarvImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/rtl/crop-trade': {
-      id: '/spc/_layout/rtl/crop-trade'
-      path: '/rtl/crop-trade'
-      fullPath: '/spc/rtl/crop-trade'
-      preLoaderRoute: typeof SpcLayoutRtlCropTradeImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/rtl/exp': {
-      id: '/spc/_layout/rtl/exp'
-      path: '/rtl/exp'
-      fullPath: '/spc/rtl/exp'
-      preLoaderRoute: typeof SpcLayoutRtlExpImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/rtl/garak-prc': {
-      id: '/spc/_layout/rtl/garak-prc'
-      path: '/rtl/garak-prc'
-      fullPath: '/spc/rtl/garak-prc'
-      preLoaderRoute: typeof SpcLayoutRtlGarakPrcImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/rtl/prc-dsbrd': {
-      id: '/spc/_layout/rtl/prc-dsbrd'
-      path: '/rtl/prc-dsbrd'
-      fullPath: '/spc/rtl/prc-dsbrd'
-      preLoaderRoute: typeof SpcLayoutRtlPrcDsbrdImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/rtl/prc-predc': {
-      id: '/spc/_layout/rtl/prc-predc'
-      path: '/rtl/prc-predc'
-      fullPath: '/spc/rtl/prc-predc'
-      preLoaderRoute: typeof SpcLayoutRtlPrcPredcImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/spc/_layout/rtl/whlsl-mrkt-share': {
-      id: '/spc/_layout/rtl/whlsl-mrkt-share'
-      path: '/rtl/whlsl-mrkt-share'
-      fullPath: '/spc/rtl/whlsl-mrkt-share'
-      preLoaderRoute: typeof SpcLayoutRtlWhlslMrktShareImport
-      parentRoute: typeof SpcLayoutImport
-    }
-    '/jeju-agri/detail/$id/': {
-      id: '/jeju-agri/detail/$id/'
-      path: '/jeju-agri/detail/$id'
-      fullPath: '/jeju-agri/detail/$id'
-      preLoaderRoute: typeof JejuAgriDetailIdIndexImport
-      parentRoute: typeof rootRoute
-    }
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/403": {
+      id: "/403";
+      path: "/403";
+      fullPath: "/403";
+      preLoaderRoute: typeof R403Import;
+      parentRoute: typeof rootRoute;
+    };
+    "/gis": {
+      id: "/gis";
+      path: "/gis";
+      fullPath: "/gis";
+      preLoaderRoute: typeof GisImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/login": {
+      id: "/login";
+      path: "/login";
+      fullPath: "/login";
+      preLoaderRoute: typeof LoginImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/bsc": {
+      id: "/bsc";
+      path: "/bsc";
+      fullPath: "/bsc";
+      preLoaderRoute: typeof BscImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/bsc/_layout": {
+      id: "/bsc/_layout";
+      path: "/bsc";
+      fullPath: "/bsc";
+      preLoaderRoute: typeof BscLayoutImport;
+      parentRoute: typeof BscRoute;
+    };
+    "/spc": {
+      id: "/spc";
+      path: "/spc";
+      fullPath: "/spc";
+      preLoaderRoute: typeof SpcImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/spc/_layout": {
+      id: "/spc/_layout";
+      path: "/spc";
+      fullPath: "/spc";
+      preLoaderRoute: typeof SpcLayoutImport;
+      parentRoute: typeof SpcRoute;
+    };
+    "/jeju-agri/": {
+      id: "/jeju-agri/";
+      path: "/jeju-agri";
+      fullPath: "/jeju-agri";
+      preLoaderRoute: typeof JejuAgriIndexImport;
+      parentRoute: typeof rootRoute;
+    };
+    "/bsc/_layout/cifru-rtl/bsc-stats": {
+      id: "/bsc/_layout/cifru-rtl/bsc-stats";
+      path: "/cifru-rtl/bsc-stats";
+      fullPath: "/bsc/cifru-rtl/bsc-stats";
+      preLoaderRoute: typeof BscLayoutCifruRtlBscStatsImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cifru-rtl/cifruhyb": {
+      id: "/bsc/_layout/cifru-rtl/cifruhyb";
+      path: "/cifru-rtl/cifruhyb";
+      fullPath: "/bsc/cifru-rtl/cifruhyb";
+      preLoaderRoute: typeof BscLayoutCifruRtlCifruhybImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cifru-rtl/hinat-cifru": {
+      id: "/bsc/_layout/cifru-rtl/hinat-cifru";
+      path: "/cifru-rtl/hinat-cifru";
+      fullPath: "/bsc/cifru-rtl/hinat-cifru";
+      preLoaderRoute: typeof BscLayoutCifruRtlHinatCifruImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cifru-rtl/house-cifru": {
+      id: "/bsc/_layout/cifru-rtl/house-cifru";
+      path: "/cifru-rtl/house-cifru";
+      fullPath: "/bsc/cifru-rtl/house-cifru";
+      preLoaderRoute: typeof BscLayoutCifruRtlHouseCifruImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cifru-rtl/opf-cifru": {
+      id: "/bsc/_layout/cifru-rtl/opf-cifru";
+      path: "/cifru-rtl/opf-cifru";
+      fullPath: "/bsc/cifru-rtl/opf-cifru";
+      preLoaderRoute: typeof BscLayoutCifruRtlOpfCifruImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cifru-rtl/prdsts-vrty": {
+      id: "/bsc/_layout/cifru-rtl/prdsts-vrty";
+      path: "/cifru-rtl/prdsts-vrty";
+      fullPath: "/bsc/cifru-rtl/prdsts-vrty";
+      preLoaderRoute: typeof BscLayoutCifruRtlPrdstsVrtyImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/adlfrt": {
+      id: "/bsc/_layout/cltvar-yield/adlfrt";
+      path: "/cltvar-yield/adlfrt";
+      fullPath: "/bsc/cltvar-yield/adlfrt";
+      preLoaderRoute: typeof BscLayoutCltvarYieldAdlfrtImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/adlfrt-imtfrt": {
+      id: "/bsc/_layout/cltvar-yield/adlfrt-imtfrt";
+      path: "/cltvar-yield/adlfrt-imtfrt";
+      fullPath: "/bsc/cltvar-yield/adlfrt-imtfrt";
+      preLoaderRoute: typeof BscLayoutCltvarYieldAdlfrtImtfrtImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/cnvgt": {
+      id: "/bsc/_layout/cltvar-yield/cnvgt";
+      path: "/cltvar-yield/cnvgt";
+      fullPath: "/bsc/cltvar-yield/cnvgt";
+      preLoaderRoute: typeof BscLayoutCltvarYieldCnvgtImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/frtvgt": {
+      id: "/bsc/_layout/cltvar-yield/frtvgt";
+      path: "/cltvar-yield/frtvgt";
+      fullPath: "/bsc/cltvar-yield/frtvgt";
+      preLoaderRoute: typeof BscLayoutCltvarYieldFrtvgtImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/indcrp": {
+      id: "/bsc/_layout/cltvar-yield/indcrp";
+      path: "/cltvar-yield/indcrp";
+      fullPath: "/bsc/cltvar-yield/indcrp";
+      preLoaderRoute: typeof BscLayoutCltvarYieldIndcrpImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/lfyvgt": {
+      id: "/bsc/_layout/cltvar-yield/lfyvgt";
+      path: "/cltvar-yield/lfyvgt";
+      fullPath: "/bsc/cltvar-yield/lfyvgt";
+      preLoaderRoute: typeof BscLayoutCltvarYieldLfyvgtImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/miscgrn": {
+      id: "/bsc/_layout/cltvar-yield/miscgrn";
+      path: "/cltvar-yield/miscgrn";
+      fullPath: "/bsc/cltvar-yield/miscgrn";
+      preLoaderRoute: typeof BscLayoutCltvarYieldMiscgrnImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/mldgrn": {
+      id: "/bsc/_layout/cltvar-yield/mldgrn";
+      path: "/cltvar-yield/mldgrn";
+      fullPath: "/bsc/cltvar-yield/mldgrn";
+      preLoaderRoute: typeof BscLayoutCltvarYieldMldgrnImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/pls": {
+      id: "/bsc/_layout/cltvar-yield/pls";
+      path: "/cltvar-yield/pls";
+      fullPath: "/bsc/cltvar-yield/pls";
+      preLoaderRoute: typeof BscLayoutCltvarYieldPlsImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/rtcrp": {
+      id: "/bsc/_layout/cltvar-yield/rtcrp";
+      path: "/cltvar-yield/rtcrp";
+      fullPath: "/bsc/cltvar-yield/rtcrp";
+      preLoaderRoute: typeof BscLayoutCltvarYieldRtcrpImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/rtvgt": {
+      id: "/bsc/_layout/cltvar-yield/rtvgt";
+      path: "/cltvar-yield/rtvgt";
+      fullPath: "/bsc/cltvar-yield/rtvgt";
+      preLoaderRoute: typeof BscLayoutCltvarYieldRtvgtImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/whtbrl-mldgrn": {
+      id: "/bsc/_layout/cltvar-yield/whtbrl-mldgrn";
+      path: "/cltvar-yield/whtbrl-mldgrn";
+      fullPath: "/bsc/cltvar-yield/whtbrl-mldgrn";
+      preLoaderRoute: typeof BscLayoutCltvarYieldWhtbrlMldgrnImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/cltvar-yield/whtbrl-rghgrn": {
+      id: "/bsc/_layout/cltvar-yield/whtbrl-rghgrn";
+      path: "/cltvar-yield/whtbrl-rghgrn";
+      fullPath: "/bsc/cltvar-yield/whtbrl-rghgrn";
+      preLoaderRoute: typeof BscLayoutCltvarYieldWhtbrlRghgrnImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/ecnm/ast": {
+      id: "/bsc/_layout/ecnm/ast";
+      path: "/ecnm/ast";
+      fullPath: "/bsc/ecnm/ast";
+      preLoaderRoute: typeof BscLayoutEcnmAstImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/ecnm/crast": {
+      id: "/bsc/_layout/ecnm/crast";
+      path: "/ecnm/crast";
+      fullPath: "/bsc/ecnm/crast";
+      preLoaderRoute: typeof BscLayoutEcnmCrastImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/ecnm/earn": {
+      id: "/bsc/_layout/ecnm/earn";
+      path: "/ecnm/earn";
+      fullPath: "/bsc/ecnm/earn";
+      preLoaderRoute: typeof BscLayoutEcnmEarnImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/ecnm/grsincm": {
+      id: "/bsc/_layout/ecnm/grsincm";
+      path: "/ecnm/grsincm";
+      fullPath: "/bsc/ecnm/grsincm";
+      preLoaderRoute: typeof BscLayoutEcnmGrsincmImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/ecnm/key-idct": {
+      id: "/bsc/_layout/ecnm/key-idct";
+      path: "/ecnm/key-idct";
+      fullPath: "/bsc/ecnm/key-idct";
+      preLoaderRoute: typeof BscLayoutEcnmKeyIdctImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/ecnm/lblt": {
+      id: "/bsc/_layout/ecnm/lblt";
+      path: "/ecnm/lblt";
+      fullPath: "/bsc/ecnm/lblt";
+      preLoaderRoute: typeof BscLayoutEcnmLbltImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/ecnm/lbrinp": {
+      id: "/bsc/_layout/ecnm/lbrinp";
+      path: "/ecnm/lbrinp";
+      fullPath: "/bsc/ecnm/lbrinp";
+      preLoaderRoute: typeof BscLayoutEcnmLbrinpImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/ecnm/mngmt-cost": {
+      id: "/bsc/_layout/ecnm/mngmt-cost";
+      path: "/ecnm/mngmt-cost";
+      fullPath: "/bsc/ecnm/mngmt-cost";
+      preLoaderRoute: typeof BscLayoutEcnmMngmtCostImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/ecnm/prdtv-idct": {
+      id: "/bsc/_layout/ecnm/prdtv-idct";
+      path: "/ecnm/prdtv-idct";
+      fullPath: "/bsc/ecnm/prdtv-idct";
+      preLoaderRoute: typeof BscLayoutEcnmPrdtvIdctImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/frmhs/age-ppltn": {
+      id: "/bsc/_layout/frmhs/age-ppltn";
+      path: "/frmhs/age-ppltn";
+      fullPath: "/bsc/frmhs/age-ppltn";
+      preLoaderRoute: typeof BscLayoutFrmhsAgePpltnImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/frmhs/age-rtfrm": {
+      id: "/bsc/_layout/frmhs/age-rtfrm";
+      path: "/frmhs/age-rtfrm";
+      fullPath: "/bsc/frmhs/age-rtfrm";
+      preLoaderRoute: typeof BscLayoutFrmhsAgeRtfrmImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/frmhs/age-rtrrl": {
+      id: "/bsc/_layout/frmhs/age-rtrrl";
+      path: "/frmhs/age-rtrrl";
+      fullPath: "/bsc/frmhs/age-rtrrl";
+      preLoaderRoute: typeof BscLayoutFrmhsAgeRtrrlImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/frmhs/frmlnd-scl": {
+      id: "/bsc/_layout/frmhs/frmlnd-scl";
+      path: "/frmhs/frmlnd-scl";
+      fullPath: "/bsc/frmhs/frmlnd-scl";
+      preLoaderRoute: typeof BscLayoutFrmhsFrmlndSclImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/frmhs/ppltn": {
+      id: "/bsc/_layout/frmhs/ppltn";
+      path: "/frmhs/ppltn";
+      fullPath: "/bsc/frmhs/ppltn";
+      preLoaderRoute: typeof BscLayoutFrmhsPpltnImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/frmlnd/area": {
+      id: "/bsc/_layout/frmlnd/area";
+      path: "/frmlnd/area";
+      fullPath: "/bsc/frmlnd/area";
+      preLoaderRoute: typeof BscLayoutFrmlndAreaImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/frmlnd/utztn": {
+      id: "/bsc/_layout/frmlnd/utztn";
+      path: "/frmlnd/utztn";
+      fullPath: "/bsc/frmlnd/utztn";
+      preLoaderRoute: typeof BscLayoutFrmlndUtztnImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/prdctn-mtrl/agrchm-frtlzr-ntsl": {
+      id: "/bsc/_layout/prdctn-mtrl/agrchm-frtlzr-ntsl";
+      path: "/prdctn-mtrl/agrchm-frtlzr-ntsl";
+      fullPath: "/bsc/prdctn-mtrl/agrchm-frtlzr-ntsl";
+      preLoaderRoute: typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/bsc/_layout/prdctn-mtrl/frmcn-hld": {
+      id: "/bsc/_layout/prdctn-mtrl/frmcn-hld";
+      path: "/prdctn-mtrl/frmcn-hld";
+      fullPath: "/bsc/prdctn-mtrl/frmcn-hld";
+      preLoaderRoute: typeof BscLayoutPrdctnMtrlFrmcnHldImport;
+      parentRoute: typeof BscLayoutImport;
+    };
+    "/spc/_layout/agrclt-env/agrclt-dstdmg": {
+      id: "/spc/_layout/agrclt-env/agrclt-dstdmg";
+      path: "/agrclt-env/agrclt-dstdmg";
+      fullPath: "/spc/agrclt-env/agrclt-dstdmg";
+      preLoaderRoute: typeof SpcLayoutAgrcltEnvAgrcltDstdmgImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/agrclt-env/dstdmg-type-stats": {
+      id: "/spc/_layout/agrclt-env/dstdmg-type-stats";
+      path: "/agrclt-env/dstdmg-type-stats";
+      fullPath: "/spc/agrclt-env/dstdmg-type-stats";
+      preLoaderRoute: typeof SpcLayoutAgrcltEnvDstdmgTypeStatsImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/agrclt-env/gwt-anls-dsbrd": {
+      id: "/spc/_layout/agrclt-env/gwt-anls-dsbrd";
+      path: "/agrclt-env/gwt-anls-dsbrd";
+      fullPath: "/spc/agrclt-env/gwt-anls-dsbrd";
+      preLoaderRoute: typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/agrclt-env/gwt-wtrqlty-chag": {
+      id: "/spc/_layout/agrclt-env/gwt-wtrqlty-chag";
+      path: "/agrclt-env/gwt-wtrqlty-chag";
+      fullPath: "/spc/agrclt-env/gwt-wtrqlty-chag";
+      preLoaderRoute: typeof SpcLayoutAgrcltEnvGwtWtrqltyChagImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/agrclt-env/item-dam-cs": {
+      id: "/spc/_layout/agrclt-env/item-dam-cs";
+      path: "/agrclt-env/item-dam-cs";
+      fullPath: "/spc/agrclt-env/item-dam-cs";
+      preLoaderRoute: typeof SpcLayoutAgrcltEnvItemDamCsImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/agrclt-env/wethr": {
+      id: "/spc/_layout/agrclt-env/wethr";
+      path: "/agrclt-env/wethr";
+      fullPath: "/spc/agrclt-env/wethr";
+      preLoaderRoute: typeof SpcLayoutAgrcltEnvWethrImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/agrclt-env/yrly-agrclt-dstdmg": {
+      id: "/spc/_layout/agrclt-env/yrly-agrclt-dstdmg";
+      path: "/agrclt-env/yrly-agrclt-dstdmg";
+      fullPath: "/spc/agrclt-env/yrly-agrclt-dstdmg";
+      preLoaderRoute: typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/obsrvn/cifru-trage-dist": {
+      id: "/spc/_layout/obsrvn/cifru-trage-dist";
+      path: "/obsrvn/cifru-trage-dist";
+      fullPath: "/spc/obsrvn/cifru-trage-dist";
+      preLoaderRoute: typeof SpcLayoutObsrvnCifruTrageDistImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/obsrvn/flnt": {
+      id: "/spc/_layout/obsrvn/flnt";
+      path: "/obsrvn/flnt";
+      fullPath: "/spc/obsrvn/flnt";
+      preLoaderRoute: typeof SpcLayoutObsrvnFlntImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/obsrvn/obsrvn-info-cmp": {
+      id: "/spc/_layout/obsrvn/obsrvn-info-cmp";
+      path: "/obsrvn/obsrvn-info-cmp";
+      fullPath: "/spc/obsrvn/obsrvn-info-cmp";
+      preLoaderRoute: typeof SpcLayoutObsrvnObsrvnInfoCmpImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/obsrvn/qlty": {
+      id: "/spc/_layout/obsrvn/qlty";
+      path: "/obsrvn/qlty";
+      fullPath: "/spc/obsrvn/qlty";
+      preLoaderRoute: typeof SpcLayoutObsrvnQltyImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/prod/aging": {
+      id: "/spc/_layout/prod/aging";
+      path: "/prod/aging";
+      fullPath: "/spc/prod/aging";
+      preLoaderRoute: typeof SpcLayoutProdAgingImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/prod/cltvar-chag": {
+      id: "/spc/_layout/prod/cltvar-chag";
+      path: "/prod/cltvar-chag";
+      fullPath: "/spc/prod/cltvar-chag";
+      preLoaderRoute: typeof SpcLayoutProdCltvarChagImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/prod/crop-cltvtn-map": {
+      id: "/spc/_layout/prod/crop-cltvtn-map";
+      path: "/prod/crop-cltvtn-map";
+      fullPath: "/spc/prod/crop-cltvtn-map";
+      preLoaderRoute: typeof SpcLayoutProdCropCltvtnMapImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/prod/rgn-cifru-cltvtn": {
+      id: "/spc/_layout/prod/rgn-cifru-cltvtn";
+      path: "/prod/rgn-cifru-cltvtn";
+      fullPath: "/spc/prod/rgn-cifru-cltvtn";
+      preLoaderRoute: typeof SpcLayoutProdRgnCifruCltvtnImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/prod/rgn-cltvtn-harv": {
+      id: "/spc/_layout/prod/rgn-cltvtn-harv";
+      path: "/prod/rgn-cltvtn-harv";
+      fullPath: "/spc/prod/rgn-cltvtn-harv";
+      preLoaderRoute: typeof SpcLayoutProdRgnCltvtnHarvImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/rtl/crop-trade": {
+      id: "/spc/_layout/rtl/crop-trade";
+      path: "/rtl/crop-trade";
+      fullPath: "/spc/rtl/crop-trade";
+      preLoaderRoute: typeof SpcLayoutRtlCropTradeImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/rtl/exp": {
+      id: "/spc/_layout/rtl/exp";
+      path: "/rtl/exp";
+      fullPath: "/spc/rtl/exp";
+      preLoaderRoute: typeof SpcLayoutRtlExpImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/rtl/garak-prc": {
+      id: "/spc/_layout/rtl/garak-prc";
+      path: "/rtl/garak-prc";
+      fullPath: "/spc/rtl/garak-prc";
+      preLoaderRoute: typeof SpcLayoutRtlGarakPrcImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/rtl/prc-dsbrd": {
+      id: "/spc/_layout/rtl/prc-dsbrd";
+      path: "/rtl/prc-dsbrd";
+      fullPath: "/spc/rtl/prc-dsbrd";
+      preLoaderRoute: typeof SpcLayoutRtlPrcDsbrdImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/rtl/prc-predc": {
+      id: "/spc/_layout/rtl/prc-predc";
+      path: "/rtl/prc-predc";
+      fullPath: "/spc/rtl/prc-predc";
+      preLoaderRoute: typeof SpcLayoutRtlPrcPredcImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/spc/_layout/rtl/whlsl-mrkt-share": {
+      id: "/spc/_layout/rtl/whlsl-mrkt-share";
+      path: "/rtl/whlsl-mrkt-share";
+      fullPath: "/spc/rtl/whlsl-mrkt-share";
+      preLoaderRoute: typeof SpcLayoutRtlWhlslMrktShareImport;
+      parentRoute: typeof SpcLayoutImport;
+    };
+    "/jeju-agri/detail/$id/": {
+      id: "/jeju-agri/detail/$id/";
+      path: "/jeju-agri/detail/$id";
+      fullPath: "/jeju-agri/detail/$id";
+      preLoaderRoute: typeof JejuAgriDetailIdIndexImport;
+      parentRoute: typeof rootRoute;
+    };
   }
 }
 
 // Create and export the route tree
 
 interface BscLayoutRouteChildren {
-  BscLayoutCifruRtlBscStatsRoute: typeof BscLayoutCifruRtlBscStatsRoute
-  BscLayoutCifruRtlCifruhybRoute: typeof BscLayoutCifruRtlCifruhybRoute
-  BscLayoutCifruRtlHinatCifruRoute: typeof BscLayoutCifruRtlHinatCifruRoute
-  BscLayoutCifruRtlHouseCifruRoute: typeof BscLayoutCifruRtlHouseCifruRoute
-  BscLayoutCifruRtlOpfCifruRoute: typeof BscLayoutCifruRtlOpfCifruRoute
-  BscLayoutCifruRtlPrdstsVrtyRoute: typeof BscLayoutCifruRtlPrdstsVrtyRoute
-  BscLayoutCltvarYieldAdlfrtRoute: typeof BscLayoutCltvarYieldAdlfrtRoute
-  BscLayoutCltvarYieldAdlfrtImtfrtRoute: typeof BscLayoutCltvarYieldAdlfrtImtfrtRoute
-  BscLayoutCltvarYieldCnvgtRoute: typeof BscLayoutCltvarYieldCnvgtRoute
-  BscLayoutCltvarYieldFrtvgtRoute: typeof BscLayoutCltvarYieldFrtvgtRoute
-  BscLayoutCltvarYieldIndcrpRoute: typeof BscLayoutCltvarYieldIndcrpRoute
-  BscLayoutCltvarYieldLfyvgtRoute: typeof BscLayoutCltvarYieldLfyvgtRoute
-  BscLayoutCltvarYieldMiscgrnRoute: typeof BscLayoutCltvarYieldMiscgrnRoute
-  BscLayoutCltvarYieldMldgrnRoute: typeof BscLayoutCltvarYieldMldgrnRoute
-  BscLayoutCltvarYieldPlsRoute: typeof BscLayoutCltvarYieldPlsRoute
-  BscLayoutCltvarYieldRtcrpRoute: typeof BscLayoutCltvarYieldRtcrpRoute
-  BscLayoutCltvarYieldRtvgtRoute: typeof BscLayoutCltvarYieldRtvgtRoute
-  BscLayoutCltvarYieldWhtbrlMldgrnRoute: typeof BscLayoutCltvarYieldWhtbrlMldgrnRoute
-  BscLayoutCltvarYieldWhtbrlRghgrnRoute: typeof BscLayoutCltvarYieldWhtbrlRghgrnRoute
-  BscLayoutEcnmAstRoute: typeof BscLayoutEcnmAstRoute
-  BscLayoutEcnmCrastRoute: typeof BscLayoutEcnmCrastRoute
-  BscLayoutEcnmEarnRoute: typeof BscLayoutEcnmEarnRoute
-  BscLayoutEcnmGrsincmRoute: typeof BscLayoutEcnmGrsincmRoute
-  BscLayoutEcnmKeyIdctRoute: typeof BscLayoutEcnmKeyIdctRoute
-  BscLayoutEcnmLbltRoute: typeof BscLayoutEcnmLbltRoute
-  BscLayoutEcnmLbrinpRoute: typeof BscLayoutEcnmLbrinpRoute
-  BscLayoutEcnmMngmtCostRoute: typeof BscLayoutEcnmMngmtCostRoute
-  BscLayoutEcnmPrdtvIdctRoute: typeof BscLayoutEcnmPrdtvIdctRoute
-  BscLayoutFrmhsAgePpltnRoute: typeof BscLayoutFrmhsAgePpltnRoute
-  BscLayoutFrmhsAgeRtfrmRoute: typeof BscLayoutFrmhsAgeRtfrmRoute
-  BscLayoutFrmhsAgeRtrrlRoute: typeof BscLayoutFrmhsAgeRtrrlRoute
-  BscLayoutFrmhsFrmlndSclRoute: typeof BscLayoutFrmhsFrmlndSclRoute
-  BscLayoutFrmhsPpltnRoute: typeof BscLayoutFrmhsPpltnRoute
-  BscLayoutFrmlndAreaRoute: typeof BscLayoutFrmlndAreaRoute
-  BscLayoutFrmlndUtztnRoute: typeof BscLayoutFrmlndUtztnRoute
-  BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute: typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute
-  BscLayoutPrdctnMtrlFrmcnHldRoute: typeof BscLayoutPrdctnMtrlFrmcnHldRoute
+  BscLayoutCifruRtlBscStatsRoute: typeof BscLayoutCifruRtlBscStatsRoute;
+  BscLayoutCifruRtlCifruhybRoute: typeof BscLayoutCifruRtlCifruhybRoute;
+  BscLayoutCifruRtlHinatCifruRoute: typeof BscLayoutCifruRtlHinatCifruRoute;
+  BscLayoutCifruRtlHouseCifruRoute: typeof BscLayoutCifruRtlHouseCifruRoute;
+  BscLayoutCifruRtlOpfCifruRoute: typeof BscLayoutCifruRtlOpfCifruRoute;
+  BscLayoutCifruRtlPrdstsVrtyRoute: typeof BscLayoutCifruRtlPrdstsVrtyRoute;
+  BscLayoutCltvarYieldAdlfrtRoute: typeof BscLayoutCltvarYieldAdlfrtRoute;
+  BscLayoutCltvarYieldAdlfrtImtfrtRoute: typeof BscLayoutCltvarYieldAdlfrtImtfrtRoute;
+  BscLayoutCltvarYieldCnvgtRoute: typeof BscLayoutCltvarYieldCnvgtRoute;
+  BscLayoutCltvarYieldFrtvgtRoute: typeof BscLayoutCltvarYieldFrtvgtRoute;
+  BscLayoutCltvarYieldIndcrpRoute: typeof BscLayoutCltvarYieldIndcrpRoute;
+  BscLayoutCltvarYieldLfyvgtRoute: typeof BscLayoutCltvarYieldLfyvgtRoute;
+  BscLayoutCltvarYieldMiscgrnRoute: typeof BscLayoutCltvarYieldMiscgrnRoute;
+  BscLayoutCltvarYieldMldgrnRoute: typeof BscLayoutCltvarYieldMldgrnRoute;
+  BscLayoutCltvarYieldPlsRoute: typeof BscLayoutCltvarYieldPlsRoute;
+  BscLayoutCltvarYieldRtcrpRoute: typeof BscLayoutCltvarYieldRtcrpRoute;
+  BscLayoutCltvarYieldRtvgtRoute: typeof BscLayoutCltvarYieldRtvgtRoute;
+  BscLayoutCltvarYieldWhtbrlMldgrnRoute: typeof BscLayoutCltvarYieldWhtbrlMldgrnRoute;
+  BscLayoutCltvarYieldWhtbrlRghgrnRoute: typeof BscLayoutCltvarYieldWhtbrlRghgrnRoute;
+  BscLayoutEcnmAstRoute: typeof BscLayoutEcnmAstRoute;
+  BscLayoutEcnmCrastRoute: typeof BscLayoutEcnmCrastRoute;
+  BscLayoutEcnmEarnRoute: typeof BscLayoutEcnmEarnRoute;
+  BscLayoutEcnmGrsincmRoute: typeof BscLayoutEcnmGrsincmRoute;
+  BscLayoutEcnmKeyIdctRoute: typeof BscLayoutEcnmKeyIdctRoute;
+  BscLayoutEcnmLbltRoute: typeof BscLayoutEcnmLbltRoute;
+  BscLayoutEcnmLbrinpRoute: typeof BscLayoutEcnmLbrinpRoute;
+  BscLayoutEcnmMngmtCostRoute: typeof BscLayoutEcnmMngmtCostRoute;
+  BscLayoutEcnmPrdtvIdctRoute: typeof BscLayoutEcnmPrdtvIdctRoute;
+  BscLayoutFrmhsAgePpltnRoute: typeof BscLayoutFrmhsAgePpltnRoute;
+  BscLayoutFrmhsAgeRtfrmRoute: typeof BscLayoutFrmhsAgeRtfrmRoute;
+  BscLayoutFrmhsAgeRtrrlRoute: typeof BscLayoutFrmhsAgeRtrrlRoute;
+  BscLayoutFrmhsFrmlndSclRoute: typeof BscLayoutFrmhsFrmlndSclRoute;
+  BscLayoutFrmhsPpltnRoute: typeof BscLayoutFrmhsPpltnRoute;
+  BscLayoutFrmlndAreaRoute: typeof BscLayoutFrmlndAreaRoute;
+  BscLayoutFrmlndUtztnRoute: typeof BscLayoutFrmlndUtztnRoute;
+  BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute: typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute;
+  BscLayoutPrdctnMtrlFrmcnHldRoute: typeof BscLayoutPrdctnMtrlFrmcnHldRoute;
 }
 
 const BscLayoutRouteChildren: BscLayoutRouteChildren = {
@@ -1087,57 +1068,55 @@ const BscLayoutRouteChildren: BscLayoutRouteChildren = {
   BscLayoutFrmhsPpltnRoute: BscLayoutFrmhsPpltnRoute,
   BscLayoutFrmlndAreaRoute: BscLayoutFrmlndAreaRoute,
   BscLayoutFrmlndUtztnRoute: BscLayoutFrmlndUtztnRoute,
-  BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute:
-    BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute,
+  BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute: BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute,
   BscLayoutPrdctnMtrlFrmcnHldRoute: BscLayoutPrdctnMtrlFrmcnHldRoute,
-}
+};
 
-const BscLayoutRouteWithChildren = BscLayoutRoute._addFileChildren(
-  BscLayoutRouteChildren,
-)
+const BscLayoutRouteWithChildren = BscLayoutRoute._addFileChildren(BscLayoutRouteChildren);
 
 interface BscRouteChildren {
-  BscLayoutRoute: typeof BscLayoutRouteWithChildren
+  BscLayoutRoute: typeof BscLayoutRouteWithChildren;
 }
 
 const BscRouteChildren: BscRouteChildren = {
   BscLayoutRoute: BscLayoutRouteWithChildren,
-}
+};
 
-const BscRouteWithChildren = BscRoute._addFileChildren(BscRouteChildren)
+const BscRouteWithChildren = BscRoute._addFileChildren(BscRouteChildren);
 
 interface SpcLayoutRouteChildren {
-  SpcLayoutAgrcltEnvAgrcltDstdmgRoute: typeof SpcLayoutAgrcltEnvAgrcltDstdmgRoute
-  SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute: typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute
-  SpcLayoutAgrcltEnvGwtWtrqltyChagRoute: typeof SpcLayoutAgrcltEnvGwtWtrqltyChagRoute
-  SpcLayoutAgrcltEnvItemDamCsRoute: typeof SpcLayoutAgrcltEnvItemDamCsRoute
-  SpcLayoutAgrcltEnvWethrRoute: typeof SpcLayoutAgrcltEnvWethrRoute
-  SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute: typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute
-  SpcLayoutObsrvnCifruTrageDistRoute: typeof SpcLayoutObsrvnCifruTrageDistRoute
-  SpcLayoutObsrvnFlntRoute: typeof SpcLayoutObsrvnFlntRoute
-  SpcLayoutObsrvnObsrvnInfoCmpRoute: typeof SpcLayoutObsrvnObsrvnInfoCmpRoute
-  SpcLayoutObsrvnQltyRoute: typeof SpcLayoutObsrvnQltyRoute
-  SpcLayoutProdAgingRoute: typeof SpcLayoutProdAgingRoute
-  SpcLayoutProdCltvarChagRoute: typeof SpcLayoutProdCltvarChagRoute
-  SpcLayoutProdCropCltvtnMapRoute: typeof SpcLayoutProdCropCltvtnMapRoute
-  SpcLayoutProdRgnCifruCltvtnRoute: typeof SpcLayoutProdRgnCifruCltvtnRoute
-  SpcLayoutProdRgnCltvtnHarvRoute: typeof SpcLayoutProdRgnCltvtnHarvRoute
-  SpcLayoutRtlCropTradeRoute: typeof SpcLayoutRtlCropTradeRoute
-  SpcLayoutRtlExpRoute: typeof SpcLayoutRtlExpRoute
-  SpcLayoutRtlGarakPrcRoute: typeof SpcLayoutRtlGarakPrcRoute
-  SpcLayoutRtlPrcDsbrdRoute: typeof SpcLayoutRtlPrcDsbrdRoute
-  SpcLayoutRtlPrcPredcRoute: typeof SpcLayoutRtlPrcPredcRoute
-  SpcLayoutRtlWhlslMrktShareRoute: typeof SpcLayoutRtlWhlslMrktShareRoute
+  SpcLayoutAgrcltEnvAgrcltDstdmgRoute: typeof SpcLayoutAgrcltEnvAgrcltDstdmgRoute;
+  SpcLayoutAgrcltEnvDstdmgTypeStatsRoute: typeof SpcLayoutAgrcltEnvDstdmgTypeStatsRoute;
+  SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute: typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute;
+  SpcLayoutAgrcltEnvGwtWtrqltyChagRoute: typeof SpcLayoutAgrcltEnvGwtWtrqltyChagRoute;
+  SpcLayoutAgrcltEnvItemDamCsRoute: typeof SpcLayoutAgrcltEnvItemDamCsRoute;
+  SpcLayoutAgrcltEnvWethrRoute: typeof SpcLayoutAgrcltEnvWethrRoute;
+  SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute: typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute;
+  SpcLayoutObsrvnCifruTrageDistRoute: typeof SpcLayoutObsrvnCifruTrageDistRoute;
+  SpcLayoutObsrvnFlntRoute: typeof SpcLayoutObsrvnFlntRoute;
+  SpcLayoutObsrvnObsrvnInfoCmpRoute: typeof SpcLayoutObsrvnObsrvnInfoCmpRoute;
+  SpcLayoutObsrvnQltyRoute: typeof SpcLayoutObsrvnQltyRoute;
+  SpcLayoutProdAgingRoute: typeof SpcLayoutProdAgingRoute;
+  SpcLayoutProdCltvarChagRoute: typeof SpcLayoutProdCltvarChagRoute;
+  SpcLayoutProdCropCltvtnMapRoute: typeof SpcLayoutProdCropCltvtnMapRoute;
+  SpcLayoutProdRgnCifruCltvtnRoute: typeof SpcLayoutProdRgnCifruCltvtnRoute;
+  SpcLayoutProdRgnCltvtnHarvRoute: typeof SpcLayoutProdRgnCltvtnHarvRoute;
+  SpcLayoutRtlCropTradeRoute: typeof SpcLayoutRtlCropTradeRoute;
+  SpcLayoutRtlExpRoute: typeof SpcLayoutRtlExpRoute;
+  SpcLayoutRtlGarakPrcRoute: typeof SpcLayoutRtlGarakPrcRoute;
+  SpcLayoutRtlPrcDsbrdRoute: typeof SpcLayoutRtlPrcDsbrdRoute;
+  SpcLayoutRtlPrcPredcRoute: typeof SpcLayoutRtlPrcPredcRoute;
+  SpcLayoutRtlWhlslMrktShareRoute: typeof SpcLayoutRtlWhlslMrktShareRoute;
 }
 
 const SpcLayoutRouteChildren: SpcLayoutRouteChildren = {
   SpcLayoutAgrcltEnvAgrcltDstdmgRoute: SpcLayoutAgrcltEnvAgrcltDstdmgRoute,
+  SpcLayoutAgrcltEnvDstdmgTypeStatsRoute: SpcLayoutAgrcltEnvDstdmgTypeStatsRoute,
   SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute: SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute,
   SpcLayoutAgrcltEnvGwtWtrqltyChagRoute: SpcLayoutAgrcltEnvGwtWtrqltyChagRoute,
   SpcLayoutAgrcltEnvItemDamCsRoute: SpcLayoutAgrcltEnvItemDamCsRoute,
   SpcLayoutAgrcltEnvWethrRoute: SpcLayoutAgrcltEnvWethrRoute,
-  SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute:
-    SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute,
+  SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute: SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute,
   SpcLayoutObsrvnCifruTrageDistRoute: SpcLayoutObsrvnCifruTrageDistRoute,
   SpcLayoutObsrvnFlntRoute: SpcLayoutObsrvnFlntRoute,
   SpcLayoutObsrvnObsrvnInfoCmpRoute: SpcLayoutObsrvnObsrvnInfoCmpRoute,
@@ -1153,451 +1132,455 @@ const SpcLayoutRouteChildren: SpcLayoutRouteChildren = {
   SpcLayoutRtlPrcDsbrdRoute: SpcLayoutRtlPrcDsbrdRoute,
   SpcLayoutRtlPrcPredcRoute: SpcLayoutRtlPrcPredcRoute,
   SpcLayoutRtlWhlslMrktShareRoute: SpcLayoutRtlWhlslMrktShareRoute,
-}
+};
 
-const SpcLayoutRouteWithChildren = SpcLayoutRoute._addFileChildren(
-  SpcLayoutRouteChildren,
-)
+const SpcLayoutRouteWithChildren = SpcLayoutRoute._addFileChildren(SpcLayoutRouteChildren);
 
 interface SpcRouteChildren {
-  SpcLayoutRoute: typeof SpcLayoutRouteWithChildren
+  SpcLayoutRoute: typeof SpcLayoutRouteWithChildren;
 }
 
 const SpcRouteChildren: SpcRouteChildren = {
   SpcLayoutRoute: SpcLayoutRouteWithChildren,
-}
+};
 
-const SpcRouteWithChildren = SpcRoute._addFileChildren(SpcRouteChildren)
+const SpcRouteWithChildren = SpcRoute._addFileChildren(SpcRouteChildren);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/403': typeof R403Route
-  '/gis': typeof GisRoute
-  '/login': typeof LoginRoute
-  '/bsc': typeof BscLayoutRouteWithChildren
-  '/spc': typeof SpcLayoutRouteWithChildren
-  '/jeju-agri': typeof JejuAgriIndexRoute
-  '/bsc/cifru-rtl/bsc-stats': typeof BscLayoutCifruRtlBscStatsRoute
-  '/bsc/cifru-rtl/cifruhyb': typeof BscLayoutCifruRtlCifruhybRoute
-  '/bsc/cifru-rtl/hinat-cifru': typeof BscLayoutCifruRtlHinatCifruRoute
-  '/bsc/cifru-rtl/house-cifru': typeof BscLayoutCifruRtlHouseCifruRoute
-  '/bsc/cifru-rtl/opf-cifru': typeof BscLayoutCifruRtlOpfCifruRoute
-  '/bsc/cifru-rtl/prdsts-vrty': typeof BscLayoutCifruRtlPrdstsVrtyRoute
-  '/bsc/cltvar-yield/adlfrt': typeof BscLayoutCltvarYieldAdlfrtRoute
-  '/bsc/cltvar-yield/adlfrt-imtfrt': typeof BscLayoutCltvarYieldAdlfrtImtfrtRoute
-  '/bsc/cltvar-yield/cnvgt': typeof BscLayoutCltvarYieldCnvgtRoute
-  '/bsc/cltvar-yield/frtvgt': typeof BscLayoutCltvarYieldFrtvgtRoute
-  '/bsc/cltvar-yield/indcrp': typeof BscLayoutCltvarYieldIndcrpRoute
-  '/bsc/cltvar-yield/lfyvgt': typeof BscLayoutCltvarYieldLfyvgtRoute
-  '/bsc/cltvar-yield/miscgrn': typeof BscLayoutCltvarYieldMiscgrnRoute
-  '/bsc/cltvar-yield/mldgrn': typeof BscLayoutCltvarYieldMldgrnRoute
-  '/bsc/cltvar-yield/pls': typeof BscLayoutCltvarYieldPlsRoute
-  '/bsc/cltvar-yield/rtcrp': typeof BscLayoutCltvarYieldRtcrpRoute
-  '/bsc/cltvar-yield/rtvgt': typeof BscLayoutCltvarYieldRtvgtRoute
-  '/bsc/cltvar-yield/whtbrl-mldgrn': typeof BscLayoutCltvarYieldWhtbrlMldgrnRoute
-  '/bsc/cltvar-yield/whtbrl-rghgrn': typeof BscLayoutCltvarYieldWhtbrlRghgrnRoute
-  '/bsc/ecnm/ast': typeof BscLayoutEcnmAstRoute
-  '/bsc/ecnm/crast': typeof BscLayoutEcnmCrastRoute
-  '/bsc/ecnm/earn': typeof BscLayoutEcnmEarnRoute
-  '/bsc/ecnm/grsincm': typeof BscLayoutEcnmGrsincmRoute
-  '/bsc/ecnm/key-idct': typeof BscLayoutEcnmKeyIdctRoute
-  '/bsc/ecnm/lblt': typeof BscLayoutEcnmLbltRoute
-  '/bsc/ecnm/lbrinp': typeof BscLayoutEcnmLbrinpRoute
-  '/bsc/ecnm/mngmt-cost': typeof BscLayoutEcnmMngmtCostRoute
-  '/bsc/ecnm/prdtv-idct': typeof BscLayoutEcnmPrdtvIdctRoute
-  '/bsc/frmhs/age-ppltn': typeof BscLayoutFrmhsAgePpltnRoute
-  '/bsc/frmhs/age-rtfrm': typeof BscLayoutFrmhsAgeRtfrmRoute
-  '/bsc/frmhs/age-rtrrl': typeof BscLayoutFrmhsAgeRtrrlRoute
-  '/bsc/frmhs/frmlnd-scl': typeof BscLayoutFrmhsFrmlndSclRoute
-  '/bsc/frmhs/ppltn': typeof BscLayoutFrmhsPpltnRoute
-  '/bsc/frmlnd/area': typeof BscLayoutFrmlndAreaRoute
-  '/bsc/frmlnd/utztn': typeof BscLayoutFrmlndUtztnRoute
-  '/bsc/prdctn-mtrl/agrchm-frtlzr-ntsl': typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute
-  '/bsc/prdctn-mtrl/frmcn-hld': typeof BscLayoutPrdctnMtrlFrmcnHldRoute
-  '/spc/agrclt-env/agrclt-dstdmg': typeof SpcLayoutAgrcltEnvAgrcltDstdmgRoute
-  '/spc/agrclt-env/gwt-anls-dsbrd': typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute
-  '/spc/agrclt-env/gwt-wtrqlty-chag': typeof SpcLayoutAgrcltEnvGwtWtrqltyChagRoute
-  '/spc/agrclt-env/item-dam-cs': typeof SpcLayoutAgrcltEnvItemDamCsRoute
-  '/spc/agrclt-env/wethr': typeof SpcLayoutAgrcltEnvWethrRoute
-  '/spc/agrclt-env/yrly-agrclt-dstdmg': typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute
-  '/spc/obsrvn/cifru-trage-dist': typeof SpcLayoutObsrvnCifruTrageDistRoute
-  '/spc/obsrvn/flnt': typeof SpcLayoutObsrvnFlntRoute
-  '/spc/obsrvn/obsrvn-info-cmp': typeof SpcLayoutObsrvnObsrvnInfoCmpRoute
-  '/spc/obsrvn/qlty': typeof SpcLayoutObsrvnQltyRoute
-  '/spc/prod/aging': typeof SpcLayoutProdAgingRoute
-  '/spc/prod/cltvar-chag': typeof SpcLayoutProdCltvarChagRoute
-  '/spc/prod/crop-cltvtn-map': typeof SpcLayoutProdCropCltvtnMapRoute
-  '/spc/prod/rgn-cifru-cltvtn': typeof SpcLayoutProdRgnCifruCltvtnRoute
-  '/spc/prod/rgn-cltvtn-harv': typeof SpcLayoutProdRgnCltvtnHarvRoute
-  '/spc/rtl/crop-trade': typeof SpcLayoutRtlCropTradeRoute
-  '/spc/rtl/exp': typeof SpcLayoutRtlExpRoute
-  '/spc/rtl/garak-prc': typeof SpcLayoutRtlGarakPrcRoute
-  '/spc/rtl/prc-dsbrd': typeof SpcLayoutRtlPrcDsbrdRoute
-  '/spc/rtl/prc-predc': typeof SpcLayoutRtlPrcPredcRoute
-  '/spc/rtl/whlsl-mrkt-share': typeof SpcLayoutRtlWhlslMrktShareRoute
-  '/jeju-agri/detail/$id': typeof JejuAgriDetailIdIndexRoute
+  "/": typeof IndexRoute;
+  "/403": typeof R403Route;
+  "/gis": typeof GisRoute;
+  "/login": typeof LoginRoute;
+  "/bsc": typeof BscLayoutRouteWithChildren;
+  "/spc": typeof SpcLayoutRouteWithChildren;
+  "/jeju-agri": typeof JejuAgriIndexRoute;
+  "/bsc/cifru-rtl/bsc-stats": typeof BscLayoutCifruRtlBscStatsRoute;
+  "/bsc/cifru-rtl/cifruhyb": typeof BscLayoutCifruRtlCifruhybRoute;
+  "/bsc/cifru-rtl/hinat-cifru": typeof BscLayoutCifruRtlHinatCifruRoute;
+  "/bsc/cifru-rtl/house-cifru": typeof BscLayoutCifruRtlHouseCifruRoute;
+  "/bsc/cifru-rtl/opf-cifru": typeof BscLayoutCifruRtlOpfCifruRoute;
+  "/bsc/cifru-rtl/prdsts-vrty": typeof BscLayoutCifruRtlPrdstsVrtyRoute;
+  "/bsc/cltvar-yield/adlfrt": typeof BscLayoutCltvarYieldAdlfrtRoute;
+  "/bsc/cltvar-yield/adlfrt-imtfrt": typeof BscLayoutCltvarYieldAdlfrtImtfrtRoute;
+  "/bsc/cltvar-yield/cnvgt": typeof BscLayoutCltvarYieldCnvgtRoute;
+  "/bsc/cltvar-yield/frtvgt": typeof BscLayoutCltvarYieldFrtvgtRoute;
+  "/bsc/cltvar-yield/indcrp": typeof BscLayoutCltvarYieldIndcrpRoute;
+  "/bsc/cltvar-yield/lfyvgt": typeof BscLayoutCltvarYieldLfyvgtRoute;
+  "/bsc/cltvar-yield/miscgrn": typeof BscLayoutCltvarYieldMiscgrnRoute;
+  "/bsc/cltvar-yield/mldgrn": typeof BscLayoutCltvarYieldMldgrnRoute;
+  "/bsc/cltvar-yield/pls": typeof BscLayoutCltvarYieldPlsRoute;
+  "/bsc/cltvar-yield/rtcrp": typeof BscLayoutCltvarYieldRtcrpRoute;
+  "/bsc/cltvar-yield/rtvgt": typeof BscLayoutCltvarYieldRtvgtRoute;
+  "/bsc/cltvar-yield/whtbrl-mldgrn": typeof BscLayoutCltvarYieldWhtbrlMldgrnRoute;
+  "/bsc/cltvar-yield/whtbrl-rghgrn": typeof BscLayoutCltvarYieldWhtbrlRghgrnRoute;
+  "/bsc/ecnm/ast": typeof BscLayoutEcnmAstRoute;
+  "/bsc/ecnm/crast": typeof BscLayoutEcnmCrastRoute;
+  "/bsc/ecnm/earn": typeof BscLayoutEcnmEarnRoute;
+  "/bsc/ecnm/grsincm": typeof BscLayoutEcnmGrsincmRoute;
+  "/bsc/ecnm/key-idct": typeof BscLayoutEcnmKeyIdctRoute;
+  "/bsc/ecnm/lblt": typeof BscLayoutEcnmLbltRoute;
+  "/bsc/ecnm/lbrinp": typeof BscLayoutEcnmLbrinpRoute;
+  "/bsc/ecnm/mngmt-cost": typeof BscLayoutEcnmMngmtCostRoute;
+  "/bsc/ecnm/prdtv-idct": typeof BscLayoutEcnmPrdtvIdctRoute;
+  "/bsc/frmhs/age-ppltn": typeof BscLayoutFrmhsAgePpltnRoute;
+  "/bsc/frmhs/age-rtfrm": typeof BscLayoutFrmhsAgeRtfrmRoute;
+  "/bsc/frmhs/age-rtrrl": typeof BscLayoutFrmhsAgeRtrrlRoute;
+  "/bsc/frmhs/frmlnd-scl": typeof BscLayoutFrmhsFrmlndSclRoute;
+  "/bsc/frmhs/ppltn": typeof BscLayoutFrmhsPpltnRoute;
+  "/bsc/frmlnd/area": typeof BscLayoutFrmlndAreaRoute;
+  "/bsc/frmlnd/utztn": typeof BscLayoutFrmlndUtztnRoute;
+  "/bsc/prdctn-mtrl/agrchm-frtlzr-ntsl": typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute;
+  "/bsc/prdctn-mtrl/frmcn-hld": typeof BscLayoutPrdctnMtrlFrmcnHldRoute;
+  "/spc/agrclt-env/agrclt-dstdmg": typeof SpcLayoutAgrcltEnvAgrcltDstdmgRoute;
+  "/spc/agrclt-env/dstdmg-type-stats": typeof SpcLayoutAgrcltEnvDstdmgTypeStatsRoute;
+  "/spc/agrclt-env/gwt-anls-dsbrd": typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute;
+  "/spc/agrclt-env/gwt-wtrqlty-chag": typeof SpcLayoutAgrcltEnvGwtWtrqltyChagRoute;
+  "/spc/agrclt-env/item-dam-cs": typeof SpcLayoutAgrcltEnvItemDamCsRoute;
+  "/spc/agrclt-env/wethr": typeof SpcLayoutAgrcltEnvWethrRoute;
+  "/spc/agrclt-env/yrly-agrclt-dstdmg": typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute;
+  "/spc/obsrvn/cifru-trage-dist": typeof SpcLayoutObsrvnCifruTrageDistRoute;
+  "/spc/obsrvn/flnt": typeof SpcLayoutObsrvnFlntRoute;
+  "/spc/obsrvn/obsrvn-info-cmp": typeof SpcLayoutObsrvnObsrvnInfoCmpRoute;
+  "/spc/obsrvn/qlty": typeof SpcLayoutObsrvnQltyRoute;
+  "/spc/prod/aging": typeof SpcLayoutProdAgingRoute;
+  "/spc/prod/cltvar-chag": typeof SpcLayoutProdCltvarChagRoute;
+  "/spc/prod/crop-cltvtn-map": typeof SpcLayoutProdCropCltvtnMapRoute;
+  "/spc/prod/rgn-cifru-cltvtn": typeof SpcLayoutProdRgnCifruCltvtnRoute;
+  "/spc/prod/rgn-cltvtn-harv": typeof SpcLayoutProdRgnCltvtnHarvRoute;
+  "/spc/rtl/crop-trade": typeof SpcLayoutRtlCropTradeRoute;
+  "/spc/rtl/exp": typeof SpcLayoutRtlExpRoute;
+  "/spc/rtl/garak-prc": typeof SpcLayoutRtlGarakPrcRoute;
+  "/spc/rtl/prc-dsbrd": typeof SpcLayoutRtlPrcDsbrdRoute;
+  "/spc/rtl/prc-predc": typeof SpcLayoutRtlPrcPredcRoute;
+  "/spc/rtl/whlsl-mrkt-share": typeof SpcLayoutRtlWhlslMrktShareRoute;
+  "/jeju-agri/detail/$id": typeof JejuAgriDetailIdIndexRoute;
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/403': typeof R403Route
-  '/gis': typeof GisRoute
-  '/login': typeof LoginRoute
-  '/bsc': typeof BscLayoutRouteWithChildren
-  '/spc': typeof SpcLayoutRouteWithChildren
-  '/jeju-agri': typeof JejuAgriIndexRoute
-  '/bsc/cifru-rtl/bsc-stats': typeof BscLayoutCifruRtlBscStatsRoute
-  '/bsc/cifru-rtl/cifruhyb': typeof BscLayoutCifruRtlCifruhybRoute
-  '/bsc/cifru-rtl/hinat-cifru': typeof BscLayoutCifruRtlHinatCifruRoute
-  '/bsc/cifru-rtl/house-cifru': typeof BscLayoutCifruRtlHouseCifruRoute
-  '/bsc/cifru-rtl/opf-cifru': typeof BscLayoutCifruRtlOpfCifruRoute
-  '/bsc/cifru-rtl/prdsts-vrty': typeof BscLayoutCifruRtlPrdstsVrtyRoute
-  '/bsc/cltvar-yield/adlfrt': typeof BscLayoutCltvarYieldAdlfrtRoute
-  '/bsc/cltvar-yield/adlfrt-imtfrt': typeof BscLayoutCltvarYieldAdlfrtImtfrtRoute
-  '/bsc/cltvar-yield/cnvgt': typeof BscLayoutCltvarYieldCnvgtRoute
-  '/bsc/cltvar-yield/frtvgt': typeof BscLayoutCltvarYieldFrtvgtRoute
-  '/bsc/cltvar-yield/indcrp': typeof BscLayoutCltvarYieldIndcrpRoute
-  '/bsc/cltvar-yield/lfyvgt': typeof BscLayoutCltvarYieldLfyvgtRoute
-  '/bsc/cltvar-yield/miscgrn': typeof BscLayoutCltvarYieldMiscgrnRoute
-  '/bsc/cltvar-yield/mldgrn': typeof BscLayoutCltvarYieldMldgrnRoute
-  '/bsc/cltvar-yield/pls': typeof BscLayoutCltvarYieldPlsRoute
-  '/bsc/cltvar-yield/rtcrp': typeof BscLayoutCltvarYieldRtcrpRoute
-  '/bsc/cltvar-yield/rtvgt': typeof BscLayoutCltvarYieldRtvgtRoute
-  '/bsc/cltvar-yield/whtbrl-mldgrn': typeof BscLayoutCltvarYieldWhtbrlMldgrnRoute
-  '/bsc/cltvar-yield/whtbrl-rghgrn': typeof BscLayoutCltvarYieldWhtbrlRghgrnRoute
-  '/bsc/ecnm/ast': typeof BscLayoutEcnmAstRoute
-  '/bsc/ecnm/crast': typeof BscLayoutEcnmCrastRoute
-  '/bsc/ecnm/earn': typeof BscLayoutEcnmEarnRoute
-  '/bsc/ecnm/grsincm': typeof BscLayoutEcnmGrsincmRoute
-  '/bsc/ecnm/key-idct': typeof BscLayoutEcnmKeyIdctRoute
-  '/bsc/ecnm/lblt': typeof BscLayoutEcnmLbltRoute
-  '/bsc/ecnm/lbrinp': typeof BscLayoutEcnmLbrinpRoute
-  '/bsc/ecnm/mngmt-cost': typeof BscLayoutEcnmMngmtCostRoute
-  '/bsc/ecnm/prdtv-idct': typeof BscLayoutEcnmPrdtvIdctRoute
-  '/bsc/frmhs/age-ppltn': typeof BscLayoutFrmhsAgePpltnRoute
-  '/bsc/frmhs/age-rtfrm': typeof BscLayoutFrmhsAgeRtfrmRoute
-  '/bsc/frmhs/age-rtrrl': typeof BscLayoutFrmhsAgeRtrrlRoute
-  '/bsc/frmhs/frmlnd-scl': typeof BscLayoutFrmhsFrmlndSclRoute
-  '/bsc/frmhs/ppltn': typeof BscLayoutFrmhsPpltnRoute
-  '/bsc/frmlnd/area': typeof BscLayoutFrmlndAreaRoute
-  '/bsc/frmlnd/utztn': typeof BscLayoutFrmlndUtztnRoute
-  '/bsc/prdctn-mtrl/agrchm-frtlzr-ntsl': typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute
-  '/bsc/prdctn-mtrl/frmcn-hld': typeof BscLayoutPrdctnMtrlFrmcnHldRoute
-  '/spc/agrclt-env/agrclt-dstdmg': typeof SpcLayoutAgrcltEnvAgrcltDstdmgRoute
-  '/spc/agrclt-env/gwt-anls-dsbrd': typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute
-  '/spc/agrclt-env/gwt-wtrqlty-chag': typeof SpcLayoutAgrcltEnvGwtWtrqltyChagRoute
-  '/spc/agrclt-env/item-dam-cs': typeof SpcLayoutAgrcltEnvItemDamCsRoute
-  '/spc/agrclt-env/wethr': typeof SpcLayoutAgrcltEnvWethrRoute
-  '/spc/agrclt-env/yrly-agrclt-dstdmg': typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute
-  '/spc/obsrvn/cifru-trage-dist': typeof SpcLayoutObsrvnCifruTrageDistRoute
-  '/spc/obsrvn/flnt': typeof SpcLayoutObsrvnFlntRoute
-  '/spc/obsrvn/obsrvn-info-cmp': typeof SpcLayoutObsrvnObsrvnInfoCmpRoute
-  '/spc/obsrvn/qlty': typeof SpcLayoutObsrvnQltyRoute
-  '/spc/prod/aging': typeof SpcLayoutProdAgingRoute
-  '/spc/prod/cltvar-chag': typeof SpcLayoutProdCltvarChagRoute
-  '/spc/prod/crop-cltvtn-map': typeof SpcLayoutProdCropCltvtnMapRoute
-  '/spc/prod/rgn-cifru-cltvtn': typeof SpcLayoutProdRgnCifruCltvtnRoute
-  '/spc/prod/rgn-cltvtn-harv': typeof SpcLayoutProdRgnCltvtnHarvRoute
-  '/spc/rtl/crop-trade': typeof SpcLayoutRtlCropTradeRoute
-  '/spc/rtl/exp': typeof SpcLayoutRtlExpRoute
-  '/spc/rtl/garak-prc': typeof SpcLayoutRtlGarakPrcRoute
-  '/spc/rtl/prc-dsbrd': typeof SpcLayoutRtlPrcDsbrdRoute
-  '/spc/rtl/prc-predc': typeof SpcLayoutRtlPrcPredcRoute
-  '/spc/rtl/whlsl-mrkt-share': typeof SpcLayoutRtlWhlslMrktShareRoute
-  '/jeju-agri/detail/$id': typeof JejuAgriDetailIdIndexRoute
+  "/": typeof IndexRoute;
+  "/403": typeof R403Route;
+  "/gis": typeof GisRoute;
+  "/login": typeof LoginRoute;
+  "/bsc": typeof BscLayoutRouteWithChildren;
+  "/spc": typeof SpcLayoutRouteWithChildren;
+  "/jeju-agri": typeof JejuAgriIndexRoute;
+  "/bsc/cifru-rtl/bsc-stats": typeof BscLayoutCifruRtlBscStatsRoute;
+  "/bsc/cifru-rtl/cifruhyb": typeof BscLayoutCifruRtlCifruhybRoute;
+  "/bsc/cifru-rtl/hinat-cifru": typeof BscLayoutCifruRtlHinatCifruRoute;
+  "/bsc/cifru-rtl/house-cifru": typeof BscLayoutCifruRtlHouseCifruRoute;
+  "/bsc/cifru-rtl/opf-cifru": typeof BscLayoutCifruRtlOpfCifruRoute;
+  "/bsc/cifru-rtl/prdsts-vrty": typeof BscLayoutCifruRtlPrdstsVrtyRoute;
+  "/bsc/cltvar-yield/adlfrt": typeof BscLayoutCltvarYieldAdlfrtRoute;
+  "/bsc/cltvar-yield/adlfrt-imtfrt": typeof BscLayoutCltvarYieldAdlfrtImtfrtRoute;
+  "/bsc/cltvar-yield/cnvgt": typeof BscLayoutCltvarYieldCnvgtRoute;
+  "/bsc/cltvar-yield/frtvgt": typeof BscLayoutCltvarYieldFrtvgtRoute;
+  "/bsc/cltvar-yield/indcrp": typeof BscLayoutCltvarYieldIndcrpRoute;
+  "/bsc/cltvar-yield/lfyvgt": typeof BscLayoutCltvarYieldLfyvgtRoute;
+  "/bsc/cltvar-yield/miscgrn": typeof BscLayoutCltvarYieldMiscgrnRoute;
+  "/bsc/cltvar-yield/mldgrn": typeof BscLayoutCltvarYieldMldgrnRoute;
+  "/bsc/cltvar-yield/pls": typeof BscLayoutCltvarYieldPlsRoute;
+  "/bsc/cltvar-yield/rtcrp": typeof BscLayoutCltvarYieldRtcrpRoute;
+  "/bsc/cltvar-yield/rtvgt": typeof BscLayoutCltvarYieldRtvgtRoute;
+  "/bsc/cltvar-yield/whtbrl-mldgrn": typeof BscLayoutCltvarYieldWhtbrlMldgrnRoute;
+  "/bsc/cltvar-yield/whtbrl-rghgrn": typeof BscLayoutCltvarYieldWhtbrlRghgrnRoute;
+  "/bsc/ecnm/ast": typeof BscLayoutEcnmAstRoute;
+  "/bsc/ecnm/crast": typeof BscLayoutEcnmCrastRoute;
+  "/bsc/ecnm/earn": typeof BscLayoutEcnmEarnRoute;
+  "/bsc/ecnm/grsincm": typeof BscLayoutEcnmGrsincmRoute;
+  "/bsc/ecnm/key-idct": typeof BscLayoutEcnmKeyIdctRoute;
+  "/bsc/ecnm/lblt": typeof BscLayoutEcnmLbltRoute;
+  "/bsc/ecnm/lbrinp": typeof BscLayoutEcnmLbrinpRoute;
+  "/bsc/ecnm/mngmt-cost": typeof BscLayoutEcnmMngmtCostRoute;
+  "/bsc/ecnm/prdtv-idct": typeof BscLayoutEcnmPrdtvIdctRoute;
+  "/bsc/frmhs/age-ppltn": typeof BscLayoutFrmhsAgePpltnRoute;
+  "/bsc/frmhs/age-rtfrm": typeof BscLayoutFrmhsAgeRtfrmRoute;
+  "/bsc/frmhs/age-rtrrl": typeof BscLayoutFrmhsAgeRtrrlRoute;
+  "/bsc/frmhs/frmlnd-scl": typeof BscLayoutFrmhsFrmlndSclRoute;
+  "/bsc/frmhs/ppltn": typeof BscLayoutFrmhsPpltnRoute;
+  "/bsc/frmlnd/area": typeof BscLayoutFrmlndAreaRoute;
+  "/bsc/frmlnd/utztn": typeof BscLayoutFrmlndUtztnRoute;
+  "/bsc/prdctn-mtrl/agrchm-frtlzr-ntsl": typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute;
+  "/bsc/prdctn-mtrl/frmcn-hld": typeof BscLayoutPrdctnMtrlFrmcnHldRoute;
+  "/spc/agrclt-env/agrclt-dstdmg": typeof SpcLayoutAgrcltEnvAgrcltDstdmgRoute;
+  "/spc/agrclt-env/dstdmg-type-stats": typeof SpcLayoutAgrcltEnvDstdmgTypeStatsRoute;
+  "/spc/agrclt-env/gwt-anls-dsbrd": typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute;
+  "/spc/agrclt-env/gwt-wtrqlty-chag": typeof SpcLayoutAgrcltEnvGwtWtrqltyChagRoute;
+  "/spc/agrclt-env/item-dam-cs": typeof SpcLayoutAgrcltEnvItemDamCsRoute;
+  "/spc/agrclt-env/wethr": typeof SpcLayoutAgrcltEnvWethrRoute;
+  "/spc/agrclt-env/yrly-agrclt-dstdmg": typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute;
+  "/spc/obsrvn/cifru-trage-dist": typeof SpcLayoutObsrvnCifruTrageDistRoute;
+  "/spc/obsrvn/flnt": typeof SpcLayoutObsrvnFlntRoute;
+  "/spc/obsrvn/obsrvn-info-cmp": typeof SpcLayoutObsrvnObsrvnInfoCmpRoute;
+  "/spc/obsrvn/qlty": typeof SpcLayoutObsrvnQltyRoute;
+  "/spc/prod/aging": typeof SpcLayoutProdAgingRoute;
+  "/spc/prod/cltvar-chag": typeof SpcLayoutProdCltvarChagRoute;
+  "/spc/prod/crop-cltvtn-map": typeof SpcLayoutProdCropCltvtnMapRoute;
+  "/spc/prod/rgn-cifru-cltvtn": typeof SpcLayoutProdRgnCifruCltvtnRoute;
+  "/spc/prod/rgn-cltvtn-harv": typeof SpcLayoutProdRgnCltvtnHarvRoute;
+  "/spc/rtl/crop-trade": typeof SpcLayoutRtlCropTradeRoute;
+  "/spc/rtl/exp": typeof SpcLayoutRtlExpRoute;
+  "/spc/rtl/garak-prc": typeof SpcLayoutRtlGarakPrcRoute;
+  "/spc/rtl/prc-dsbrd": typeof SpcLayoutRtlPrcDsbrdRoute;
+  "/spc/rtl/prc-predc": typeof SpcLayoutRtlPrcPredcRoute;
+  "/spc/rtl/whlsl-mrkt-share": typeof SpcLayoutRtlWhlslMrktShareRoute;
+  "/jeju-agri/detail/$id": typeof JejuAgriDetailIdIndexRoute;
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRoute
-  '/403': typeof R403Route
-  '/gis': typeof GisRoute
-  '/login': typeof LoginRoute
-  '/bsc': typeof BscRouteWithChildren
-  '/bsc/_layout': typeof BscLayoutRouteWithChildren
-  '/spc': typeof SpcRouteWithChildren
-  '/spc/_layout': typeof SpcLayoutRouteWithChildren
-  '/jeju-agri/': typeof JejuAgriIndexRoute
-  '/bsc/_layout/cifru-rtl/bsc-stats': typeof BscLayoutCifruRtlBscStatsRoute
-  '/bsc/_layout/cifru-rtl/cifruhyb': typeof BscLayoutCifruRtlCifruhybRoute
-  '/bsc/_layout/cifru-rtl/hinat-cifru': typeof BscLayoutCifruRtlHinatCifruRoute
-  '/bsc/_layout/cifru-rtl/house-cifru': typeof BscLayoutCifruRtlHouseCifruRoute
-  '/bsc/_layout/cifru-rtl/opf-cifru': typeof BscLayoutCifruRtlOpfCifruRoute
-  '/bsc/_layout/cifru-rtl/prdsts-vrty': typeof BscLayoutCifruRtlPrdstsVrtyRoute
-  '/bsc/_layout/cltvar-yield/adlfrt': typeof BscLayoutCltvarYieldAdlfrtRoute
-  '/bsc/_layout/cltvar-yield/adlfrt-imtfrt': typeof BscLayoutCltvarYieldAdlfrtImtfrtRoute
-  '/bsc/_layout/cltvar-yield/cnvgt': typeof BscLayoutCltvarYieldCnvgtRoute
-  '/bsc/_layout/cltvar-yield/frtvgt': typeof BscLayoutCltvarYieldFrtvgtRoute
-  '/bsc/_layout/cltvar-yield/indcrp': typeof BscLayoutCltvarYieldIndcrpRoute
-  '/bsc/_layout/cltvar-yield/lfyvgt': typeof BscLayoutCltvarYieldLfyvgtRoute
-  '/bsc/_layout/cltvar-yield/miscgrn': typeof BscLayoutCltvarYieldMiscgrnRoute
-  '/bsc/_layout/cltvar-yield/mldgrn': typeof BscLayoutCltvarYieldMldgrnRoute
-  '/bsc/_layout/cltvar-yield/pls': typeof BscLayoutCltvarYieldPlsRoute
-  '/bsc/_layout/cltvar-yield/rtcrp': typeof BscLayoutCltvarYieldRtcrpRoute
-  '/bsc/_layout/cltvar-yield/rtvgt': typeof BscLayoutCltvarYieldRtvgtRoute
-  '/bsc/_layout/cltvar-yield/whtbrl-mldgrn': typeof BscLayoutCltvarYieldWhtbrlMldgrnRoute
-  '/bsc/_layout/cltvar-yield/whtbrl-rghgrn': typeof BscLayoutCltvarYieldWhtbrlRghgrnRoute
-  '/bsc/_layout/ecnm/ast': typeof BscLayoutEcnmAstRoute
-  '/bsc/_layout/ecnm/crast': typeof BscLayoutEcnmCrastRoute
-  '/bsc/_layout/ecnm/earn': typeof BscLayoutEcnmEarnRoute
-  '/bsc/_layout/ecnm/grsincm': typeof BscLayoutEcnmGrsincmRoute
-  '/bsc/_layout/ecnm/key-idct': typeof BscLayoutEcnmKeyIdctRoute
-  '/bsc/_layout/ecnm/lblt': typeof BscLayoutEcnmLbltRoute
-  '/bsc/_layout/ecnm/lbrinp': typeof BscLayoutEcnmLbrinpRoute
-  '/bsc/_layout/ecnm/mngmt-cost': typeof BscLayoutEcnmMngmtCostRoute
-  '/bsc/_layout/ecnm/prdtv-idct': typeof BscLayoutEcnmPrdtvIdctRoute
-  '/bsc/_layout/frmhs/age-ppltn': typeof BscLayoutFrmhsAgePpltnRoute
-  '/bsc/_layout/frmhs/age-rtfrm': typeof BscLayoutFrmhsAgeRtfrmRoute
-  '/bsc/_layout/frmhs/age-rtrrl': typeof BscLayoutFrmhsAgeRtrrlRoute
-  '/bsc/_layout/frmhs/frmlnd-scl': typeof BscLayoutFrmhsFrmlndSclRoute
-  '/bsc/_layout/frmhs/ppltn': typeof BscLayoutFrmhsPpltnRoute
-  '/bsc/_layout/frmlnd/area': typeof BscLayoutFrmlndAreaRoute
-  '/bsc/_layout/frmlnd/utztn': typeof BscLayoutFrmlndUtztnRoute
-  '/bsc/_layout/prdctn-mtrl/agrchm-frtlzr-ntsl': typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute
-  '/bsc/_layout/prdctn-mtrl/frmcn-hld': typeof BscLayoutPrdctnMtrlFrmcnHldRoute
-  '/spc/_layout/agrclt-env/agrclt-dstdmg': typeof SpcLayoutAgrcltEnvAgrcltDstdmgRoute
-  '/spc/_layout/agrclt-env/gwt-anls-dsbrd': typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute
-  '/spc/_layout/agrclt-env/gwt-wtrqlty-chag': typeof SpcLayoutAgrcltEnvGwtWtrqltyChagRoute
-  '/spc/_layout/agrclt-env/item-dam-cs': typeof SpcLayoutAgrcltEnvItemDamCsRoute
-  '/spc/_layout/agrclt-env/wethr': typeof SpcLayoutAgrcltEnvWethrRoute
-  '/spc/_layout/agrclt-env/yrly-agrclt-dstdmg': typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute
-  '/spc/_layout/obsrvn/cifru-trage-dist': typeof SpcLayoutObsrvnCifruTrageDistRoute
-  '/spc/_layout/obsrvn/flnt': typeof SpcLayoutObsrvnFlntRoute
-  '/spc/_layout/obsrvn/obsrvn-info-cmp': typeof SpcLayoutObsrvnObsrvnInfoCmpRoute
-  '/spc/_layout/obsrvn/qlty': typeof SpcLayoutObsrvnQltyRoute
-  '/spc/_layout/prod/aging': typeof SpcLayoutProdAgingRoute
-  '/spc/_layout/prod/cltvar-chag': typeof SpcLayoutProdCltvarChagRoute
-  '/spc/_layout/prod/crop-cltvtn-map': typeof SpcLayoutProdCropCltvtnMapRoute
-  '/spc/_layout/prod/rgn-cifru-cltvtn': typeof SpcLayoutProdRgnCifruCltvtnRoute
-  '/spc/_layout/prod/rgn-cltvtn-harv': typeof SpcLayoutProdRgnCltvtnHarvRoute
-  '/spc/_layout/rtl/crop-trade': typeof SpcLayoutRtlCropTradeRoute
-  '/spc/_layout/rtl/exp': typeof SpcLayoutRtlExpRoute
-  '/spc/_layout/rtl/garak-prc': typeof SpcLayoutRtlGarakPrcRoute
-  '/spc/_layout/rtl/prc-dsbrd': typeof SpcLayoutRtlPrcDsbrdRoute
-  '/spc/_layout/rtl/prc-predc': typeof SpcLayoutRtlPrcPredcRoute
-  '/spc/_layout/rtl/whlsl-mrkt-share': typeof SpcLayoutRtlWhlslMrktShareRoute
-  '/jeju-agri/detail/$id/': typeof JejuAgriDetailIdIndexRoute
+  __root__: typeof rootRoute;
+  "/": typeof IndexRoute;
+  "/403": typeof R403Route;
+  "/gis": typeof GisRoute;
+  "/login": typeof LoginRoute;
+  "/bsc": typeof BscRouteWithChildren;
+  "/bsc/_layout": typeof BscLayoutRouteWithChildren;
+  "/spc": typeof SpcRouteWithChildren;
+  "/spc/_layout": typeof SpcLayoutRouteWithChildren;
+  "/jeju-agri/": typeof JejuAgriIndexRoute;
+  "/bsc/_layout/cifru-rtl/bsc-stats": typeof BscLayoutCifruRtlBscStatsRoute;
+  "/bsc/_layout/cifru-rtl/cifruhyb": typeof BscLayoutCifruRtlCifruhybRoute;
+  "/bsc/_layout/cifru-rtl/hinat-cifru": typeof BscLayoutCifruRtlHinatCifruRoute;
+  "/bsc/_layout/cifru-rtl/house-cifru": typeof BscLayoutCifruRtlHouseCifruRoute;
+  "/bsc/_layout/cifru-rtl/opf-cifru": typeof BscLayoutCifruRtlOpfCifruRoute;
+  "/bsc/_layout/cifru-rtl/prdsts-vrty": typeof BscLayoutCifruRtlPrdstsVrtyRoute;
+  "/bsc/_layout/cltvar-yield/adlfrt": typeof BscLayoutCltvarYieldAdlfrtRoute;
+  "/bsc/_layout/cltvar-yield/adlfrt-imtfrt": typeof BscLayoutCltvarYieldAdlfrtImtfrtRoute;
+  "/bsc/_layout/cltvar-yield/cnvgt": typeof BscLayoutCltvarYieldCnvgtRoute;
+  "/bsc/_layout/cltvar-yield/frtvgt": typeof BscLayoutCltvarYieldFrtvgtRoute;
+  "/bsc/_layout/cltvar-yield/indcrp": typeof BscLayoutCltvarYieldIndcrpRoute;
+  "/bsc/_layout/cltvar-yield/lfyvgt": typeof BscLayoutCltvarYieldLfyvgtRoute;
+  "/bsc/_layout/cltvar-yield/miscgrn": typeof BscLayoutCltvarYieldMiscgrnRoute;
+  "/bsc/_layout/cltvar-yield/mldgrn": typeof BscLayoutCltvarYieldMldgrnRoute;
+  "/bsc/_layout/cltvar-yield/pls": typeof BscLayoutCltvarYieldPlsRoute;
+  "/bsc/_layout/cltvar-yield/rtcrp": typeof BscLayoutCltvarYieldRtcrpRoute;
+  "/bsc/_layout/cltvar-yield/rtvgt": typeof BscLayoutCltvarYieldRtvgtRoute;
+  "/bsc/_layout/cltvar-yield/whtbrl-mldgrn": typeof BscLayoutCltvarYieldWhtbrlMldgrnRoute;
+  "/bsc/_layout/cltvar-yield/whtbrl-rghgrn": typeof BscLayoutCltvarYieldWhtbrlRghgrnRoute;
+  "/bsc/_layout/ecnm/ast": typeof BscLayoutEcnmAstRoute;
+  "/bsc/_layout/ecnm/crast": typeof BscLayoutEcnmCrastRoute;
+  "/bsc/_layout/ecnm/earn": typeof BscLayoutEcnmEarnRoute;
+  "/bsc/_layout/ecnm/grsincm": typeof BscLayoutEcnmGrsincmRoute;
+  "/bsc/_layout/ecnm/key-idct": typeof BscLayoutEcnmKeyIdctRoute;
+  "/bsc/_layout/ecnm/lblt": typeof BscLayoutEcnmLbltRoute;
+  "/bsc/_layout/ecnm/lbrinp": typeof BscLayoutEcnmLbrinpRoute;
+  "/bsc/_layout/ecnm/mngmt-cost": typeof BscLayoutEcnmMngmtCostRoute;
+  "/bsc/_layout/ecnm/prdtv-idct": typeof BscLayoutEcnmPrdtvIdctRoute;
+  "/bsc/_layout/frmhs/age-ppltn": typeof BscLayoutFrmhsAgePpltnRoute;
+  "/bsc/_layout/frmhs/age-rtfrm": typeof BscLayoutFrmhsAgeRtfrmRoute;
+  "/bsc/_layout/frmhs/age-rtrrl": typeof BscLayoutFrmhsAgeRtrrlRoute;
+  "/bsc/_layout/frmhs/frmlnd-scl": typeof BscLayoutFrmhsFrmlndSclRoute;
+  "/bsc/_layout/frmhs/ppltn": typeof BscLayoutFrmhsPpltnRoute;
+  "/bsc/_layout/frmlnd/area": typeof BscLayoutFrmlndAreaRoute;
+  "/bsc/_layout/frmlnd/utztn": typeof BscLayoutFrmlndUtztnRoute;
+  "/bsc/_layout/prdctn-mtrl/agrchm-frtlzr-ntsl": typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute;
+  "/bsc/_layout/prdctn-mtrl/frmcn-hld": typeof BscLayoutPrdctnMtrlFrmcnHldRoute;
+  "/spc/_layout/agrclt-env/agrclt-dstdmg": typeof SpcLayoutAgrcltEnvAgrcltDstdmgRoute;
+  "/spc/_layout/agrclt-env/dstdmg-type-stats": typeof SpcLayoutAgrcltEnvDstdmgTypeStatsRoute;
+  "/spc/_layout/agrclt-env/gwt-anls-dsbrd": typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute;
+  "/spc/_layout/agrclt-env/gwt-wtrqlty-chag": typeof SpcLayoutAgrcltEnvGwtWtrqltyChagRoute;
+  "/spc/_layout/agrclt-env/item-dam-cs": typeof SpcLayoutAgrcltEnvItemDamCsRoute;
+  "/spc/_layout/agrclt-env/wethr": typeof SpcLayoutAgrcltEnvWethrRoute;
+  "/spc/_layout/agrclt-env/yrly-agrclt-dstdmg": typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute;
+  "/spc/_layout/obsrvn/cifru-trage-dist": typeof SpcLayoutObsrvnCifruTrageDistRoute;
+  "/spc/_layout/obsrvn/flnt": typeof SpcLayoutObsrvnFlntRoute;
+  "/spc/_layout/obsrvn/obsrvn-info-cmp": typeof SpcLayoutObsrvnObsrvnInfoCmpRoute;
+  "/spc/_layout/obsrvn/qlty": typeof SpcLayoutObsrvnQltyRoute;
+  "/spc/_layout/prod/aging": typeof SpcLayoutProdAgingRoute;
+  "/spc/_layout/prod/cltvar-chag": typeof SpcLayoutProdCltvarChagRoute;
+  "/spc/_layout/prod/crop-cltvtn-map": typeof SpcLayoutProdCropCltvtnMapRoute;
+  "/spc/_layout/prod/rgn-cifru-cltvtn": typeof SpcLayoutProdRgnCifruCltvtnRoute;
+  "/spc/_layout/prod/rgn-cltvtn-harv": typeof SpcLayoutProdRgnCltvtnHarvRoute;
+  "/spc/_layout/rtl/crop-trade": typeof SpcLayoutRtlCropTradeRoute;
+  "/spc/_layout/rtl/exp": typeof SpcLayoutRtlExpRoute;
+  "/spc/_layout/rtl/garak-prc": typeof SpcLayoutRtlGarakPrcRoute;
+  "/spc/_layout/rtl/prc-dsbrd": typeof SpcLayoutRtlPrcDsbrdRoute;
+  "/spc/_layout/rtl/prc-predc": typeof SpcLayoutRtlPrcPredcRoute;
+  "/spc/_layout/rtl/whlsl-mrkt-share": typeof SpcLayoutRtlWhlslMrktShareRoute;
+  "/jeju-agri/detail/$id/": typeof JejuAgriDetailIdIndexRoute;
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
+  fileRoutesByFullPath: FileRoutesByFullPath;
   fullPaths:
-    | '/'
-    | '/403'
-    | '/gis'
-    | '/login'
-    | '/bsc'
-    | '/spc'
-    | '/jeju-agri'
-    | '/bsc/cifru-rtl/bsc-stats'
-    | '/bsc/cifru-rtl/cifruhyb'
-    | '/bsc/cifru-rtl/hinat-cifru'
-    | '/bsc/cifru-rtl/house-cifru'
-    | '/bsc/cifru-rtl/opf-cifru'
-    | '/bsc/cifru-rtl/prdsts-vrty'
-    | '/bsc/cltvar-yield/adlfrt'
-    | '/bsc/cltvar-yield/adlfrt-imtfrt'
-    | '/bsc/cltvar-yield/cnvgt'
-    | '/bsc/cltvar-yield/frtvgt'
-    | '/bsc/cltvar-yield/indcrp'
-    | '/bsc/cltvar-yield/lfyvgt'
-    | '/bsc/cltvar-yield/miscgrn'
-    | '/bsc/cltvar-yield/mldgrn'
-    | '/bsc/cltvar-yield/pls'
-    | '/bsc/cltvar-yield/rtcrp'
-    | '/bsc/cltvar-yield/rtvgt'
-    | '/bsc/cltvar-yield/whtbrl-mldgrn'
-    | '/bsc/cltvar-yield/whtbrl-rghgrn'
-    | '/bsc/ecnm/ast'
-    | '/bsc/ecnm/crast'
-    | '/bsc/ecnm/earn'
-    | '/bsc/ecnm/grsincm'
-    | '/bsc/ecnm/key-idct'
-    | '/bsc/ecnm/lblt'
-    | '/bsc/ecnm/lbrinp'
-    | '/bsc/ecnm/mngmt-cost'
-    | '/bsc/ecnm/prdtv-idct'
-    | '/bsc/frmhs/age-ppltn'
-    | '/bsc/frmhs/age-rtfrm'
-    | '/bsc/frmhs/age-rtrrl'
-    | '/bsc/frmhs/frmlnd-scl'
-    | '/bsc/frmhs/ppltn'
-    | '/bsc/frmlnd/area'
-    | '/bsc/frmlnd/utztn'
-    | '/bsc/prdctn-mtrl/agrchm-frtlzr-ntsl'
-    | '/bsc/prdctn-mtrl/frmcn-hld'
-    | '/spc/agrclt-env/agrclt-dstdmg'
-    | '/spc/agrclt-env/gwt-anls-dsbrd'
-    | '/spc/agrclt-env/gwt-wtrqlty-chag'
-    | '/spc/agrclt-env/item-dam-cs'
-    | '/spc/agrclt-env/wethr'
-    | '/spc/agrclt-env/yrly-agrclt-dstdmg'
-    | '/spc/obsrvn/cifru-trage-dist'
-    | '/spc/obsrvn/flnt'
-    | '/spc/obsrvn/obsrvn-info-cmp'
-    | '/spc/obsrvn/qlty'
-    | '/spc/prod/aging'
-    | '/spc/prod/cltvar-chag'
-    | '/spc/prod/crop-cltvtn-map'
-    | '/spc/prod/rgn-cifru-cltvtn'
-    | '/spc/prod/rgn-cltvtn-harv'
-    | '/spc/rtl/crop-trade'
-    | '/spc/rtl/exp'
-    | '/spc/rtl/garak-prc'
-    | '/spc/rtl/prc-dsbrd'
-    | '/spc/rtl/prc-predc'
-    | '/spc/rtl/whlsl-mrkt-share'
-    | '/jeju-agri/detail/$id'
-  fileRoutesByTo: FileRoutesByTo
+    | "/"
+    | "/403"
+    | "/gis"
+    | "/login"
+    | "/bsc"
+    | "/spc"
+    | "/jeju-agri"
+    | "/bsc/cifru-rtl/bsc-stats"
+    | "/bsc/cifru-rtl/cifruhyb"
+    | "/bsc/cifru-rtl/hinat-cifru"
+    | "/bsc/cifru-rtl/house-cifru"
+    | "/bsc/cifru-rtl/opf-cifru"
+    | "/bsc/cifru-rtl/prdsts-vrty"
+    | "/bsc/cltvar-yield/adlfrt"
+    | "/bsc/cltvar-yield/adlfrt-imtfrt"
+    | "/bsc/cltvar-yield/cnvgt"
+    | "/bsc/cltvar-yield/frtvgt"
+    | "/bsc/cltvar-yield/indcrp"
+    | "/bsc/cltvar-yield/lfyvgt"
+    | "/bsc/cltvar-yield/miscgrn"
+    | "/bsc/cltvar-yield/mldgrn"
+    | "/bsc/cltvar-yield/pls"
+    | "/bsc/cltvar-yield/rtcrp"
+    | "/bsc/cltvar-yield/rtvgt"
+    | "/bsc/cltvar-yield/whtbrl-mldgrn"
+    | "/bsc/cltvar-yield/whtbrl-rghgrn"
+    | "/bsc/ecnm/ast"
+    | "/bsc/ecnm/crast"
+    | "/bsc/ecnm/earn"
+    | "/bsc/ecnm/grsincm"
+    | "/bsc/ecnm/key-idct"
+    | "/bsc/ecnm/lblt"
+    | "/bsc/ecnm/lbrinp"
+    | "/bsc/ecnm/mngmt-cost"
+    | "/bsc/ecnm/prdtv-idct"
+    | "/bsc/frmhs/age-ppltn"
+    | "/bsc/frmhs/age-rtfrm"
+    | "/bsc/frmhs/age-rtrrl"
+    | "/bsc/frmhs/frmlnd-scl"
+    | "/bsc/frmhs/ppltn"
+    | "/bsc/frmlnd/area"
+    | "/bsc/frmlnd/utztn"
+    | "/bsc/prdctn-mtrl/agrchm-frtlzr-ntsl"
+    | "/bsc/prdctn-mtrl/frmcn-hld"
+    | "/spc/agrclt-env/agrclt-dstdmg"
+    | "/spc/agrclt-env/dstdmg-type-stats"
+    | "/spc/agrclt-env/gwt-anls-dsbrd"
+    | "/spc/agrclt-env/gwt-wtrqlty-chag"
+    | "/spc/agrclt-env/item-dam-cs"
+    | "/spc/agrclt-env/wethr"
+    | "/spc/agrclt-env/yrly-agrclt-dstdmg"
+    | "/spc/obsrvn/cifru-trage-dist"
+    | "/spc/obsrvn/flnt"
+    | "/spc/obsrvn/obsrvn-info-cmp"
+    | "/spc/obsrvn/qlty"
+    | "/spc/prod/aging"
+    | "/spc/prod/cltvar-chag"
+    | "/spc/prod/crop-cltvtn-map"
+    | "/spc/prod/rgn-cifru-cltvtn"
+    | "/spc/prod/rgn-cltvtn-harv"
+    | "/spc/rtl/crop-trade"
+    | "/spc/rtl/exp"
+    | "/spc/rtl/garak-prc"
+    | "/spc/rtl/prc-dsbrd"
+    | "/spc/rtl/prc-predc"
+    | "/spc/rtl/whlsl-mrkt-share"
+    | "/jeju-agri/detail/$id";
+  fileRoutesByTo: FileRoutesByTo;
   to:
-    | '/'
-    | '/403'
-    | '/gis'
-    | '/login'
-    | '/bsc'
-    | '/spc'
-    | '/jeju-agri'
-    | '/bsc/cifru-rtl/bsc-stats'
-    | '/bsc/cifru-rtl/cifruhyb'
-    | '/bsc/cifru-rtl/hinat-cifru'
-    | '/bsc/cifru-rtl/house-cifru'
-    | '/bsc/cifru-rtl/opf-cifru'
-    | '/bsc/cifru-rtl/prdsts-vrty'
-    | '/bsc/cltvar-yield/adlfrt'
-    | '/bsc/cltvar-yield/adlfrt-imtfrt'
-    | '/bsc/cltvar-yield/cnvgt'
-    | '/bsc/cltvar-yield/frtvgt'
-    | '/bsc/cltvar-yield/indcrp'
-    | '/bsc/cltvar-yield/lfyvgt'
-    | '/bsc/cltvar-yield/miscgrn'
-    | '/bsc/cltvar-yield/mldgrn'
-    | '/bsc/cltvar-yield/pls'
-    | '/bsc/cltvar-yield/rtcrp'
-    | '/bsc/cltvar-yield/rtvgt'
-    | '/bsc/cltvar-yield/whtbrl-mldgrn'
-    | '/bsc/cltvar-yield/whtbrl-rghgrn'
-    | '/bsc/ecnm/ast'
-    | '/bsc/ecnm/crast'
-    | '/bsc/ecnm/earn'
-    | '/bsc/ecnm/grsincm'
-    | '/bsc/ecnm/key-idct'
-    | '/bsc/ecnm/lblt'
-    | '/bsc/ecnm/lbrinp'
-    | '/bsc/ecnm/mngmt-cost'
-    | '/bsc/ecnm/prdtv-idct'
-    | '/bsc/frmhs/age-ppltn'
-    | '/bsc/frmhs/age-rtfrm'
-    | '/bsc/frmhs/age-rtrrl'
-    | '/bsc/frmhs/frmlnd-scl'
-    | '/bsc/frmhs/ppltn'
-    | '/bsc/frmlnd/area'
-    | '/bsc/frmlnd/utztn'
-    | '/bsc/prdctn-mtrl/agrchm-frtlzr-ntsl'
-    | '/bsc/prdctn-mtrl/frmcn-hld'
-    | '/spc/agrclt-env/agrclt-dstdmg'
-    | '/spc/agrclt-env/gwt-anls-dsbrd'
-    | '/spc/agrclt-env/gwt-wtrqlty-chag'
-    | '/spc/agrclt-env/item-dam-cs'
-    | '/spc/agrclt-env/wethr'
-    | '/spc/agrclt-env/yrly-agrclt-dstdmg'
-    | '/spc/obsrvn/cifru-trage-dist'
-    | '/spc/obsrvn/flnt'
-    | '/spc/obsrvn/obsrvn-info-cmp'
-    | '/spc/obsrvn/qlty'
-    | '/spc/prod/aging'
-    | '/spc/prod/cltvar-chag'
-    | '/spc/prod/crop-cltvtn-map'
-    | '/spc/prod/rgn-cifru-cltvtn'
-    | '/spc/prod/rgn-cltvtn-harv'
-    | '/spc/rtl/crop-trade'
-    | '/spc/rtl/exp'
-    | '/spc/rtl/garak-prc'
-    | '/spc/rtl/prc-dsbrd'
-    | '/spc/rtl/prc-predc'
-    | '/spc/rtl/whlsl-mrkt-share'
-    | '/jeju-agri/detail/$id'
+    | "/"
+    | "/403"
+    | "/gis"
+    | "/login"
+    | "/bsc"
+    | "/spc"
+    | "/jeju-agri"
+    | "/bsc/cifru-rtl/bsc-stats"
+    | "/bsc/cifru-rtl/cifruhyb"
+    | "/bsc/cifru-rtl/hinat-cifru"
+    | "/bsc/cifru-rtl/house-cifru"
+    | "/bsc/cifru-rtl/opf-cifru"
+    | "/bsc/cifru-rtl/prdsts-vrty"
+    | "/bsc/cltvar-yield/adlfrt"
+    | "/bsc/cltvar-yield/adlfrt-imtfrt"
+    | "/bsc/cltvar-yield/cnvgt"
+    | "/bsc/cltvar-yield/frtvgt"
+    | "/bsc/cltvar-yield/indcrp"
+    | "/bsc/cltvar-yield/lfyvgt"
+    | "/bsc/cltvar-yield/miscgrn"
+    | "/bsc/cltvar-yield/mldgrn"
+    | "/bsc/cltvar-yield/pls"
+    | "/bsc/cltvar-yield/rtcrp"
+    | "/bsc/cltvar-yield/rtvgt"
+    | "/bsc/cltvar-yield/whtbrl-mldgrn"
+    | "/bsc/cltvar-yield/whtbrl-rghgrn"
+    | "/bsc/ecnm/ast"
+    | "/bsc/ecnm/crast"
+    | "/bsc/ecnm/earn"
+    | "/bsc/ecnm/grsincm"
+    | "/bsc/ecnm/key-idct"
+    | "/bsc/ecnm/lblt"
+    | "/bsc/ecnm/lbrinp"
+    | "/bsc/ecnm/mngmt-cost"
+    | "/bsc/ecnm/prdtv-idct"
+    | "/bsc/frmhs/age-ppltn"
+    | "/bsc/frmhs/age-rtfrm"
+    | "/bsc/frmhs/age-rtrrl"
+    | "/bsc/frmhs/frmlnd-scl"
+    | "/bsc/frmhs/ppltn"
+    | "/bsc/frmlnd/area"
+    | "/bsc/frmlnd/utztn"
+    | "/bsc/prdctn-mtrl/agrchm-frtlzr-ntsl"
+    | "/bsc/prdctn-mtrl/frmcn-hld"
+    | "/spc/agrclt-env/agrclt-dstdmg"
+    | "/spc/agrclt-env/dstdmg-type-stats"
+    | "/spc/agrclt-env/gwt-anls-dsbrd"
+    | "/spc/agrclt-env/gwt-wtrqlty-chag"
+    | "/spc/agrclt-env/item-dam-cs"
+    | "/spc/agrclt-env/wethr"
+    | "/spc/agrclt-env/yrly-agrclt-dstdmg"
+    | "/spc/obsrvn/cifru-trage-dist"
+    | "/spc/obsrvn/flnt"
+    | "/spc/obsrvn/obsrvn-info-cmp"
+    | "/spc/obsrvn/qlty"
+    | "/spc/prod/aging"
+    | "/spc/prod/cltvar-chag"
+    | "/spc/prod/crop-cltvtn-map"
+    | "/spc/prod/rgn-cifru-cltvtn"
+    | "/spc/prod/rgn-cltvtn-harv"
+    | "/spc/rtl/crop-trade"
+    | "/spc/rtl/exp"
+    | "/spc/rtl/garak-prc"
+    | "/spc/rtl/prc-dsbrd"
+    | "/spc/rtl/prc-predc"
+    | "/spc/rtl/whlsl-mrkt-share"
+    | "/jeju-agri/detail/$id";
   id:
-    | '__root__'
-    | '/'
-    | '/403'
-    | '/gis'
-    | '/login'
-    | '/bsc'
-    | '/bsc/_layout'
-    | '/spc'
-    | '/spc/_layout'
-    | '/jeju-agri/'
-    | '/bsc/_layout/cifru-rtl/bsc-stats'
-    | '/bsc/_layout/cifru-rtl/cifruhyb'
-    | '/bsc/_layout/cifru-rtl/hinat-cifru'
-    | '/bsc/_layout/cifru-rtl/house-cifru'
-    | '/bsc/_layout/cifru-rtl/opf-cifru'
-    | '/bsc/_layout/cifru-rtl/prdsts-vrty'
-    | '/bsc/_layout/cltvar-yield/adlfrt'
-    | '/bsc/_layout/cltvar-yield/adlfrt-imtfrt'
-    | '/bsc/_layout/cltvar-yield/cnvgt'
-    | '/bsc/_layout/cltvar-yield/frtvgt'
-    | '/bsc/_layout/cltvar-yield/indcrp'
-    | '/bsc/_layout/cltvar-yield/lfyvgt'
-    | '/bsc/_layout/cltvar-yield/miscgrn'
-    | '/bsc/_layout/cltvar-yield/mldgrn'
-    | '/bsc/_layout/cltvar-yield/pls'
-    | '/bsc/_layout/cltvar-yield/rtcrp'
-    | '/bsc/_layout/cltvar-yield/rtvgt'
-    | '/bsc/_layout/cltvar-yield/whtbrl-mldgrn'
-    | '/bsc/_layout/cltvar-yield/whtbrl-rghgrn'
-    | '/bsc/_layout/ecnm/ast'
-    | '/bsc/_layout/ecnm/crast'
-    | '/bsc/_layout/ecnm/earn'
-    | '/bsc/_layout/ecnm/grsincm'
-    | '/bsc/_layout/ecnm/key-idct'
-    | '/bsc/_layout/ecnm/lblt'
-    | '/bsc/_layout/ecnm/lbrinp'
-    | '/bsc/_layout/ecnm/mngmt-cost'
-    | '/bsc/_layout/ecnm/prdtv-idct'
-    | '/bsc/_layout/frmhs/age-ppltn'
-    | '/bsc/_layout/frmhs/age-rtfrm'
-    | '/bsc/_layout/frmhs/age-rtrrl'
-    | '/bsc/_layout/frmhs/frmlnd-scl'
-    | '/bsc/_layout/frmhs/ppltn'
-    | '/bsc/_layout/frmlnd/area'
-    | '/bsc/_layout/frmlnd/utztn'
-    | '/bsc/_layout/prdctn-mtrl/agrchm-frtlzr-ntsl'
-    | '/bsc/_layout/prdctn-mtrl/frmcn-hld'
-    | '/spc/_layout/agrclt-env/agrclt-dstdmg'
-    | '/spc/_layout/agrclt-env/gwt-anls-dsbrd'
-    | '/spc/_layout/agrclt-env/gwt-wtrqlty-chag'
-    | '/spc/_layout/agrclt-env/item-dam-cs'
-    | '/spc/_layout/agrclt-env/wethr'
-    | '/spc/_layout/agrclt-env/yrly-agrclt-dstdmg'
-    | '/spc/_layout/obsrvn/cifru-trage-dist'
-    | '/spc/_layout/obsrvn/flnt'
-    | '/spc/_layout/obsrvn/obsrvn-info-cmp'
-    | '/spc/_layout/obsrvn/qlty'
-    | '/spc/_layout/prod/aging'
-    | '/spc/_layout/prod/cltvar-chag'
-    | '/spc/_layout/prod/crop-cltvtn-map'
-    | '/spc/_layout/prod/rgn-cifru-cltvtn'
-    | '/spc/_layout/prod/rgn-cltvtn-harv'
-    | '/spc/_layout/rtl/crop-trade'
-    | '/spc/_layout/rtl/exp'
-    | '/spc/_layout/rtl/garak-prc'
-    | '/spc/_layout/rtl/prc-dsbrd'
-    | '/spc/_layout/rtl/prc-predc'
-    | '/spc/_layout/rtl/whlsl-mrkt-share'
-    | '/jeju-agri/detail/$id/'
-  fileRoutesById: FileRoutesById
+    | "__root__"
+    | "/"
+    | "/403"
+    | "/gis"
+    | "/login"
+    | "/bsc"
+    | "/bsc/_layout"
+    | "/spc"
+    | "/spc/_layout"
+    | "/jeju-agri/"
+    | "/bsc/_layout/cifru-rtl/bsc-stats"
+    | "/bsc/_layout/cifru-rtl/cifruhyb"
+    | "/bsc/_layout/cifru-rtl/hinat-cifru"
+    | "/bsc/_layout/cifru-rtl/house-cifru"
+    | "/bsc/_layout/cifru-rtl/opf-cifru"
+    | "/bsc/_layout/cifru-rtl/prdsts-vrty"
+    | "/bsc/_layout/cltvar-yield/adlfrt"
+    | "/bsc/_layout/cltvar-yield/adlfrt-imtfrt"
+    | "/bsc/_layout/cltvar-yield/cnvgt"
+    | "/bsc/_layout/cltvar-yield/frtvgt"
+    | "/bsc/_layout/cltvar-yield/indcrp"
+    | "/bsc/_layout/cltvar-yield/lfyvgt"
+    | "/bsc/_layout/cltvar-yield/miscgrn"
+    | "/bsc/_layout/cltvar-yield/mldgrn"
+    | "/bsc/_layout/cltvar-yield/pls"
+    | "/bsc/_layout/cltvar-yield/rtcrp"
+    | "/bsc/_layout/cltvar-yield/rtvgt"
+    | "/bsc/_layout/cltvar-yield/whtbrl-mldgrn"
+    | "/bsc/_layout/cltvar-yield/whtbrl-rghgrn"
+    | "/bsc/_layout/ecnm/ast"
+    | "/bsc/_layout/ecnm/crast"
+    | "/bsc/_layout/ecnm/earn"
+    | "/bsc/_layout/ecnm/grsincm"
+    | "/bsc/_layout/ecnm/key-idct"
+    | "/bsc/_layout/ecnm/lblt"
+    | "/bsc/_layout/ecnm/lbrinp"
+    | "/bsc/_layout/ecnm/mngmt-cost"
+    | "/bsc/_layout/ecnm/prdtv-idct"
+    | "/bsc/_layout/frmhs/age-ppltn"
+    | "/bsc/_layout/frmhs/age-rtfrm"
+    | "/bsc/_layout/frmhs/age-rtrrl"
+    | "/bsc/_layout/frmhs/frmlnd-scl"
+    | "/bsc/_layout/frmhs/ppltn"
+    | "/bsc/_layout/frmlnd/area"
+    | "/bsc/_layout/frmlnd/utztn"
+    | "/bsc/_layout/prdctn-mtrl/agrchm-frtlzr-ntsl"
+    | "/bsc/_layout/prdctn-mtrl/frmcn-hld"
+    | "/spc/_layout/agrclt-env/agrclt-dstdmg"
+    | "/spc/_layout/agrclt-env/dstdmg-type-stats"
+    | "/spc/_layout/agrclt-env/gwt-anls-dsbrd"
+    | "/spc/_layout/agrclt-env/gwt-wtrqlty-chag"
+    | "/spc/_layout/agrclt-env/item-dam-cs"
+    | "/spc/_layout/agrclt-env/wethr"
+    | "/spc/_layout/agrclt-env/yrly-agrclt-dstdmg"
+    | "/spc/_layout/obsrvn/cifru-trage-dist"
+    | "/spc/_layout/obsrvn/flnt"
+    | "/spc/_layout/obsrvn/obsrvn-info-cmp"
+    | "/spc/_layout/obsrvn/qlty"
+    | "/spc/_layout/prod/aging"
+    | "/spc/_layout/prod/cltvar-chag"
+    | "/spc/_layout/prod/crop-cltvtn-map"
+    | "/spc/_layout/prod/rgn-cifru-cltvtn"
+    | "/spc/_layout/prod/rgn-cltvtn-harv"
+    | "/spc/_layout/rtl/crop-trade"
+    | "/spc/_layout/rtl/exp"
+    | "/spc/_layout/rtl/garak-prc"
+    | "/spc/_layout/rtl/prc-dsbrd"
+    | "/spc/_layout/rtl/prc-predc"
+    | "/spc/_layout/rtl/whlsl-mrkt-share"
+    | "/jeju-agri/detail/$id/";
+  fileRoutesById: FileRoutesById;
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  R403Route: typeof R403Route
-  GisRoute: typeof GisRoute
-  LoginRoute: typeof LoginRoute
-  BscRoute: typeof BscRouteWithChildren
-  SpcRoute: typeof SpcRouteWithChildren
-  JejuAgriIndexRoute: typeof JejuAgriIndexRoute
-  JejuAgriDetailIdIndexRoute: typeof JejuAgriDetailIdIndexRoute
+  IndexRoute: typeof IndexRoute;
+  R403Route: typeof R403Route;
+  GisRoute: typeof GisRoute;
+  LoginRoute: typeof LoginRoute;
+  BscRoute: typeof BscRouteWithChildren;
+  SpcRoute: typeof SpcRouteWithChildren;
+  JejuAgriIndexRoute: typeof JejuAgriIndexRoute;
+  JejuAgriDetailIdIndexRoute: typeof JejuAgriDetailIdIndexRoute;
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -1609,11 +1592,9 @@ const rootRouteChildren: RootRouteChildren = {
   SpcRoute: SpcRouteWithChildren,
   JejuAgriIndexRoute: JejuAgriIndexRoute,
   JejuAgriDetailIdIndexRoute: JejuAgriDetailIdIndexRoute,
-}
+};
 
-export const routeTree = rootRoute
-  ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+export const routeTree = rootRoute._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
 
 /* ROUTE_MANIFEST_START
 {
@@ -1703,6 +1684,7 @@ export const routeTree = rootRoute
       "parent": "/spc",
       "children": [
         "/spc/_layout/agrclt-env/agrclt-dstdmg",
+        "/spc/_layout/agrclt-env/dstdmg-type-stats",
         "/spc/_layout/agrclt-env/gwt-anls-dsbrd",
         "/spc/_layout/agrclt-env/gwt-wtrqlty-chag",
         "/spc/_layout/agrclt-env/item-dam-cs",
@@ -1878,6 +1860,10 @@ export const routeTree = rootRoute
     },
     "/spc/_layout/agrclt-env/agrclt-dstdmg": {
       "filePath": "spc/_layout/agrclt-env/agrclt-dstdmg.tsx",
+      "parent": "/spc/_layout"
+    },
+    "/spc/_layout/agrclt-env/dstdmg-type-stats": {
+      "filePath": "spc/_layout/agrclt-env/dstdmg-type-stats.tsx",
       "parent": "/spc/_layout"
     },
     "/spc/_layout/agrclt-env/gwt-anls-dsbrd": {

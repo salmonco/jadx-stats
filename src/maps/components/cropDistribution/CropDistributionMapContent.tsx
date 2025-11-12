@@ -23,7 +23,8 @@ interface Props {
 const CropDistributionMapContent = ({ mapId }: Props) => {
   const mapList = useMapList<CropDistributionMap>();
   const map = mapList.getMapById(mapId);
-  const { layerManager, map: olMap, ready } = useSetupOL(mapId, 10.5, "jeju");
+
+  const { layerManager, ready, map: olMap } = useSetupOL(mapId, 10.5, "jeju");
 
   const [menuPosition, setMenuPosition] = useState(null);
   const [menuChildren, setMenuChildren] = useState(null);
@@ -49,6 +50,13 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
   // TODO: 지역 필터 적용
   const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
+  const filteredAreaData = areaData
+    ? {
+        ...areaData,
+        features: areaData.features.filter(filterFeatures),
+      }
+    : null;
+
   useCropDistributionLayer({
     layerManager,
     map: olMap,
@@ -58,8 +66,8 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
     setMenuChildren,
     cropData,
     hexData,
-    opacity: 1 - map.visualizationSetting.transparency,
-    areaData,
+    opacity: map.visualizationSetting.opacity,
+    areaData: filteredAreaData,
   });
 
   const closeMenu = () => {
@@ -74,10 +82,10 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
       {menuPosition && menuChildren && <FloatingMenu position={menuPosition} onClose={closeMenu} menuChildren={menuChildren as any} />}
       <FilterContainer isFixed>
-        <RegionFilter features={areaData} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} />
+        <RegionFilter features={areaData} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
         <ButtonGroupSelector title="작물 정보" cols={2} options={cropInfoOptions} selectedValues={map.selectedCropLevel} setSelectedValues={map.setSelectedCropLevel} />
         <BaseLegend title="범례" items={legendItems} direction="horizontal" itemsPerRow={3} />
       </FilterContainer>

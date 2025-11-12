@@ -1,18 +1,17 @@
 import { useMemo } from "react";
 import VisualizationLegend from "~/features/visualization/components/common/VisualizationLegend";
-import { YearlyDisasterFeatureCollection } from "~/features/visualization/layers/YearlyDisasterLayer";
+import { MandarinCultivationFeatureCollection } from "~/features/visualization/layers/MandarinCultivationLayer";
 import { LegendColor, LegendOptions } from "~/maps/constants/visualizationSetting";
 
 interface Props {
-  features: YearlyDisasterFeatureCollection | null;
+  features: MandarinCultivationFeatureCollection | null;
   legendOptions: LegendOptions;
-  selectedDisasterCategory: string;
   onLevelChange?: (level: number) => void;
   onColorChange?: (color: LegendColor) => void;
   onPivotPointsChange?: (pivotPoints: number[]) => void;
 }
 
-const YearlyDisasterLegend = ({ features, legendOptions, selectedDisasterCategory, onLevelChange, onColorChange, onPivotPointsChange }: Props) => {
+const MandarinCultivationInfoLegend = ({ features, legendOptions, onLevelChange, onColorChange, onPivotPointsChange }: Props) => {
   const { minValue, maxValue } = useMemo(() => {
     if (!features || !Array.isArray(features.features)) return { minValue: 0, maxValue: 0 };
 
@@ -20,21 +19,19 @@ const YearlyDisasterLegend = ({ features, legendOptions, selectedDisasterCategor
     let max = -Infinity;
 
     for (const feature of features.features) {
-      const amt = feature?.properties?.stats?.[0]?.[selectedDisasterCategory];
-      if (typeof amt === "number" && amt > 0) {
-        min = Math.min(min, amt);
-        max = Math.max(max, amt);
+      const averageAge = feature?.properties?.stats[0]?.total_area;
+      if (typeof averageAge === "number" && !isNaN(averageAge)) {
+        min = Math.min(min, averageAge);
+        max = Math.max(max, averageAge);
       }
     }
 
     return {
-      minValue: min === Infinity ? 0 : min,
-      maxValue: max === -Infinity ? 0 : max,
+      minValue: min === Infinity ? 0 : min / 10_000,
+      maxValue: max === -Infinity ? 0 : max / 10_000,
     };
-  }, [features, selectedDisasterCategory]);
+  }, [features]);
 
-  // TODO: 범례에 단위 표기
-  // selectedDisasterCategory === "total_dstr_sprt_amt" ? "천원" : "m²"
   return (
     <VisualizationLegend
       minValue={minValue}
@@ -47,4 +44,4 @@ const YearlyDisasterLegend = ({ features, legendOptions, selectedDisasterCategor
   );
 };
 
-export default YearlyDisasterLegend;
+export default MandarinCultivationInfoLegend;

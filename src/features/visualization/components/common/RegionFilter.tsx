@@ -1,13 +1,15 @@
 import { Select } from "antd";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { DEFAULT_ALL_OPTION, REGION_LEVEL_LABEL, RegionFilterOptions, withAllOption } from "~/features/visualization/utils/regionFilterOptions";
 import { REGION_LEVEL_OPTIONS, RegionLevelOptions, regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { toOptions } from "~/features/visualization/utils/toOptions";
+import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 
-interface RegionFilterProps {
+interface Props<M> {
   features: any;
   selectedRegion: RegionFilterOptions;
   setSelectedRegion: (value: RegionFilterOptions | ((prev: RegionFilterOptions) => RegionFilterOptions)) => void;
+  map: M;
 }
 
 const processMultiSelect = (currentValues: string[]) => {
@@ -21,7 +23,7 @@ const processMultiSelect = (currentValues: string[]) => {
   return currentValues;
 };
 
-const RegionFilter = ({ features, selectedRegion, setSelectedRegion }: RegionFilterProps) => {
+const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion, setSelectedRegion, map }: Props<M>) => {
   const currentOptions = useMemo(() => {
     if (!features) {
       return [];
@@ -29,6 +31,10 @@ const RegionFilter = ({ features, selectedRegion, setSelectedRegion }: RegionFil
     const names: string[] = features.features.map((feature) => feature.properties.vrbs_nm).sort();
     return withAllOption([...new Set(names)]);
   }, [features]);
+
+  useEffect(() => {
+    map.setRegionFilterSetting(selectedRegion);
+  }, [selectedRegion]);
 
   const currentValue = (() => {
     switch (selectedRegion.구분) {

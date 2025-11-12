@@ -11,32 +11,50 @@ interface Stats {
   total_count: number;
 }
 
-interface MandarinCultivationProperties {
+interface DisasterTypeHistoryStatsProperties {
   stats: Stats[];
 }
 
-export type MandarinCultivationFeatureCollection = BaseFeatureCollection<MandarinCultivationProperties>;
-type MandarinCultivationFeature = BaseFeature<MandarinCultivationProperties>;
+export type DisasterTypeHistoryStatsFeatureCollection = BaseFeatureCollection<DisasterTypeHistoryStatsProperties>;
+type DisasterTypeHistoryStatsFeature = BaseFeature<DisasterTypeHistoryStatsProperties>;
 
-export class MandarinCultivationLayer extends BaseVisualizationLayer<MandarinCultivationProperties> {
+export class DisasterTypeHistoryStatsLayer extends BaseVisualizationLayer<DisasterTypeHistoryStatsProperties> {
+  private selectedDisaster: string;
+
+  private selectedCropGroup: string;
+
   private selectedCropDetailGroup: string;
 
   constructor(
-    featureCollection: MandarinCultivationFeatureCollection,
+    featureCollection: DisasterTypeHistoryStatsFeatureCollection,
     verboseName: string | null,
     visualizationSetting: VisualizationSetting,
+    selectedDisaster: string,
+    selectedCropGroup: string,
     selectedCropDetailGroup: string
   ) {
     super(featureCollection, verboseName, visualizationSetting);
+    this.selectedDisaster = selectedDisaster;
+    this.selectedCropGroup = selectedCropGroup;
     this.selectedCropDetailGroup = selectedCropDetailGroup;
   }
 
-  public updateSelectedCropDetailGroup(newDetailGroup: string) {
-    this.selectedCropDetailGroup = newDetailGroup;
+  public updateSelectedDisaster(newDisaster: string) {
+    this.selectedDisaster = newDisaster;
     (this.layer as any)?.changed();
   }
 
-  public getValue(feature: MandarinCultivationFeature): number | null {
+  public updateSelectedCropGroup(newCropGroup: string) {
+    this.selectedCropGroup = newCropGroup;
+    (this.layer as any)?.changed();
+  }
+
+  public updateSelectedCropDetailGroup(newCropDetailGroup: string) {
+    this.selectedCropDetailGroup = newCropDetailGroup;
+    (this.layer as any)?.changed();
+  }
+
+  public getValue(feature: DisasterTypeHistoryStatsFeature): number | null {
     if (!isArray(feature.properties.stats)) {
       return null;
     }
@@ -53,7 +71,7 @@ export class MandarinCultivationLayer extends BaseVisualizationLayer<MandarinCul
     return stats.total_area / 10_000;
   }
 
-  public getTooltipContent(feature: MandarinCultivationFeature): string {
+  public getTooltipContent(feature: DisasterTypeHistoryStatsFeature): string {
     const regionNm = feature.properties.vrbs_nm;
     let stats = feature.properties.stats?.[0];
     let totalArea = 0;
@@ -127,15 +145,24 @@ export class MandarinCultivationLayer extends BaseVisualizationLayer<MandarinCul
   }
 
   public static async createLayer(
-    featureCollection: MandarinCultivationFeatureCollection,
+    featureCollection: DisasterTypeHistoryStatsFeatureCollection,
     visualizationSetting: VisualizationSetting,
+    selectedDisaster: string,
+    selectedCropGroup: string,
     selectedCropDetailGroup: string
-  ): Promise<MandarinCultivationLayer> {
+  ): Promise<DisasterTypeHistoryStatsLayer> {
     try {
-      const layer = new MandarinCultivationLayer(featureCollection, "지역별 감귤 재배정보", visualizationSetting, selectedCropDetailGroup);
+      const layer = new DisasterTypeHistoryStatsLayer(
+        featureCollection,
+        "농업재해 유형별 과거통계",
+        visualizationSetting,
+        selectedDisaster,
+        selectedCropGroup,
+        selectedCropDetailGroup
+      );
       return layer;
     } catch (error) {
-      throw new Error("Failed to create MandarinCultivationLayer: " + error.message);
+      throw new Error("Failed to create DisasterTypeHistoryStatsLayer: " + error.message);
     }
   }
 }

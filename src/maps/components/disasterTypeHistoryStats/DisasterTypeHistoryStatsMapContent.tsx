@@ -1,18 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
-import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
+import CropFilter from "~/features/visualization/components/common/CropFilter";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
 import TwoDepthScrollSelector from "~/features/visualization/components/common/TwoDepthScrollSelector";
-import YearFilter from "~/features/visualization/components/common/YearFilter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
 import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
-import { YearlyDisasterFeatureCollection, YearlyDisasterLayer } from "~/features/visualization/layers/YearlyDisasterLayer";
-import YearlyDisasterInfoMap from "~/maps/classes/YearlyDisasterInfoMap";
+import { DisasterTypeHistoryStatsFeatureCollection, DisasterTypeHistoryStatsLayer } from "~/features/visualization/layers/DisasterTypeHistoryStatsLayer";
+import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
+import DisasterTypeHistoryStatsMap from "~/maps/classes/DisasterTypeHistoryStatsMap";
+import DisasterTypeHistoryStatsLegend from "~/maps/components/disasterTypeHistoryStats/DisasterTypeHistoryStatsLegend";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
-import YearlyDisasterLegend from "~/maps/components/yearlyDisasterInfo/YearlyDisasterLegend";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
-import { TARGET_YEAR } from "~/maps/constants/yearlyDisasterInfo";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import visualizationApi from "~/services/apis/visualizationApi";
@@ -21,14 +20,15 @@ interface Props {
   mapId: string;
 }
 
-const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
-  const mapList = useMapList<YearlyDisasterInfoMap>();
+const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
+  const mapList = useMapList<DisasterTypeHistoryStatsMap>();
   const map = mapList.getMapById(mapId);
 
   const { layerManager, ready, map: olMap } = useSetupOL(mapId, 10.5, "jeju");
 
   const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
+  // TODO: api 있는지 확인
   const { data: disasterName } = useQuery({
     queryKey: ["disasterName", map.selectedTargetYear],
     queryFn: () => visualizationApi.getDisasterName(map.selectedTargetYear),
@@ -36,11 +36,21 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
     retry: 1,
   });
 
+  const { data: cropList } = useQuery({
+    queryKey: ["mandarinVarietyList"],
+    queryFn: () => visualizationApi.getMandarinVarietyList(),
+    retry: 1,
+  });
+
   const { data: features } = useQuery({
-    queryKey: ["disasterFeatures", map.selectedTargetYear, map.getSelectedRegionLevel(), map.selectedDisaster],
-    queryFn: () => visualizationApi.getDisasterFeatures(map.selectedTargetYear, map.getSelectedRegionLevel(), map.selectedDisaster),
-    enabled: !!map.selectedTargetYear || !!map.getSelectedRegionLevel() || !!map.selectedDisaster,
-    retry: false,
+    queryKey: ["mandarinCultivationInfoFeatures", map.getSelectedRegionLevel(), map.selectedCropGroup, map.selectedCropDetailGroup],
+    queryFn: () =>
+      visualizationApi.getMandarinCultivationInfo(
+        map.getSelectedRegionLevel(),
+        map.selectedCropGroup,
+        map.selectedCropDetailGroup === DEFAULT_ALL_OPTION ? null : map.selectedCropDetailGroup
+      ),
+    enabled: !!ready,
   });
 
   const filteredFeatures = features
@@ -50,19 +60,20 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
       }
     : null;
 
-  const createYearlyDisasterInfoLayer = async (features: YearlyDisasterFeatureCollection, visualizationSetting: VisualizationSetting) => {
-    return YearlyDisasterLayer.createLayer(features, visualizationSetting, map.selectedDisasterCategory);
+  const createDisasterTypeHistoryStatsLayer = async (features: DisasterTypeHistoryStatsFeatureCollection, visualizationSetting: VisualizationSetting) => {
+    return DisasterTypeHistoryStatsLayer.createLayer(features, visualizationSetting, map.selectedDisaster, map.selectedCropGroup, map.selectedCropDetailGroup);
   };
 
   useVisualizationLayer({
     ready,
     features: filteredFeatures,
     layerManager,
-    layerName: "yearlyDisasterLayer",
-    createLayer: createYearlyDisasterInfoLayer,
+    layerName: "disasterTypeHistoryStatsLayer",
+    createLayer: createDisasterTypeHistoryStatsLayer,
     map,
     updateProps: {
-      selectedDisasterCategory: map.selectedDisasterCategory,
+      selectedDisaster: map.selectedDisaster,
+      selectedCropDetailGroup: map.selectedCropDetailGroup,
     },
   });
 
@@ -91,18 +102,9 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
       <FloatingContainer
         filter={
           <>
-            <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
+            {/* TODO: 기간 설정 컴포넌트 추가 */}
             <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
-            <ButtonGroupSelector
-              title="항목"
-              cols={2}
-              options={[
-                { value: "total_dstr_sprt_amt", label: "재난지원금" },
-                { value: "total_cfmtn_dmg_qnty", label: "피해면적" },
-              ]}
-              selectedValues={map.selectedDisasterCategory}
-              setSelectedValues={map.setSelectedDisasterCategory}
-            />
+            {/* 재해 구분 */}
             <TwoDepthScrollSelector
               options={disasterOptionsMap}
               title="재해 종류 및 세부 항목"
@@ -113,13 +115,14 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
               multiSelectSecond={false}
               hasSecondDepth={hasSecondDepth}
             />
+            {/* 품목, 세부 품목 */}
+            <CropFilter cropList={cropList} map={map} />
           </>
         }
         visualizationSetting={
-          <YearlyDisasterLegend
+          <DisasterTypeHistoryStatsLegend
             features={features}
             legendOptions={map.visualizationSetting.legendOptions}
-            selectedDisasterCategory={map.selectedDisasterCategory}
             onLevelChange={map.setLegendLevel}
             onColorChange={map.setLegendColor}
             onPivotPointsChange={map.setLegendPivotPoints}
@@ -135,4 +138,4 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
   );
 };
 
-export default YearlyDisasterInfoMapContent;
+export default DisasterTypeHistoryStatsMapContent;

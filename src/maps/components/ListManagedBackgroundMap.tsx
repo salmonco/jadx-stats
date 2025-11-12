@@ -34,8 +34,8 @@ interface BackgroundMapProps {
   layerManager: LayerManager;
   eventManager?: EventManager;
   ready: boolean;
-  map?: ExtendedOLMap;
   mapId: string;
+  map: ExtendedOLMap;
   children?: React.ReactNode;
 }
 
@@ -92,7 +92,7 @@ const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMa
       ref={mapContainerRef}
     >
       <div className="h-full w-full" id={mapId} />
-      <LayerHeader mapId={mapId} onClickFullScreen={onClickFullScreen} />
+      <LayerHeader map={map} olMap={olMap} onClickFullScreen={onClickFullScreen} />
       {ready && (
         <>
           {mergedMapOptions?.miniMap && <MiniMap mainMap={olMap} />}

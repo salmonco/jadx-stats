@@ -1,258 +1,40 @@
-import { useEffect, useMemo, useRef } from "react";
-import { createRoot, Root } from "react-dom/client";
-import { FeatureCollection, Geometry } from "~/maps/classes/interfaces";
-import BaseLayer from "~/maps/layers/BaseLayer";
-import { Vector as VectorLayer } from "ol/layer";
-import { Vector as SourceVector } from "ol/source";
-import { getCenter } from "ol/extent";
-import { colorsRed } from "~/utils/gisColors";
-import * as d3 from "d3";
+import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
+import { BaseFeature, BaseFeatureCollection, BaseVisualizationLayer } from "./BaseVisualizationLayer";
 
 interface Stats {
   avg_age: number;
   count: number;
 }
 
-interface Properties {
-  FID: number;
-  id: string;
-  lvl: string;
-  nm: string;
-  stats: Stats;
-  vrbs_nm: string;
-}
+export type AgingStatusFeatureCollection = BaseFeatureCollection<{ stats: Stats }>;
 
-export interface Feature {
-  id: string;
-  type: "Feature";
-  geometry: Geometry;
-  properties: Properties;
-}
-
-export type AgingStatusFeatureCollection = FeatureCollection<Feature>;
-
-const InnerLayerComponent = ({ features, frameState, visible, zIndex }: InnerLayerProps) => {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const tooltipRef = useRef<HTMLDivElement>(null);
-
-  const { extent, size } = frameState;
-  const [width, height] = size;
-  const resolution = frameState.viewState.resolution;
-  const path = useMemo(() => {
-    const center = getCenter(extent);
-    const proj = d3.geoTransform({
-      point(x, y) {
-        this.stream.point(width / 2 + (x - center[0]) / resolution, height / 2 + (center[1] - y) / resolution);
-      },
-    });
-    return d3.geoPath().projection(proj);
-  }, [extent, resolution, width, height]);
-
-  useEffect(() => {
-    if (tooltipRef.current) {
-      document.body.appendChild(tooltipRef.current);
-    }
-  }, []);
-
-  useEffect(() => {
-    const svg = d3.select(svgRef.current);
-    if (!visible) {
-      svg.selectAll("*").remove();
-      return;
-    }
-
-    svg.attr("width", width).attr("height", height).style("pointer-events", "auto");
-
-    if (features.features.length === 0) return;
-
-    const indexMap = new Map<string, number>();
-    features.features
-      .filter((f) => f.properties.stats)
-      .sort((a, b) => {
-        const aAge = a.properties?.stats?.avg_age ?? 0;
-        const bAge = b.properties?.stats?.avg_age ?? 0;
-        return bAge - aAge;
-      })
-      .forEach((f, i) => indexMap.set(f.id, i));
-
-    const getDistributedColor = (index: number, total: number): string => {
-      if (total === 2) return index === 0 ? colorsRed[3] : colorsRed[9];
-
-      const colorCount = colorsRed.length;
-      const slotSize = total / colorCount;
-      const slot = Math.floor(index / slotSize);
-      return colorsRed[slot % colorCount];
-    };
-
-    const validFeatures = features.features.filter((f) => f.properties.stats);
-
-    const getAreaFill = (feature: Feature): string => {
-      const hasStats = feature.properties.stats;
-
-      if (!hasStats) {
-        return "#f9f9f9";
-      }
-
-      const totalFeatures = validFeatures.length;
-      const sortedIdx = indexMap.get(feature.id) ?? 0;
-
-      if (totalFeatures === 1) return colorsRed[6];
-      if (sortedIdx === 0) return colorsRed[0];
-
-      return getDistributedColor(sortedIdx, totalFeatures);
-    };
-
-    svg
-      .selectAll("path")
-      .data(features.features)
-      .join("path")
-      .attr("d", (d: Feature) => path(d.geometry))
-      .attr("stroke", "rgba(255, 255, 255, 1)")
-      .attr("stroke-width", 1)
-      .attr("fill", (d: Feature) => getAreaFill(d))
-      .attr("fill-opacity", 0.75)
-      .style("cursor", "pointer")
-      .style("pointer-events", "auto")
-      .on("mousemove", function (evt) {
-        const el = this as SVGPathElement;
-        el.parentNode.appendChild(el);
-        d3.select(this).attr("stroke", "#499df3").attr("stroke-width", 3.5);
-
-        const d = d3.select(this).data()[0] as Feature;
-        const tooltip = tooltipRef.current;
-        if (!tooltip) return;
-
-        const regionNm = d.properties.vrbs_nm;
-        const stats = d.properties.stats;
-
-        const tooltipInnerHTML = `
-            <div style="border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 4px;">
-              <div style="color: #FFC132; display: flex; gap: 4px;">
-                <div style="font-size: 16px;">▶</div>
-                <div style="font-weight: 700; font-size: 16px; padding-bottom: 2px;">${regionNm}</div>
-              </div>
-              ${
-                !stats
-                  ? `<div style="display: flex; align-items: center; gap: 4px; color: #ccc; font-size: 14px; padding: 12px; background: #3D4C6E; border-radius: 6px;">
-                       <svg width="16" height="16" fill="#ccc" viewBox="0 0 24 24"><path d="M12 0C5.371 0 0 5.371 0 12s5.371 12 12 12 12-5.371 12-12S18.629 0 12 0zm1 17h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                       <span>데이터가 없습니다.</span>
-                     </div>`
-                  : `<div style="background: #3D4C6E; border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; color: white; gap: 4px;">
-                       <div style="font-size: 14px;">평균 연령 : ${stats.avg_age?.toFixed(2) ?? "-"}세</div>
-                       <div style="font-size: 14px;">총 경영체 수: ${stats.count?.toLocaleString() ?? "-"}개</div>
-                     </div>`
-              }
-            </div>
-          `;
-
-        const { clientX, clientY } = evt;
-
-        tooltip.innerHTML = tooltipInnerHTML;
-        tooltip.style.left = `${clientX + 15}px`;
-        tooltip.style.top = `${clientY - 30}px`;
-        tooltip.style.display = "block";
-      })
-      .on("mouseout", function () {
-        d3.select(this).attr("stroke", "rgba(255, 255, 255, 1)").attr("stroke-width", 1);
-        if (tooltipRef.current) tooltipRef.current.style.display = "none";
-      });
-
-    return () => {
-      svg.selectAll("*").remove();
-    };
-  }, [features, frameState, visible, zIndex]);
-
-  return (
-    <div className="relative overflow-visible">
-      <svg ref={svgRef} className="absolute" />
-      <div ref={tooltipRef} className="pointer-events-none fixed rounded-lg bg-[#37445E] text-white shadow-[1px_1px_4px_0px_rgba(0,0,0,0.59)]" />
-    </div>
-  );
-};
-
-interface InnerLayerOptions {
-  zIndex: number;
-  features: AgingStatusFeatureCollection;
-  svgRef: React.MutableRefObject<SVGSVGElement>;
-}
-
-interface InnerLayerProps {
-  features: AgingStatusFeatureCollection;
-  frameState: any;
-  visible: boolean;
-  zIndex: number;
-}
-
-// @ts-ignore
-export class InnerLayer extends VectorLayer<VectorSource> {
-  features: AgingStatusFeatureCollection;
-  visible: boolean;
-  zIndex: number;
-  container: HTMLElement;
-  root: Root;
-  tooltip: HTMLDivElement | null;
-
-  constructor(options: InnerLayerOptions) {
-    const { features, svgRef, zIndex, ...superOptions } = options;
-
-    const vectorSource = new SourceVector({
-      features: [],
-    });
-
-    super({ source: vectorSource, ...superOptions });
-
-    this.features = options.features;
-    this.zIndex = options.zIndex;
-    this.visible = true;
-    this.container = this.setupContainer();
-    this.root = createRoot(this.container);
+export class AgingStatusLayer extends BaseVisualizationLayer<{ stats: Stats }> {
+  public getValue(feature: BaseFeature<{ stats: Stats }>): number | null {
+    return feature.properties.stats?.avg_age ?? null;
   }
 
-  setupContainer() {
-    const container = document.createElement("div");
-    container.id = "aging-status";
-    document.body.appendChild(container);
-    container.style.position = "relative";
-    container.style.pointerEvents = "none";
-    container.style.overflow = "visible";
+  public getTooltipContent(feature: BaseFeature<{ stats: Stats }>): string {
+    const regionNm = feature.properties.vrbs_nm;
+    const avgAge = feature.properties.stats?.avg_age;
+    const count = feature.properties.stats?.count;
 
-    return container;
+    return `
+      <div style="border-radius: 8px; padding: 14px; display: flex; flex-direction: column; gap: 8px; width: 220px;">
+        <div style="color: #FFC132; display: flex; gap: 4px;">
+          <div style="font-size: 16px;">▶</div>
+          <div style="font-weight: 700; font-size: 16px; padding-bottom: 2px;">${regionNm}</div>
+        </div>
+        <div style="background: #3D4C6E; border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; color: white;">
+          <div style="font-size: 14px;">평균 연령 : ${avgAge != null ? avgAge.toFixed(2) : "-"}세</div>
+          <div style="font-size: 14px;">총 경영체 수 : ${count != null ? count.toLocaleString() : "-"}개</div>
+        </div>
+      </div>
+    `;
   }
 
-  updateFeatures(newFeatures: AgingStatusFeatureCollection) {
-    this.features = newFeatures;
-  }
-
-  render(frameState: any) {
-    if (!frameState) return;
-
-    this.root.render(<InnerLayerComponent features={this.features} frameState={frameState} visible={this.visible} zIndex={this.zIndex} />);
-    return this.container;
-  }
-
-  dispose() {
-    if (this.tooltip) {
-      document.body.removeChild(this.tooltip);
-      this.tooltip = null;
-    }
-    super.dispose();
-  }
-}
-
-export class AgingStatusLayer extends BaseLayer {
-  constructor(featureCollection: AgingStatusFeatureCollection, verboseName: string | null = null) {
-    const layerType = "custom";
-    const layer = new InnerLayer({
-      features: featureCollection,
-      svgRef: { current: null },
-      zIndex: 50,
-    });
-    super({ layerType, layer }, verboseName);
-  }
-
-  public static async createLayer(featureCollection: AgingStatusFeatureCollection): Promise<AgingStatusLayer> {
+  public static async createLayer(featureCollection: AgingStatusFeatureCollection, visualizationSetting: VisualizationSetting): Promise<AgingStatusLayer> {
     try {
-      const layer = new AgingStatusLayer(featureCollection, "고령화 통계");
+      const layer = new AgingStatusLayer(featureCollection, "고령화 통계", visualizationSetting);
       return layer;
     } catch (error) {
       throw new Error("Failed to create AgingStatusLayer: " + error.message);

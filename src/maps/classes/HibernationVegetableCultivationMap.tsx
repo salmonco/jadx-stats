@@ -3,6 +3,7 @@ import HibernationVegetableCultivationChart from "~/maps/components/hibernationV
 import HibernationVegetableCultivationMapContent from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationMapContent";
 import { CropType, DEFAULT_CROP, DEFAULT_TARGET_YEAR } from "~/maps/constants/hibernationVegetableCultivation";
 import { MapOptions } from "~/maps/constants/mapOptions";
+
 class HibernationVegetableCultivationMap extends CommonBackgroundMap {
   #selectedTargetYear = DEFAULT_TARGET_YEAR;
 
@@ -51,7 +52,8 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
    * @returns 현재 맵의 상태를 나타내는 문자열 스냅샷
    */
   getSnapshot() {
-    return `${super.getSnapshot()}-${this.#selectedTargetYear}-${this.#selectedCrop}`;
+    const { level, color, pivotPoints } = this.visualizationSetting.legendOptions;
+    return `${super.getSnapshot()}-${this.#selectedTargetYear}-${this.#selectedCrop}-${level}-${color}-${pivotPoints.join(",")}`;
   }
 
   get selectedTargetYear() {

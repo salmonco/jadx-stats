@@ -3,7 +3,8 @@ import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualiz
 import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { BackgroundMapType, DEFAULT_BACKGROUND_MAP_TYPE } from "~/maps/constants/backgroundMapType";
 import { MapOptions } from "~/maps/constants/mapOptions";
-import { DEFAULT_LABEL_OPTIONS, DEFAULT_LEGEND_OPTIONS, DEFAULT_TRANSPARENCY, DEFAULT_VISUAL_TYPE, VisualizationSetting } from "~/maps/constants/visualizationSetting";
+import { DEFAULT_VISUALIZATION_SETTING, LegendColor, VisualizationSetting } from "~/maps/constants/visualizationSetting";
+
 class CommonBackgroundMap {
   #mapId = uuidv4();
   #mapOptions: MapOptions;
@@ -15,7 +16,7 @@ class CommonBackgroundMap {
    * 지역 필터 설정
    * - 구분, 행정시, 권역, 읍면, 리동
    */
-  #regionFilterSetting: RegionFilterOptions = DEFAULT_REGION_SETTING;
+  #regionFilterSetting: RegionFilterOptions = structuredClone(DEFAULT_REGION_SETTING);
 
   /**
    * 시각화 설정
@@ -24,12 +25,7 @@ class CommonBackgroundMap {
    * - 레이블 (값, 지역)
    * - 투명도
    */
-  #visualizationSetting: VisualizationSetting = {
-    legendOptions: DEFAULT_LEGEND_OPTIONS,
-    visualType: DEFAULT_VISUAL_TYPE,
-    labelOptions: DEFAULT_LABEL_OPTIONS,
-    transparency: DEFAULT_TRANSPARENCY,
-  };
+  #visualizationSetting: VisualizationSetting = structuredClone(DEFAULT_VISUALIZATION_SETTING);
 
   /**
    * 지도 타입 (일반, 위성, 백지도, 자정)
@@ -58,6 +54,12 @@ class CommonBackgroundMap {
     this.setSelectedRegionLevel = this.setSelectedRegionLevel.bind(this);
     this.setRegionFilterSetting = this.setRegionFilterSetting.bind(this);
     this.setMapType = this.setMapType.bind(this);
+    this.setLabelOptions = this.setLabelOptions.bind(this);
+    this.setOpacity = this.setOpacity.bind(this);
+    this.resetVisualizationSetting = this.resetVisualizationSetting.bind(this);
+    this.setLegendLevel = this.setLegendLevel.bind(this);
+    this.setLegendColor = this.setLegendColor.bind(this);
+    this.setLegendPivotPoints = this.setLegendPivotPoints.bind(this);
   }
 
   destroy() {
@@ -176,6 +178,49 @@ class CommonBackgroundMap {
     if (state.visualizationSetting) {
       this.#visualizationSetting = state.visualizationSetting;
     }
+    this.notifyListeners();
+  }
+
+  /**
+   * 레이블 옵션 설정
+   * @param isShowValue - 값 표시 여부
+   * @param isShowRegion - 지역명 표시 여부
+   */
+  setLabelOptions(isShowValue: boolean, isShowRegion: boolean) {
+    this.#visualizationSetting.labelOptions.isShowValue = isShowValue;
+    this.#visualizationSetting.labelOptions.isShowRegion = isShowRegion;
+    this.notifyListeners();
+  }
+
+  /**
+   * 투명도 설정
+   * @param opacity - 투명도 값 (0-1)
+   */
+  setOpacity(opacity: number) {
+    this.#visualizationSetting.opacity = opacity;
+    this.notifyListeners();
+  }
+
+  /**
+   * 시각화 설정 초기화
+   */
+  resetVisualizationSetting() {
+    this.#visualizationSetting = structuredClone(DEFAULT_VISUALIZATION_SETTING);
+    this.notifyListeners();
+  }
+
+  setLegendLevel(level: number) {
+    this.visualizationSetting.legendOptions.level = level;
+    this.notifyListeners();
+  }
+
+  setLegendColor(color: LegendColor) {
+    this.visualizationSetting.legendOptions.color = color;
+    this.notifyListeners();
+  }
+
+  setLegendPivotPoints(pivotPoints: number[]) {
+    this.visualizationSetting.legendOptions.pivotPoints = pivotPoints;
     this.notifyListeners();
   }
 
