@@ -90,6 +90,8 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
         setLabelOptions={map.setLabelOptions}
         labelOptions={map.visualizationSetting.labelOptions}
         resetVisualizationSetting={map.resetVisualizationSetting}
+        setOpacity={map.setOpacity}
+        opacity={map.visualizationSetting.opacity}
       />
     </ListManagedBackgroundMap>
   );

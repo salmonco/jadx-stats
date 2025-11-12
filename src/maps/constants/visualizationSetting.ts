@@ -6,7 +6,7 @@ export type VisualizationSetting = {
   /** 레이블 설정 */
   labelOptions: LabelOptions;
   /** 투명도 */
-  transparency: number;
+  opacity: number;
 };
 
 /** 범례 레벨 기본값 */
@@ -39,7 +39,7 @@ export const DEFAULT_VISUALIZATION_SETTING: VisualizationSetting = {
   legendOptions: DEFAULT_LEGEND_OPTIONS,
   visualType: DEFAULT_VISUAL_TYPE,
   labelOptions: DEFAULT_LABEL_OPTIONS,
-  transparency: DEFAULT_TRANSPARENCY,
+  opacity: DEFAULT_TRANSPARENCY,
 };
 
 export const SETTING_BUTTONS = {

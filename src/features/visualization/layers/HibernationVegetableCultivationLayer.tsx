@@ -178,7 +178,7 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
       .attr("stroke", "rgba(255, 255, 255, 1)")
       .attr("stroke-width", 1)
       .attr("fill", (d: Feature) => getChangeFill(d))
-      .attr("fill-opacity", 0.75)
+      .attr("fill-opacity", visualizationSetting.opacity)
       .style("cursor", "pointer")
       .style("pointer-events", "auto");
 
