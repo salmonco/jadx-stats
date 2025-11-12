@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { VisualType } from "~/maps/constants/visualizationSetting";
 import DataVisualizationButton from "./DataVisualizationButton";
 import FilterContainer from "./FilterContainer";
 import VisualizationSettingContainer from "./VisualizationSettingContainer";
@@ -11,9 +12,21 @@ interface Props {
   resetVisualizationSetting: () => void;
   setOpacity: (opacity: number) => void;
   opacity: number;
+  visualType: VisualType;
+  setVisualType: (type: VisualType) => void;
 }
 
-const FloatingContainer = ({ filter, visualizationSetting, setLabelOptions, labelOptions, resetVisualizationSetting, setOpacity, opacity }: Props) => {
+const FloatingContainer = ({
+  filter,
+  visualizationSetting,
+  setLabelOptions,
+  labelOptions,
+  resetVisualizationSetting,
+  setOpacity,
+  opacity,
+  visualType,
+  setVisualType,
+}: Props) => {
   const [isVisualizationOpen, setIsVisualizationOpen] = useState(false);
 
   return (
@@ -33,6 +46,8 @@ const FloatingContainer = ({ filter, visualizationSetting, setLabelOptions, labe
           resetVisualizationSetting={resetVisualizationSetting}
           setOpacity={setOpacity}
           opacity={opacity}
+          visualType={visualType}
+          setVisualType={setVisualType}
         />
       </div>
     </div>

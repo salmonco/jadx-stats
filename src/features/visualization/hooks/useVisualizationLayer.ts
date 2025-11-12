@@ -17,8 +17,15 @@ export const useVisualizationLayer = ({ ready, features, layerManager, layerName
 
     const layerWrapper = layerManager.getLayer(layerName);
 
-    if (layerWrapper) {
-      const existingLayer = layerWrapper.getLayer();
+    // visualType이 바뀌면 기존 레이어 제거
+    if (layerWrapper && layerWrapper.visualType !== map.visualizationSetting.visualType) {
+      layerManager.removeLayer(layerName);
+    }
+
+    const updatedLayerWrapper = layerManager.getLayer(layerName);
+
+    if (updatedLayerWrapper) {
+      const existingLayer = updatedLayerWrapper.getLayer();
       if (typeof (existingLayer as any).updateFeatures === "function") {
         (existingLayer as any).updateFeatures(features);
       }
@@ -28,8 +35,8 @@ export const useVisualizationLayer = ({ ready, features, layerManager, layerName
       if (updateProps) {
         Object.entries(updateProps).forEach(([key, value]) => {
           const updaterMethodName = `update${key.charAt(0).toUpperCase() + key.slice(1)}`;
-          if (typeof (layerWrapper as any)[updaterMethodName] === "function") {
-            (layerWrapper as any)[updaterMethodName](value);
+          if (typeof (updatedLayerWrapper as any)[updaterMethodName] === "function") {
+            (updatedLayerWrapper as any)[updaterMethodName](value);
           }
         });
       }

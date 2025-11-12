@@ -3,7 +3,7 @@ import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualiz
 import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { BackgroundMapType, DEFAULT_BACKGROUND_MAP_TYPE } from "~/maps/constants/backgroundMapType";
 import { MapOptions } from "~/maps/constants/mapOptions";
-import { DEFAULT_VISUALIZATION_SETTING, LegendColor, VisualizationSetting } from "~/maps/constants/visualizationSetting";
+import { DEFAULT_VISUALIZATION_SETTING, LegendColor, VisualizationSetting, VisualType } from "~/maps/constants/visualizationSetting";
 
 class CommonBackgroundMap {
   #mapId = uuidv4();
@@ -60,6 +60,7 @@ class CommonBackgroundMap {
     this.setLegendLevel = this.setLegendLevel.bind(this);
     this.setLegendColor = this.setLegendColor.bind(this);
     this.setLegendPivotPoints = this.setLegendPivotPoints.bind(this);
+    this.setVisualType = this.setVisualType.bind(this);
   }
 
   destroy() {
@@ -198,6 +199,15 @@ class CommonBackgroundMap {
    */
   setOpacity(opacity: number) {
     this.#visualizationSetting.opacity = opacity;
+    this.notifyListeners();
+  }
+
+  /**
+   * 시각화 타입 설정
+   * @param type - 시각화 타입
+   */
+  setVisualType(type: VisualType) {
+    this.#visualizationSetting.visualType = type;
     this.notifyListeners();
   }
 
