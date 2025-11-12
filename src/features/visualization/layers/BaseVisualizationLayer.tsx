@@ -36,6 +36,7 @@ interface BaseInnerLayerProps<T = any> {
   getAreaFill: (feature: BaseFeature<T>, colorScale: (value: number) => string) => string;
   getLabels: (feature: BaseFeature<T>, labelOptions: any) => string[];
   getTooltipContent: (feature: BaseFeature<T>) => string;
+  getValue: (feature: BaseFeature<T>) => number | null;
 }
 
 const BaseInnerLayerComponent = <T,>({
@@ -48,6 +49,7 @@ const BaseInnerLayerComponent = <T,>({
   getAreaFill,
   getLabels,
   getTooltipContent,
+  getValue,
 }: BaseInnerLayerProps<T>) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -67,6 +69,12 @@ const BaseInnerLayerComponent = <T,>({
   }, [extent, resolution, width, height]);
 
   const colorScale = useMemo(() => createColorScale(features, visualizationSetting), [createColorScale, features, visualizationSetting]);
+
+  const radiusScale = useMemo(() => {
+    const values = features.features.map((d) => getValue(d)).filter((v): v is number => v != null && typeof v === "number");
+    const [minValue, maxValue] = values.length > 0 ? (d3.extent(values) as [number, number]) : [0, 1];
+    return d3.scaleLinear().domain([minValue, maxValue]).range([5, 20]);
+  }, [features, getValue]);
 
   useEffect(() => {
     if (!frameState || !visible || !features?.features?.length) return;
@@ -88,6 +96,61 @@ const BaseInnerLayerComponent = <T,>({
         .attr("stroke-width", 1)
         .attr("fill", (d: BaseFeature<T>) => getAreaFill(d, colorScale))
         .attr("fill-opacity", visualizationSetting.opacity)
+        .style("cursor", "pointer")
+        .style("pointer-events", "auto")
+        .on("mouseover", function (event, d) {
+          d3.select(this).attr("stroke", "#499df3").attr("stroke-width", 3.5);
+          tooltip.style("opacity", 1).style("display", "block");
+          tooltip.html(getTooltipContent(d));
+        })
+        .on("mousemove", (event) => {
+          tooltip.style("left", `${event.clientX + 15}px`).style("top", `${event.clientY - 28}px`);
+        })
+        .on("mouseout", function () {
+          d3.select(this).attr("stroke", "white").attr("stroke-width", 1);
+          tooltip.style("opacity", 0).style("display", "none");
+        });
+    } else if (visualizationSetting.visualType === VISUAL_TYPES.점) {
+      svg
+        .selectAll("circle")
+        .data(features.features)
+        .join("circle")
+        .attr("cx", (d: BaseFeature<T>) => path.centroid(d.geometry)[0])
+        .attr("cy", (d: BaseFeature<T>) => path.centroid(d.geometry)[1])
+        .attr("r", 5) // Fixed radius for dots
+        .attr("fill", (d: BaseFeature<T>) => getAreaFill(d, colorScale))
+        .attr("fill-opacity", visualizationSetting.opacity)
+        .attr("stroke", "white")
+        .attr("stroke-width", 1)
+        .style("cursor", "pointer")
+        .style("pointer-events", "auto")
+        .on("mouseover", function (event, d) {
+          d3.select(this).attr("stroke", "#499df3").attr("stroke-width", 3.5);
+          tooltip.style("opacity", 1).style("display", "block");
+          tooltip.html(getTooltipContent(d));
+        })
+        .on("mousemove", (event) => {
+          tooltip.style("left", `${event.clientX + 15}px`).style("top", `${event.clientY - 28}px`);
+        })
+        .on("mouseout", function () {
+          d3.select(this).attr("stroke", "white").attr("stroke-width", 1);
+          tooltip.style("opacity", 0).style("display", "none");
+        });
+    } else if (visualizationSetting.visualType === VISUAL_TYPES.버블) {
+      svg
+        .selectAll("circle")
+        .data(features.features)
+        .join("circle")
+        .attr("cx", (d: BaseFeature<T>) => path.centroid(d.geometry)[0])
+        .attr("cy", (d: BaseFeature<T>) => path.centroid(d.geometry)[1])
+        .attr("r", (d: BaseFeature<T>) => {
+          const value = getValue(d);
+          return value !== null ? radiusScale(value) : 0;
+        })
+        .attr("fill", (d: BaseFeature<T>) => getAreaFill(d, colorScale))
+        .attr("fill-opacity", visualizationSetting.opacity)
+        .attr("stroke", "white")
+        .attr("stroke-width", 1)
         .style("cursor", "pointer")
         .style("pointer-events", "auto")
         .on("mouseover", function (event, d) {
@@ -137,7 +200,7 @@ const BaseInnerLayerComponent = <T,>({
     } else {
       svg.selectAll("text").remove();
     }
-  }, [features, frameState, visible, zIndex, visualizationSetting, path, colorScale, createColorScale, getAreaFill, getLabels, getTooltipContent]);
+  }, [features, frameState, visible, zIndex, visualizationSetting, path, colorScale, createColorScale, getAreaFill, getLabels, getTooltipContent, getValue]);
 
   if (!frameState || !visible || !features?.features?.length) {
     return null;
@@ -166,6 +229,7 @@ export class BaseInnerLayer<T = any> extends VectorLayer<any> {
   getAreaFill: (feature: BaseFeature<T>, colorScale: (value: number) => string) => string;
   getLabels: (feature: BaseFeature<T>, labelOptions: any) => string[];
   getTooltipContent: (feature: BaseFeature<T>) => string;
+  getValue: (feature: BaseFeature<T>) => number | null;
 
   constructor(
     features: BaseFeatureCollection<T>,
@@ -174,7 +238,8 @@ export class BaseInnerLayer<T = any> extends VectorLayer<any> {
     createColorScale: (features: BaseFeatureCollection<T>, visualizationSetting: VisualizationSetting) => d3.ScaleSequential<string> | d3.ScaleThreshold<number, string>,
     getAreaFill: (feature: BaseFeature<T>, colorScale: (value: number) => string) => string,
     getLabels: (feature: BaseFeature<T>, labelOptions: any) => string[],
-    getTooltipContent: (feature: BaseFeature<T>) => string
+    getTooltipContent: (feature: BaseFeature<T>) => string,
+    getValue: (feature: BaseFeature<T>) => number | null
   ) {
     const vectorSource = new SourceVector({ features: [] });
     super({ source: vectorSource, zIndex });
@@ -187,6 +252,7 @@ export class BaseInnerLayer<T = any> extends VectorLayer<any> {
     this.getAreaFill = getAreaFill;
     this.getLabels = getLabels;
     this.getTooltipContent = getTooltipContent;
+    this.getValue = getValue;
 
     this.container = document.createElement("div");
     this.container.style.position = "absolute";
@@ -222,6 +288,7 @@ export class BaseInnerLayer<T = any> extends VectorLayer<any> {
         getAreaFill={this.getAreaFill}
         getLabels={this.getLabels}
         getTooltipContent={this.getTooltipContent}
+        getValue={this.getValue}
       />
     );
     return this.container;
@@ -247,7 +314,8 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
       this.createColorScale.bind(this),
       this.getAreaFill.bind(this),
       this.getLabels.bind(this),
-      this.getTooltipContent.bind(this)
+      this.getTooltipContent.bind(this),
+      this.getValue.bind(this)
     );
 
     // layer 속성을 직접 설정
