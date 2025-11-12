@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LABEL_TYPES, LabelOptions } from "~/maps/constants/visualizationSetting";
+import { LABEL_TYPES, LabelOptions, LabelType } from "~/maps/constants/visualizationSetting";
 
 interface Params {
   labelOptions: LabelOptions;
@@ -24,7 +24,7 @@ export const useLabelSettings = ({ labelOptions, setLabelOptions }: Params) => {
 
   const labelTypes = Object.entries(LABEL_TYPES).map(([label, id]) => ({ id, label }));
 
-  const onClickLabelItem = (itemId: string) => {
+  const onClickLabelItem = (itemId: LabelType) => {
     const newLabels = selectedLabels.includes(itemId) ? selectedLabels.filter((id) => id !== itemId) : [...selectedLabels, itemId];
 
     setSelectedLabels(newLabels);
@@ -34,7 +34,7 @@ export const useLabelSettings = ({ labelOptions, setLabelOptions }: Params) => {
     setLabelOptions(isShowValue, isShowRegion);
   };
 
-  const checkIsLabelSelected = (itemId: string) => {
+  const checkIsLabelSelected = (itemId: LabelType) => {
     return selectedLabels.includes(itemId);
   };
 

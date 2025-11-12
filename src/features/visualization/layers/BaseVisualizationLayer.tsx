@@ -5,7 +5,7 @@ import { Vector as SourceVector } from "ol/source";
 import { useEffect, useMemo, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FeatureCollection, Geometry } from "~/maps/classes/interfaces";
-import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
+import { VISUAL_TYPES, VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import BaseLayer from "~/maps/layers/BaseLayer";
 import { getColorGradient } from "~/utils/colorGradient";
 
@@ -78,29 +78,31 @@ const BaseInnerLayerComponent = <T,>({
 
     svg.attr("width", width).attr("height", height).style("position", "absolute").style("top", 0).style("left", 0);
 
-    svg
-      .selectAll("path")
-      .data(features.features)
-      .join("path")
-      .attr("d", path)
-      .attr("stroke", "white")
-      .attr("stroke-width", 1)
-      .attr("fill", (d: BaseFeature<T>) => getAreaFill(d, colorScale))
-      .attr("fill-opacity", visualizationSetting.opacity)
-      .style("cursor", "pointer")
-      .style("pointer-events", "auto")
-      .on("mouseover", function (event, d) {
-        d3.select(this).attr("stroke", "#499df3").attr("stroke-width", 3.5);
-        tooltip.style("opacity", 1).style("display", "block");
-        tooltip.html(getTooltipContent(d));
-      })
-      .on("mousemove", (event) => {
-        tooltip.style("left", `${event.clientX + 15}px`).style("top", `${event.clientY - 28}px`);
-      })
-      .on("mouseout", function () {
-        d3.select(this).attr("stroke", "white").attr("stroke-width", 1);
-        tooltip.style("opacity", 0).style("display", "none");
-      });
+    if (visualizationSetting.visualType === VISUAL_TYPES.색상) {
+      svg
+        .selectAll("path")
+        .data(features.features)
+        .join("path")
+        .attr("d", path)
+        .attr("stroke", "white")
+        .attr("stroke-width", 1)
+        .attr("fill", (d: BaseFeature<T>) => getAreaFill(d, colorScale))
+        .attr("fill-opacity", visualizationSetting.opacity)
+        .style("cursor", "pointer")
+        .style("pointer-events", "auto")
+        .on("mouseover", function (event, d) {
+          d3.select(this).attr("stroke", "#499df3").attr("stroke-width", 3.5);
+          tooltip.style("opacity", 1).style("display", "block");
+          tooltip.html(getTooltipContent(d));
+        })
+        .on("mousemove", (event) => {
+          tooltip.style("left", `${event.clientX + 15}px`).style("top", `${event.clientY - 28}px`);
+        })
+        .on("mouseout", function () {
+          d3.select(this).attr("stroke", "white").attr("stroke-width", 1);
+          tooltip.style("opacity", 0).style("display", "none");
+        });
+    }
 
     // 레이블 표시
     const { labelOptions } = visualizationSetting;

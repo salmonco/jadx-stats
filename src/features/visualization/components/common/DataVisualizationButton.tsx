@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useLabelSettings } from "~/features/visualization/hooks/useLabelSettings";
-import { SETTING_BUTTONS, SettingButtonId } from "~/maps/constants/visualizationSetting";
+import { useVisualTypeSettings } from "~/features/visualization/hooks/useVisualTypeSettings";
+import { LabelType, VISUAL_SETTING_BUTTONS, VISUAL_TYPES, VisualSettingButtonId, VisualType } from "~/maps/constants/visualizationSetting";
 import OpacityModal from "./OpacityModal";
 
 interface Props {
@@ -10,13 +11,16 @@ interface Props {
   resetVisualizationSetting: () => void;
   setOpacity: (opacity: number) => void;
   opacity: number;
+  visualType: VisualType;
+  setVisualType: (type: VisualType) => void;
 }
 
-const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, resetVisualizationSetting, setOpacity, opacity }: Props) => {
+const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, resetVisualizationSetting, setOpacity, opacity, visualType, setVisualType }: Props) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [openSubMenu, setOpenSubMenu] = useState<SettingButtonId | null>(null);
-  const [selectedVisualType, setSelectedVisualType] = useState("color");
+  const [openSubMenu, setOpenSubMenu] = useState<VisualSettingButtonId | null>(null);
   const [isOpacityModalOpen, setIsOpacityModalOpen] = useState(false);
+
+  const { visualTypeMenu, onClickVisualTypeItem, checkIsVisualTypeSelected } = useVisualTypeSettings({ visualType, setVisualType });
 
   const { labelTypes, onClickLabelItem, checkIsLabelSelected } = useLabelSettings({
     labelOptions,
@@ -25,20 +29,13 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
 
   const buttonRef = useRef<HTMLDivElement>(null);
 
-  const visualTypes = [
-    { id: "heat", label: "히트" },
-    { id: "bubble", label: "버블" },
-    { id: "dot", label: "점" },
-    { id: "color", label: "색상" },
-  ];
-
-  const handleButtonClick = (buttonId: SettingButtonId) => {
-    if (buttonId === SETTING_BUTTONS.초기화) {
+  const handleButtonClick = (buttonId: VisualSettingButtonId) => {
+    if (buttonId === VISUAL_SETTING_BUTTONS.초기화) {
       resetVisualizationSetting();
       return;
     }
 
-    if (buttonId === SETTING_BUTTONS["투명도 설정"]) {
+    if (buttonId === VISUAL_SETTING_BUTTONS["투명도 설정"]) {
       setIsOpacityModalOpen(true);
       return;
     }
@@ -47,29 +44,29 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
     setOpenSubMenu(openSubMenu === buttonId ? null : buttonId);
   };
 
-  const renderSubMenu = (buttonId: SettingButtonId) => {
+  const renderSubMenu = (buttonId: VisualSettingButtonId) => {
     if (openSubMenu !== buttonId) return null;
 
     let items = [];
-    if (buttonId === SETTING_BUTTONS.타입) {
-      items = visualTypes;
-    } else if (buttonId === SETTING_BUTTONS.레이블) {
+    if (buttonId === VISUAL_SETTING_BUTTONS.타입) {
+      items = Object.entries(VISUAL_TYPES).map(([label, id]) => ({ id, label }));
+    } else if (buttonId === VISUAL_SETTING_BUTTONS.레이블) {
       items = labelTypes;
     }
 
     const handleItemClick = (itemId: string) => {
-      if (buttonId === SETTING_BUTTONS.타입) {
-        setSelectedVisualType(itemId);
-      } else if (buttonId === SETTING_BUTTONS.레이블) {
-        onClickLabelItem(itemId);
+      if (buttonId === VISUAL_SETTING_BUTTONS.타입) {
+        onClickVisualTypeItem(itemId as VisualType);
+      } else if (buttonId === VISUAL_SETTING_BUTTONS.레이블) {
+        onClickLabelItem(itemId as LabelType);
       }
     };
 
     const isSelected = (itemId: string) => {
-      if (buttonId === SETTING_BUTTONS.타입) {
-        return selectedVisualType === itemId;
-      } else if (buttonId === SETTING_BUTTONS.레이블) {
-        return checkIsLabelSelected(itemId);
+      if (buttonId === VISUAL_SETTING_BUTTONS.타입) {
+        return checkIsVisualTypeSelected(itemId as VisualType);
+      } else if (buttonId === VISUAL_SETTING_BUTTONS.레이블) {
+        return checkIsLabelSelected(itemId as LabelType);
       }
       return false;
     };
@@ -115,7 +112,7 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
       {/* 설정 버튼들 */}
       {isSettingsOpen && (
         <div className="absolute bottom-0 left-[240px] flex gap-2">
-          {Object.entries(SETTING_BUTTONS).map(([label, id]) => (
+          {Object.entries(VISUAL_SETTING_BUTTONS).map(([label, id]) => (
             <div key={id} className="relative">
               <button
                 className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-700 text-sm text-white shadow-lg transition-transform hover:scale-105"
