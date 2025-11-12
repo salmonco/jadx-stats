@@ -391,11 +391,16 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
 
   public updateFeatures(newFeatureCollection: BaseFeatureCollection<T>) {
     this.featureCollection = newFeatureCollection;
+
     if (this.currentLayer instanceof BaseInnerLayer) {
       this.currentLayer.updateFeatures(newFeatureCollection);
     } else if (this.currentLayer instanceof OLHeatmapLayer) {
-      // weight과 features를 갱신하기 위해 레이어 재생성
-      this.createAndSetLayer();
+      // 히트맵 레이어 source만 업데이트
+      const olFeatures = this.createHeatmapOLFeatures(newFeatureCollection, this.getValue.bind(this));
+      const vectorSource = new SourceVector<Feature<Geometry>>({ features: olFeatures });
+      this.currentLayer.setSource(vectorSource);
+      this.currentLayer.setOpacity(this.visualizationSetting.opacity);
+      this.currentLayer.changed();
     }
   }
 
