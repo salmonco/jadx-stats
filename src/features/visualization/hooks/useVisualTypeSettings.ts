@@ -8,12 +8,12 @@ interface Params {
 export const useVisualTypeSettings = ({ visualType, setVisualType }: Params) => {
   const visualTypeMenu = Object.entries(VISUAL_TYPES).map(([label, id]) => ({ id, label }));
 
-  const onClickVisualTypeItem = (item: VisualType) => {
-    setVisualType(item);
+  const onClickVisualTypeItem = (type: VisualType) => {
+    setVisualType(type);
   };
 
-  const checkIsVisualTypeSelected = (item: VisualType) => {
-    return visualType === item;
+  const checkIsVisualTypeSelected = (type: VisualType) => {
+    return visualType === type;
   };
 
   return {
