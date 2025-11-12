@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import ChartContainer from "~/features/visualization/components/common/ChartContainer";
 import CultivationChangeDivergingBarChart from "~/features/visualization/components/production/CultivationChangeDivergingBarChart";
-import { HibernationVegetableCultivationFeatureCollection } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
+import { HibernationFeatureCollection } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
 import HibernationVegetableCultivationMap from "~/maps/classes/HibernationVegetableCultivationMap";
 import { useMapList } from "~/maps/hooks/useMapList";
 import processedData from "~/maps/utils/hibernationVegetableCultivation/processedData";
@@ -14,7 +14,7 @@ const HibernationVegetableCultivationChart = () => {
 
   const [chartData, setChartData] = useState<any>(null);
 
-  const { data: features } = useQuery<HibernationVegetableCultivationFeatureCollection>({
+  const { data: features } = useQuery<HibernationFeatureCollection>({
     queryKey: ["hibernationVegetableCultivationFeatures", firstMap.selectedTargetYear, firstMap.getSelectedRegionLevel()],
     queryFn: () => visualizationApi.getHinatVgtblCltvarDclrFile(firstMap.selectedTargetYear, firstMap.selectedTargetYear - 1, firstMap.getSelectedRegionLevel()),
     // TODO: 지도와 차트 간 ready 상태 공유
