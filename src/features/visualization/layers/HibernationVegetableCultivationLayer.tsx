@@ -5,9 +5,10 @@ import { Vector as SourceVector } from "ol/source";
 import { useEffect, useMemo, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FeatureCollection, Geometry } from "~/maps/classes/interfaces";
+import type { LegendOptions } from "~/maps/constants/visualizationSetting";
 import BaseLayer from "~/maps/layers/BaseLayer";
+import { getColorGradient } from "~/utils/colorGradient";
 import { formatAreaHa } from "~/utils/format";
-import { colorsBlue, colorsRed } from "~/utils/gisColors";
 
 interface AreaChange {
   crop_nm: string;
@@ -41,6 +42,7 @@ interface InnerLayerOptions {
   features: HibernationVegetableCultivationFeatureCollection;
   svgRef: React.MutableRefObject<SVGSVGElement>;
   selectedCrop: string;
+  legendOptions: LegendOptions;
 }
 
 interface InnerLayerProps {
@@ -49,9 +51,10 @@ interface InnerLayerProps {
   visible: boolean;
   zIndex: number;
   selectedCrop: string;
+  legendOptions: LegendOptions;
 }
 
-const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCrop }: InnerLayerProps) => {
+const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCrop, legendOptions }: InnerLayerProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
@@ -80,6 +83,23 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
 
   const sortableFeatures = filteredFeatures.filter((f) => f.properties.area_chg.chg_mttr.length);
 
+  /**
+   * 범례 설정을 기반으로 한 값 범위 계산 (색상 매핑용)
+   * @description 선택된 작물의 변화량 데이터에서 최대 절댓값을 구하여 색상 매핑에 사용할 범위를 설정
+   */
+  const valueRange = useMemo(() => {
+    if (sortableFeatures.length === 0) return { min: 0, max: 0 };
+
+    const values = sortableFeatures.map((f) => {
+      const matter = f.properties.area_chg.chg_mttr.find((m) => m.crop_nm === selectedCrop);
+      /** 단위 변환: chg_cn 값을 10,000으로 나누어 헥타르(ha) 단위로 변환 */
+      return matter ? matter.chg_cn / 10_000 : 0;
+    });
+
+    const absMax = Math.max(...values.map(Math.abs));
+    return { min: -absMax, max: absMax };
+  }, [sortableFeatures, selectedCrop]);
+
   useEffect(() => {
     if (tooltipRef.current) {
       document.body.appendChild(tooltipRef.current);
@@ -99,35 +119,14 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
 
     if (sortableFeatures.length === 0) return;
 
-    const avgChangeValues = sortableFeatures.map((f) => {
-      const list = f.properties.area_chg?.chg_mttr ?? [];
-      if (list.length === 0) return 0;
-      const total = list.reduce((s, c) => s + c.chg_cn * c.drctn, 0);
-      return total / list.length;
-    });
+    /** 범례 설정에서 선택된 색상의 그라데이션 함수 가져오기 */
+    const colorGradient = getColorGradient(legendOptions.color);
 
-    if (avgChangeValues.length === 0 || avgChangeValues.some((v) => isNaN(v))) return;
-
-    const indexMap = new Map<string, number>();
-    sortableFeatures
-      .sort((a, b) => {
-        const getVal = (fs: Feature) => {
-          const matters = fs.properties.area_chg?.chg_mttr ?? [];
-          const matter = matters.find((m) => m.crop_nm === selectedCrop);
-          if (!matter) return 0;
-          return Math.abs(matter.chg_cn);
-        };
-        return getVal(a) - getVal(b);
-      })
-      .forEach((f, i) => indexMap.set(f.id, i));
-
-    const getDistributedColor = (index: number, total: number, colorArr: string[]): string => {
-      const colorCount = colorArr.length;
-      const slotSize = total / colorCount;
-      const slot = Math.floor(index / slotSize);
-      return colorArr[slot % colorCount];
-    };
-
+    /**
+     * 지도 피처의 색상을 결정하는 함수
+     * @param {Feature} feature - 지도 피처 객체
+     * @returns {string} 해당 피처에 적용할 색상 코드
+     */
     const getChangeFill = (feature: Feature): string => {
       const matters = feature?.properties?.area_chg?.chg_mttr;
       if (!Array.isArray(matters)) return "#f9f9f9";
@@ -135,15 +134,38 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
       const matter = matters.find((m) => m.crop_nm === selectedCrop);
       if (!matter) return "#f9f9f9";
 
-      const value = matter.chg_cn;
+      /** 단위 변환: chg_cn 값을 10,000으로 나누어 헥타르(ha) 단위로 변환 */
+      const value = matter.chg_cn / 10_000;
       if (value === undefined || value === null) return "#f9f9f9";
 
-      const totalFeatures = sortableFeatures.length;
-      const sortedIdx = indexMap.get(feature.id) ?? 0;
+      // 사용자 정의 구간이 있는 경우
+      if (legendOptions.pivotPoints.length > 0) {
+        const pivotPoints = legendOptions.pivotPoints;
+        let stepIndex = 0;
 
-      const colorArr = value >= 0 ? [...colorsRed].reverse() : [...colorsBlue];
+        // 값이 어느 구간에 속하는지 찾기
+        for (let i = 0; i < pivotPoints.length - 1; i++) {
+          if (value > pivotPoints[i]) {
+            stepIndex = i;
+          }
+        }
 
-      return getDistributedColor(sortedIdx, totalFeatures, colorArr);
+        // 높은 값이 진한 색상이 되도록 역순으로 계산
+        const stepNormalized = pivotPoints.length > 1 ? (pivotPoints.length - 2 - stepIndex) / (pivotPoints.length - 2) : 0;
+        return colorGradient(stepNormalized);
+      } else {
+        // 자동 구간인 경우
+        /** 값을 0-1 범위로 정규화 */
+        const normalizedValue = (value - valueRange.min) / (valueRange.max - valueRange.min);
+
+        /** 범례 단계에 따른 색상 단계 계산 */
+        const stepSize = 1 / legendOptions.level;
+        const stepIndex = Math.min(Math.floor(normalizedValue / stepSize), legendOptions.level - 1);
+        // 높은 값이 진한 색상이 되도록 역순으로 계산
+        const stepNormalized = legendOptions.level > 1 ? (legendOptions.level - 1 - stepIndex) / (legendOptions.level - 1) : 0;
+
+        return colorGradient(stepNormalized);
+      }
     };
 
     svg
@@ -220,7 +242,7 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
     return () => {
       svg.selectAll("*").remove();
     };
-  }, [features, frameState, visible, zIndex, selectedCrop]);
+  }, [features, frameState, visible, zIndex, selectedCrop, legendOptions, valueRange]);
 
   return (
     <div className="">
@@ -238,9 +260,10 @@ export class InnerLayer extends VectorLayer<VectorSource> {
   container: HTMLElement;
   root: Root;
   selectedCrop: string;
+  legendOptions: LegendOptions;
 
   constructor(options: InnerLayerOptions) {
-    const { name, features, svgRef, zIndex, selectedCrop, ...superOptions } = options;
+    const { name, features, svgRef, zIndex, selectedCrop, legendOptions, ...superOptions } = options;
 
     const vectorSource = new SourceVector({
       features: [],
@@ -255,6 +278,7 @@ export class InnerLayer extends VectorLayer<VectorSource> {
     this.container = this.setupContainer();
     this.root = createRoot(this.container);
     this.selectedCrop = selectedCrop;
+    this.legendOptions = legendOptions;
   }
 
   setupContainer() {
@@ -275,18 +299,29 @@ export class InnerLayer extends VectorLayer<VectorSource> {
     this.selectedCrop = newCrop;
   }
 
+  updateLegendOptions(newLegendOptions: LegendOptions) {
+    this.legendOptions = { ...newLegendOptions };
+  }
+
   render(frameState: any) {
     if (!frameState) return;
 
     this.root.render(
-      <InnerLayerComponent features={this.features} frameState={frameState} visible={this.visible} zIndex={this.zIndex} selectedCrop={this.selectedCrop} />
+      <InnerLayerComponent
+        features={this.features}
+        frameState={frameState}
+        visible={this.visible}
+        zIndex={this.zIndex}
+        selectedCrop={this.selectedCrop}
+        legendOptions={this.legendOptions}
+      />
     );
     return this.container;
   }
 }
 
 export class HibernationVegetableCultivationLayer extends BaseLayer {
-  constructor(featureCol: HibernationVegetableCultivationFeatureCollection, verboseName: string | null = null, selectedCrop: string) {
+  constructor(featureCol: HibernationVegetableCultivationFeatureCollection, verboseName: string | null = null, selectedCrop: string, legendOptions: LegendOptions) {
     const layerType = "custom";
     const layer = new InnerLayer({
       name: "HibernationVegetableCultivationLayer",
@@ -294,16 +329,18 @@ export class HibernationVegetableCultivationLayer extends BaseLayer {
       svgRef: { current: null },
       zIndex: 50,
       selectedCrop: selectedCrop,
+      legendOptions: legendOptions,
     });
     super({ layerType, layer }, verboseName);
   }
 
   public static async createLayer(
     featureCollection: HibernationVegetableCultivationFeatureCollection,
-    selectedCrop: string
+    selectedCrop: string,
+    legendOptions: LegendOptions
   ): Promise<HibernationVegetableCultivationLayer> {
     try {
-      const layer = new HibernationVegetableCultivationLayer(featureCollection, "재배면적변화", selectedCrop);
+      const layer = new HibernationVegetableCultivationLayer(featureCollection, "재배면적변화", selectedCrop, legendOptions);
       return layer;
     } catch (error) {
       throw new Error("Failed to create HibernationVegetableCultivationLayer: " + error.message);
