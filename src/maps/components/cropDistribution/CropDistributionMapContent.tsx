@@ -24,7 +24,7 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
   const mapList = useMapList<CropDistributionMap>();
   const map = mapList.getMapById(mapId);
 
-  const { layerManager, map: olMap, ready } = useSetupOL(mapId, 10.5, "jeju");
+  const { layerManager, ready, map: olMap } = useSetupOL(mapId, 10.5, "jeju");
 
   const [menuPosition, setMenuPosition] = useState(null);
   const [menuChildren, setMenuChildren] = useState(null);
@@ -82,7 +82,7 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
       {menuPosition && menuChildren && <FloatingMenu position={menuPosition} onClose={closeMenu} menuChildren={menuChildren as any} />}
       <FilterContainer isFixed>
         <RegionFilter features={areaData} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />

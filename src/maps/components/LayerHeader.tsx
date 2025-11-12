@@ -1,22 +1,36 @@
-import { Maximize, Share2 } from "lucide-react";
+import { FileText, Maximize, Share2 } from "lucide-react";
+import { useState } from "react";
+import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useMapShare from "~/maps/hooks/useMapShare";
+import { ExtendedOLMap } from "../hooks/useOLMap";
+import ReportModal from "./ReportModal";
 import ShareModal from "./ShareModal";
 
-interface LayerHeaderProps {
-  mapId: string;
+interface Props<M> {
+  map: M;
+  olMap: ExtendedOLMap;
   onClickFullScreen?: () => void;
 }
 
-const LayerHeader = ({ mapId, onClickFullScreen }: LayerHeaderProps) => {
-  const mapList = useMapList();
-  const map = mapList.getMapById(mapId);
+const LayerHeader = <M extends CommonBackgroundMap>({ map, olMap, onClickFullScreen }: Props<M>) => {
+  const mapList = useMapList<M>();
+
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const { isShareModalOpen, shareUrl, onClickShare, onCloseShareModal } = useMapShare({ map });
 
   if (!map) {
     return null;
   }
+
+  const onClickReport = () => {
+    setIsReportModalOpen(true);
+  };
+
+  const onCloseReportModal = () => {
+    setIsReportModalOpen(false);
+  };
 
   return (
     <>
@@ -26,8 +40,9 @@ const LayerHeader = ({ mapId, onClickFullScreen }: LayerHeaderProps) => {
           {map.tooltip}
         </div>
         <div className="flex items-center gap-4">
-          {/* TODO: 보고서 구현 */}
-          <div>보고서</div>
+          <button onClick={onClickReport} className="text-white" aria-label="보고서" title="보고서">
+            <FileText />
+          </button>
           <button onClick={onClickFullScreen} className="text-white" aria-label="전체화면 토글" title="전체화면 토글">
             <Maximize />
           </button>
@@ -40,6 +55,7 @@ const LayerHeader = ({ mapId, onClickFullScreen }: LayerHeaderProps) => {
         </div>
       </div>
       {isShareModalOpen && <ShareModal url={shareUrl} onClose={onCloseShareModal} />}
+      {isReportModalOpen && <ReportModal map={map} olMap={olMap} onClose={onCloseReportModal} />}
     </>
   );
 };

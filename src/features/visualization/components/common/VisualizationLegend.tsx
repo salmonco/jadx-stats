@@ -77,7 +77,8 @@ const VisualizationLegend = ({ minValue, maxValue, legendOptions, onLevelChange,
   return (
     <div className="flex gap-3">
       {/* 범례 */}
-      <div className="flex-1">
+      {/* NOTE: 보고서에서 범례 캡쳐를 위해 legend-container 클래스명 추가 */}
+      <div className="legend-container flex-1">
         <div className="flex flex-col">
           {steps.map((step, index) => (
             <div key={index} className="flex items-center">
