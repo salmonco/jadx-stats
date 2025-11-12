@@ -1,3 +1,4 @@
+import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import MandarinTreeAgeDistributionChart from "~/maps/components/mandarinTreeAgeDistribution/MandarinTreeAgeDistributionChart";
 import MandarinTreeAgeDistributionMapContent from "~/maps/components/mandarinTreeAgeDistribution/MandarinTreeAgeDistributionMapContent";
@@ -13,7 +14,7 @@ class MandarinTreeAgeDistributionMap extends CommonBackgroundMap {
 
   #selectedCropGroup = DEFAULT_CROP_GROUP;
 
-  #selectedCropDetailGroup = null;
+  #selectedCropDetailGroup = DEFAULT_ALL_OPTION;
 
   constructor(mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) {
     super(mapOptions, title, tooltip);

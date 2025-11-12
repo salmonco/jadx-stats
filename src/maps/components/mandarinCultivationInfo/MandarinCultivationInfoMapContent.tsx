@@ -33,7 +33,7 @@ const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
   });
 
   const { data: features } = useQuery({
-    queryKey: ["mandarinCultivationInfoFeatures", map.getSelectedRegionLevel(), map.selectedCropPummok, map.selectedCropDetailGroup],
+    queryKey: ["mandarinCultivationInfoFeatures", map.getSelectedRegionLevel(), map.selectedCropGroup, map.selectedCropDetailGroup],
     queryFn: () =>
       visualizationApi.getMandarinCultivationInfo(
         map.getSelectedRegionLevel(),
