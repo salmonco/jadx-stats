@@ -5,7 +5,7 @@ import { Vector as SourceVector } from "ol/source";
 import { useEffect, useMemo, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FeatureCollection, Geometry } from "~/maps/classes/interfaces";
-import type { LegendOptions } from "~/maps/constants/visualizationSetting";
+import type { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import BaseLayer from "~/maps/layers/BaseLayer";
 import { getColorGradient } from "~/utils/colorGradient";
 import { formatAreaHa } from "~/utils/format";
@@ -42,7 +42,7 @@ interface InnerLayerOptions {
   features: HibernationVegetableCultivationFeatureCollection;
   svgRef: React.MutableRefObject<SVGSVGElement>;
   selectedCrop: string;
-  legendOptions: LegendOptions;
+  visualizationSetting: VisualizationSetting;
 }
 
 interface InnerLayerProps {
@@ -51,12 +51,14 @@ interface InnerLayerProps {
   visible: boolean;
   zIndex: number;
   selectedCrop: string;
-  legendOptions: LegendOptions;
+  visualizationSetting: VisualizationSetting;
 }
 
-const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCrop, legendOptions }: InnerLayerProps) => {
+const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCrop, visualizationSetting }: InnerLayerProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+
+  const { legendOptions, labelOptions } = visualizationSetting;
 
   const { extent, size } = frameState;
   const [width, height] = size;
@@ -178,11 +180,68 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
       .attr("fill", (d: Feature) => getChangeFill(d))
       .attr("fill-opacity", 0.75)
       .style("cursor", "pointer")
-      .style("pointer-events", "auto")
+      .style("pointer-events", "auto");
+
+    // 레이블 표시
+    if (labelOptions.isShowValue || labelOptions.isShowRegion) {
+      // 기존 텍스트 요소 제거
+      svg.selectAll("text").remove();
+
+      filteredFeatures.forEach((d: Feature) => {
+        const centroid = path.centroid(d.geometry);
+        const labels = [];
+
+        if (labelOptions.isShowRegion) {
+          labels.push(d.properties.vrbs_nm);
+        }
+
+        if (labelOptions.isShowValue) {
+          const matter = d.properties.area_chg.chg_mttr.find((m) => m.crop_nm === selectedCrop);
+          if (matter) {
+            labels.push((matter.chg_cn / 10_000).toFixed(1));
+          }
+        }
+
+        // 각 라벨을 별도의 tspan으로 생성
+        const textElement = svg
+          .append("text")
+          .attr("x", centroid[0])
+          .attr("y", centroid[1])
+          .attr("text-anchor", "middle")
+          .attr("dominant-baseline", "middle")
+          .attr("fill", "white")
+          .attr("font-weight", "bold")
+          .attr("font-size", "14px")
+          .style("pointer-events", "none");
+
+        labels.forEach((label, index) => {
+          textElement
+            .append("tspan")
+            .attr("x", centroid[0])
+            .attr("dy", index === 0 ? "-0.3em" : "1.2em")
+            .text(label);
+        });
+      });
+    } else {
+      svg.selectAll("text").remove();
+    }
+
+    svg
+      .selectAll("path")
       .on("mousemove", function (evt) {
         const el = this as SVGPathElement;
-        el.parentNode.appendChild(el);
+        if (el.parentNode) {
+          el.parentNode.appendChild(el);
+        }
         d3.select(this).attr("stroke", "#499df3").attr("stroke-width", 3.5);
+
+        // 레이블들을 다시 맨 앞으로 이동
+        svg.selectAll("text").each(function () {
+          const textElement = this as SVGTextElement;
+          if (textElement.parentNode) {
+            textElement.parentNode.appendChild(textElement);
+          }
+        });
 
         const d = d3.select(this).data()[0] as Feature;
         const tooltip = tooltipRef.current;
@@ -242,7 +301,7 @@ const InnerLayerComponent = ({ features, frameState, visible, zIndex, selectedCr
     return () => {
       svg.selectAll("*").remove();
     };
-  }, [features, frameState, visible, zIndex, selectedCrop, legendOptions, valueRange]);
+  }, [features, frameState, visible, zIndex, selectedCrop, visualizationSetting, valueRange]);
 
   return (
     <div className="">
@@ -260,10 +319,10 @@ export class InnerLayer extends VectorLayer<VectorSource> {
   container: HTMLElement;
   root: Root;
   selectedCrop: string;
-  legendOptions: LegendOptions;
+  visualizationSetting: VisualizationSetting;
 
   constructor(options: InnerLayerOptions) {
-    const { name, features, svgRef, zIndex, selectedCrop, legendOptions, ...superOptions } = options;
+    const { name, features, svgRef, zIndex, selectedCrop, visualizationSetting, ...superOptions } = options;
 
     const vectorSource = new SourceVector({
       features: [],
@@ -278,7 +337,7 @@ export class InnerLayer extends VectorLayer<VectorSource> {
     this.container = this.setupContainer();
     this.root = createRoot(this.container);
     this.selectedCrop = selectedCrop;
-    this.legendOptions = legendOptions;
+    this.visualizationSetting = visualizationSetting;
   }
 
   setupContainer() {
@@ -293,14 +352,30 @@ export class InnerLayer extends VectorLayer<VectorSource> {
 
   updateFeatures(newFeatures: HibernationVegetableCultivationFeatureCollection) {
     this.features = newFeatures;
+    this.forceRender();
   }
 
   updateSelectedCrop(newCrop: string) {
     this.selectedCrop = newCrop;
+    this.forceRender();
   }
 
-  updateLegendOptions(newLegendOptions: LegendOptions) {
-    this.legendOptions = { ...newLegendOptions };
+  updateVisualizationSetting(newVisualizationSetting: VisualizationSetting) {
+    this.visualizationSetting = { ...newVisualizationSetting };
+    this.forceRender();
+  }
+
+  private forceRender() {
+    this.root.render(
+      <InnerLayerComponent
+        features={this.features}
+        frameState={null}
+        visible={this.visible}
+        zIndex={this.zIndex}
+        selectedCrop={this.selectedCrop}
+        visualizationSetting={this.visualizationSetting}
+      />
+    );
   }
 
   render(frameState: any) {
@@ -313,7 +388,7 @@ export class InnerLayer extends VectorLayer<VectorSource> {
         visible={this.visible}
         zIndex={this.zIndex}
         selectedCrop={this.selectedCrop}
-        legendOptions={this.legendOptions}
+        visualizationSetting={this.visualizationSetting}
       />
     );
     return this.container;
@@ -321,7 +396,12 @@ export class InnerLayer extends VectorLayer<VectorSource> {
 }
 
 export class HibernationVegetableCultivationLayer extends BaseLayer {
-  constructor(featureCol: HibernationVegetableCultivationFeatureCollection, verboseName: string | null = null, selectedCrop: string, legendOptions: LegendOptions) {
+  constructor(
+    featureCol: HibernationVegetableCultivationFeatureCollection,
+    verboseName: string | null = null,
+    selectedCrop: string,
+    visualizationSetting: VisualizationSetting
+  ) {
     const layerType = "custom";
     const layer = new InnerLayer({
       name: "HibernationVegetableCultivationLayer",
@@ -329,7 +409,7 @@ export class HibernationVegetableCultivationLayer extends BaseLayer {
       svgRef: { current: null },
       zIndex: 50,
       selectedCrop: selectedCrop,
-      legendOptions: legendOptions,
+      visualizationSetting: visualizationSetting,
     });
     super({ layerType, layer }, verboseName);
   }
@@ -337,10 +417,10 @@ export class HibernationVegetableCultivationLayer extends BaseLayer {
   public static async createLayer(
     featureCollection: HibernationVegetableCultivationFeatureCollection,
     selectedCrop: string,
-    legendOptions: LegendOptions
+    visualizationSetting: VisualizationSetting
   ): Promise<HibernationVegetableCultivationLayer> {
     try {
-      const layer = new HibernationVegetableCultivationLayer(featureCollection, "재배면적변화", selectedCrop, legendOptions);
+      const layer = new HibernationVegetableCultivationLayer(featureCollection, "재배면적변화", selectedCrop, visualizationSetting);
       return layer;
     } catch (error) {
       throw new Error("Failed to create HibernationVegetableCultivationLayer: " + error.message);

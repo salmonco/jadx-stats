@@ -58,6 +58,7 @@ class CommonBackgroundMap {
     this.setSelectedRegionLevel = this.setSelectedRegionLevel.bind(this);
     this.setRegionFilterSetting = this.setRegionFilterSetting.bind(this);
     this.setMapType = this.setMapType.bind(this);
+    this.setLabelOptions = this.setLabelOptions.bind(this);
   }
 
   destroy() {
@@ -176,6 +177,17 @@ class CommonBackgroundMap {
     if (state.visualizationSetting) {
       this.#visualizationSetting = state.visualizationSetting;
     }
+    this.notifyListeners();
+  }
+
+  /**
+   * 레이블 옵션 설정
+   * @param isShowValue - 값 표시 여부
+   * @param isShowRegion - 지역명 표시 여부
+   */
+  setLabelOptions(isShowValue: boolean, isShowRegion: boolean) {
+    this.#visualizationSetting.labelOptions.isShowValue = isShowValue;
+    this.#visualizationSetting.labelOptions.isShowRegion = isShowRegion;
     this.notifyListeners();
   }
 
