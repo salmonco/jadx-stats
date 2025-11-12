@@ -1,0 +1,117 @@
+import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
+import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
+import DisasterTypeHistoryStatsChart from "~/maps/components/disasterTypeHistoryStats/DisasterTypeHistoryStatsChart";
+import DisasterTypeHistoryStatsMapContent from "~/maps/components/disasterTypeHistoryStats/DisasterTypeHistoryStatsMapContent";
+
+import { DEFAULT_CROP_GROUP, DEFAULT_CROP_PUMMOK } from "~/maps/constants/cropDistribution";
+import { MapOptions } from "~/maps/constants/mapOptions";
+import { DEFAULT_DISASTER } from "~/maps/constants/yearlyDisasterInfo";
+
+const DEFAULT_TARGET_YEAR = 2024;
+
+class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
+  #selectedTargetYear = DEFAULT_TARGET_YEAR;
+
+  #selectedStartDate: string;
+
+  #selectedEndDate: string;
+
+  #selectedDisaster = DEFAULT_DISASTER;
+
+  #selectedCropPummok = DEFAULT_CROP_PUMMOK;
+
+  #selectedCropGroup = DEFAULT_CROP_GROUP;
+
+  #selectedCropDetailGroup = DEFAULT_ALL_OPTION;
+
+  constructor(mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) {
+    super(mapOptions, title, tooltip);
+
+    // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
+    this.getSnapshot = this.getSnapshot.bind(this);
+    this.setSelectedTargetYear = this.setSelectedTargetYear.bind(this);
+    this.setSelectedStartDate = this.setSelectedStartDate.bind(this);
+    this.setSelectedEndDate = this.setSelectedEndDate.bind(this);
+    this.setSelectedDisaster = this.setSelectedDisaster.bind(this);
+    this.setSelectedCropPummok = this.setSelectedCropPummok.bind(this);
+    this.setSelectedCropGroup = this.setSelectedCropGroup.bind(this);
+    this.setSelectedCropDetailGroup = this.setSelectedCropDetailGroup.bind(this);
+  }
+
+  renderMap() {
+    return <DisasterTypeHistoryStatsMapContent mapId={this.mapId} />;
+  }
+
+  renderChart() {
+    return <DisasterTypeHistoryStatsChart />;
+  }
+
+  getSnapshot() {
+    return `${super.getSnapshot()}-${this.#selectedStartDate}-${this.#selectedEndDate}-${this.#selectedDisaster}-${this.#selectedCropPummok}-${this.#selectedCropGroup}-${this.#selectedCropDetailGroup}`;
+  }
+
+  get selectedTargetYear() {
+    return this.#selectedTargetYear;
+  }
+
+  setSelectedTargetYear(year: number) {
+    this.#selectedTargetYear = year;
+    this.notifyListeners();
+  }
+
+  get selectedStartDate() {
+    return this.#selectedStartDate;
+  }
+
+  setSelectedStartDate(date: string) {
+    this.#selectedStartDate = date;
+    this.notifyListeners();
+  }
+
+  get selectedEndDate() {
+    return this.#selectedEndDate;
+  }
+
+  setSelectedEndDate(date: string) {
+    this.#selectedEndDate = date;
+    this.notifyListeners();
+  }
+
+  get selectedDisaster() {
+    return this.#selectedDisaster;
+  }
+
+  setSelectedDisaster(disaster: string) {
+    this.#selectedDisaster = disaster;
+    this.notifyListeners();
+  }
+
+  get selectedCropPummok() {
+    return this.#selectedCropPummok;
+  }
+
+  setSelectedCropPummok(cropPummok: string) {
+    this.#selectedCropPummok = cropPummok;
+    this.notifyListeners();
+  }
+
+  get selectedCropGroup() {
+    return this.#selectedCropGroup;
+  }
+
+  setSelectedCropGroup(cropGroup: string) {
+    this.#selectedCropGroup = cropGroup;
+    this.notifyListeners();
+  }
+
+  get selectedCropDetailGroup() {
+    return this.#selectedCropDetailGroup;
+  }
+
+  setSelectedCropDetailGroup(cropDetailGroup: string) {
+    this.#selectedCropDetailGroup = cropDetailGroup;
+    this.notifyListeners();
+  }
+}
+
+export default DisasterTypeHistoryStatsMap;

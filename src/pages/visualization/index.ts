@@ -15,6 +15,7 @@ import GroundwaterQuality from "./agricultureEnvironment/GroundwaterQuality";
 import RegionNitrateNitrogen from "./agricultureEnvironment/RegionNitrateNitrogen";
 import WeatherVariableAnalysis from "./agricultureEnvironment/WeatherVariableAnalysis";
 import YearlyDisasterInfo from "./agricultureEnvironment/YearlyDisasterInfo";
+import DisasterTypeHistoryStats from "~/pages/visualization/agricultureEnvironment/DisasterTypeHistoryStats";
 // 유통
 import WholesaleMarketShare from "./retail/WholesaleMarketShare";
 import CropTradeInfo from "./retail/CropTradeInfo";
@@ -41,6 +42,7 @@ export {
   RegionNitrateNitrogen,
   WeatherVariableAnalysis,
   YearlyDisasterInfo,
+  DisasterTypeHistoryStats,
   // 유통
   WholesaleMarketShare,
   CropTradeInfo,
