@@ -392,6 +392,8 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
   public updateFeatures(newFeatureCollection: BaseFeatureCollection<T>) {
     this.featureCollection = newFeatureCollection;
 
+    if (!this.currentLayer) return;
+
     if (this.currentLayer instanceof BaseInnerLayer) {
       this.currentLayer.updateFeatures(newFeatureCollection);
     } else if (this.currentLayer instanceof OLHeatmapLayer) {
@@ -399,7 +401,6 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
       const olFeatures = this.createHeatmapOLFeatures(newFeatureCollection, this.getValue.bind(this));
       const vectorSource = new SourceVector<Feature<Geometry>>({ features: olFeatures });
       this.currentLayer.setSource(vectorSource);
-      this.currentLayer.setOpacity(this.visualizationSetting.opacity);
       this.currentLayer.changed();
     }
   }
@@ -408,15 +409,20 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
     const oldVisualType = this.visualizationSetting.visualType;
     this.visualizationSetting = structuredClone(newVisualizationSetting);
 
+    if (!this.currentLayer) return;
+
+    // 시각화 타입 변경 시 레이어 새로 생성
     if (oldVisualType !== newVisualizationSetting.visualType) {
-      // 시각화 타입이 변경되었으므로 레이어 재생성
       this.createAndSetLayer();
-    } else {
-      if (this.currentLayer instanceof BaseInnerLayer) {
-        this.currentLayer.updateVisualizationSetting(newVisualizationSetting);
-      } else if (this.currentLayer instanceof OLHeatmapLayer) {
-        this.createAndSetLayer();
-      }
+      return;
+    }
+
+    if (this.currentLayer instanceof BaseInnerLayer) {
+      this.currentLayer.updateVisualizationSetting(newVisualizationSetting);
+    } else if (this.currentLayer instanceof OLHeatmapLayer) {
+      // 히트맵 레이어는 source는 그대로 두고 옵션만 변경
+      this.currentLayer.setOpacity(newVisualizationSetting.opacity);
+      this.currentLayer.changed();
     }
   }
 
