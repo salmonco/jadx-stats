@@ -45,6 +45,11 @@ export type VisualType = (typeof VISUAL_TYPES)[keyof typeof VISUAL_TYPES];
 /** 지도 타입 기본값 */
 export const DEFAULT_VISUAL_TYPE: VisualType = VISUAL_TYPES.색상;
 
+/** 히트맵 반지름 기본값 */
+export const DEFAULT_HEATMAP_RADIUS = 20;
+/** 히트맵 블러 기본값 */
+export const DEFAULT_HEATMAP_BLUR = 10;
+
 /** 레이블 설정 */
 export type LabelOptions = {
   isShowValue: boolean;

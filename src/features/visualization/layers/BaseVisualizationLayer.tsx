@@ -1,11 +1,16 @@
 import * as d3 from "d3";
+import { Feature } from "ol";
 import { getCenter } from "ol/extent";
-import { Vector as VectorLayer } from "ol/layer";
+import { Geometry } from "ol/geom"; // Import Geometry from ol/geom
+import { Heatmap as OLHeatmapLayer, Vector as VectorLayer } from "ol/layer";
 import { Vector as SourceVector } from "ol/source";
 import { useEffect, useMemo, useRef } from "react";
 import { createRoot, Root } from "react-dom/client";
-import { FeatureCollection, Geometry } from "~/maps/classes/interfaces";
-import { VISUAL_TYPES, VisualizationSetting } from "~/maps/constants/visualizationSetting";
+import { geometryToPoint } from "~/features/visualization/utils/geometryToPoint";
+import { normalizeWeightMinMax } from "~/features/visualization/utils/normalizeWeightMinMax";
+import { toGeoJsonGeometry } from "~/features/visualization/utils/toGeoJsonGeometry";
+import { FeatureCollection } from "~/maps/classes/interfaces"; // Remove Geometry from here
+import { DEFAULT_HEATMAP_BLUR, DEFAULT_HEATMAP_RADIUS, VISUAL_TYPES, VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import BaseLayer from "~/maps/layers/BaseLayer";
 import { getColorGradient } from "~/utils/colorGradient";
 
@@ -91,7 +96,7 @@ const BaseInnerLayerComponent = <T,>({
         .selectAll("path")
         .data(features.features)
         .join("path")
-        .attr("d", path)
+        .attr("d", (d: BaseFeature<T>) => path(toGeoJsonGeometry(d.geometry)))
         .attr("stroke", "white")
         .attr("stroke-width", 1)
         .attr("fill", (d: BaseFeature<T>) => getAreaFill(d, colorScale))
@@ -115,8 +120,8 @@ const BaseInnerLayerComponent = <T,>({
         .selectAll("circle")
         .data(features.features)
         .join("circle")
-        .attr("cx", (d: BaseFeature<T>) => path.centroid(d.geometry)[0])
-        .attr("cy", (d: BaseFeature<T>) => path.centroid(d.geometry)[1])
+        .attr("cx", (d: BaseFeature<T>) => path.centroid(toGeoJsonGeometry(d.geometry))[0])
+        .attr("cy", (d: BaseFeature<T>) => path.centroid(toGeoJsonGeometry(d.geometry))[1])
         .attr("r", 5) // Fixed radius for dots
         .attr("fill", (d: BaseFeature<T>) => getAreaFill(d, colorScale))
         .attr("fill-opacity", visualizationSetting.opacity)
@@ -141,8 +146,8 @@ const BaseInnerLayerComponent = <T,>({
         .selectAll("circle")
         .data(features.features)
         .join("circle")
-        .attr("cx", (d: BaseFeature<T>) => path.centroid(d.geometry)[0])
-        .attr("cy", (d: BaseFeature<T>) => path.centroid(d.geometry)[1])
+        .attr("cx", (d: BaseFeature<T>) => path.centroid(toGeoJsonGeometry(d.geometry))[0])
+        .attr("cy", (d: BaseFeature<T>) => path.centroid(toGeoJsonGeometry(d.geometry))[1])
         .attr("r", (d: BaseFeature<T>) => {
           const value = getValue(d);
           return value !== null ? radiusScale(value) : 0;
@@ -173,7 +178,7 @@ const BaseInnerLayerComponent = <T,>({
       svg.selectAll("text").remove();
 
       features.features.forEach((d: BaseFeature<T>) => {
-        const centroid = path.centroid(d.geometry);
+        const centroid = path.centroid(toGeoJsonGeometry(d.geometry));
         const labels = getLabels(d, labelOptions);
 
         if (labels.length > 0) {
@@ -218,7 +223,7 @@ const BaseInnerLayerComponent = <T,>({
   );
 };
 
-export class BaseInnerLayer<T = any> extends VectorLayer<any> {
+export class BaseInnerLayer<T = any> extends VectorLayer<Feature<Geometry>> {
   features: BaseFeatureCollection<T>;
   visible: boolean;
   zIndex: number;
@@ -303,23 +308,111 @@ export class BaseInnerLayer<T = any> extends VectorLayer<any> {
 }
 
 export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
+  private currentLayer: BaseInnerLayer<T> | OLHeatmapLayer<Feature<Geometry>> | null = null;
+  private featureCollection: BaseFeatureCollection<T>;
+  private visualizationSetting: VisualizationSetting;
+
   constructor(featureCollection: BaseFeatureCollection<T>, verboseName: string | null, visualizationSetting: VisualizationSetting) {
     const layerType = "custom";
-    super({ layerType, layer: null as any }, verboseName);
+    const initialLayer = new VectorLayer<Feature<Geometry>>({
+      source: new SourceVector<Feature<Geometry>>({ features: [] }),
+    });
+    super({ layerType, layer: initialLayer }, verboseName);
 
-    const layer = new BaseInnerLayer(
-      featureCollection,
-      50,
-      visualizationSetting,
-      this.createColorScale.bind(this),
-      this.getAreaFill.bind(this),
-      this.getLabels.bind(this),
-      this.getTooltipContent.bind(this),
-      this.getValue.bind(this)
-    );
+    this.featureCollection = featureCollection;
+    this.visualizationSetting = visualizationSetting;
 
-    // layer 속성을 직접 설정
-    (this as any).layer = layer;
+    this.createAndSetLayer();
+  }
+
+  private createHeatmapOLFeatures(featureCollection: BaseFeatureCollection<T>, getValue: (feature: BaseFeature<T>) => number | null): Feature[] {
+    return featureCollection.features
+      .map((f: BaseFeature<T>) => {
+        const point = geometryToPoint(f.geometry);
+        if (!point) return null;
+        const feature = new Feature({ geometry: point });
+        feature.set("heatmap_value", getValue(f) ?? 0); // Use a generic key for the heatmap value
+        return feature;
+      })
+      .filter((f: Feature | null): f is Feature => f !== null);
+  }
+
+  private createHeatmapLayerInstance(
+    featureCollection: BaseFeatureCollection<T>,
+    visualizationSetting: VisualizationSetting,
+    getValue: (feature: BaseFeature<T>) => number | null
+  ): OLHeatmapLayer<Feature<Geometry>> {
+    const olFeatures = this.createHeatmapOLFeatures(featureCollection, getValue);
+    const weightMap = normalizeWeightMinMax(olFeatures, "heatmap_value"); // Use the generic key
+
+    const vectorSource = new SourceVector<Feature<Geometry>>({ features: olFeatures });
+    const heatmapLayer = new OLHeatmapLayer<Feature<Geometry>>({
+      source: vectorSource,
+      radius: DEFAULT_HEATMAP_RADIUS,
+      blur: DEFAULT_HEATMAP_BLUR,
+      opacity: visualizationSetting.opacity,
+      weight: (feature: Feature<Geometry>) => weightMap.get(feature) ?? 0,
+    });
+    return heatmapLayer;
+  }
+
+  private createAndSetLayer() {
+    if (this.currentLayer) {
+      if ((this as any).olMap) {
+        (this as any).olMap.removeLayer(this.currentLayer);
+      }
+
+      if (this.currentLayer instanceof BaseInnerLayer) {
+        this.currentLayer.root.unmount();
+        this.currentLayer.container.remove();
+      }
+    }
+
+    if (this.visualizationSetting.visualType === VISUAL_TYPES.히트) {
+      this.currentLayer = this.createHeatmapLayerInstance(this.featureCollection, this.visualizationSetting, this.getValue.bind(this));
+    } else {
+      this.currentLayer = new BaseInnerLayer(
+        this.featureCollection,
+        50, // zIndex
+        this.visualizationSetting,
+        this.createColorScale.bind(this),
+        this.getAreaFill.bind(this),
+        this.getLabels.bind(this),
+        this.getTooltipContent.bind(this),
+        this.getValue.bind(this)
+      );
+    }
+
+    (this as any).layer = this.currentLayer;
+    if ((this as any).olMap) {
+      (this as any).olMap.addLayer(this.currentLayer);
+    }
+  }
+
+  public updateFeatures(newFeatureCollection: BaseFeatureCollection<T>) {
+    this.featureCollection = newFeatureCollection;
+    if (this.currentLayer instanceof BaseInnerLayer) {
+      this.currentLayer.updateFeatures(newFeatureCollection);
+    } else if (this.currentLayer instanceof OLHeatmapLayer) {
+      // weight과 features를 갱신하기 위해 레이어 재생성
+      this.createAndSetLayer();
+    }
+  }
+
+  public updateVisualizationSetting(newVisualizationSetting: VisualizationSetting) {
+    const oldVisualType = this.visualizationSetting.visualType;
+    this.visualizationSetting = structuredClone(newVisualizationSetting);
+
+    if (oldVisualType !== newVisualizationSetting.visualType) {
+      // 시각화 타입이 변경되었으므로 레이어 재생성
+      this.createAndSetLayer();
+    } else {
+      if (this.currentLayer instanceof BaseInnerLayer) {
+        this.currentLayer.updateVisualizationSetting(newVisualizationSetting);
+      } else if (this.currentLayer instanceof OLHeatmapLayer) {
+        this.createAndSetLayer();
+      }
+    }
   }
 
   public abstract getValue(feature: BaseFeature<T>): number | null;
