@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useLabelSettings } from "~/features/visualization/hooks/useLabelSettings";
 import { useVisualTypeSettings } from "~/features/visualization/hooks/useVisualTypeSettings";
-import { LabelType, VISUAL_SETTING_BUTTONS, VISUAL_TYPES, VisualSettingButtonId, VisualType } from "~/maps/constants/visualizationSetting";
+import { LabelType, VISUAL_SETTING_BUTTONS, VisualSettingButtonId, VisualType } from "~/maps/constants/visualizationSetting";
 import OpacityModal from "./OpacityModal";
 
 interface Props {
@@ -49,7 +49,7 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
 
     let items = [];
     if (buttonId === VISUAL_SETTING_BUTTONS.타입) {
-      items = Object.entries(VISUAL_TYPES).map(([label, id]) => ({ id, label }));
+      items = visualTypeMenu;
     } else if (buttonId === VISUAL_SETTING_BUTTONS.레이블) {
       items = labelTypes;
     }
