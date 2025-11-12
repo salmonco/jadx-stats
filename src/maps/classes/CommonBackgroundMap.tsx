@@ -3,7 +3,7 @@ import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualiz
 import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { BackgroundMapType, DEFAULT_BACKGROUND_MAP_TYPE } from "~/maps/constants/backgroundMapType";
 import { MapOptions } from "~/maps/constants/mapOptions";
-import { DEFAULT_VISUALIZATION_SETTING, VisualizationSetting } from "~/maps/constants/visualizationSetting";
+import { DEFAULT_VISUALIZATION_SETTING, LegendColor, VisualizationSetting } from "~/maps/constants/visualizationSetting";
 
 class CommonBackgroundMap {
   #mapId = uuidv4();
@@ -57,6 +57,9 @@ class CommonBackgroundMap {
     this.setLabelOptions = this.setLabelOptions.bind(this);
     this.setOpacity = this.setOpacity.bind(this);
     this.resetVisualizationSetting = this.resetVisualizationSetting.bind(this);
+    this.setLegendLevel = this.setLegendLevel.bind(this);
+    this.setLegendColor = this.setLegendColor.bind(this);
+    this.setLegendPivotPoints = this.setLegendPivotPoints.bind(this);
   }
 
   destroy() {
@@ -203,6 +206,21 @@ class CommonBackgroundMap {
    */
   resetVisualizationSetting() {
     this.#visualizationSetting = structuredClone(DEFAULT_VISUALIZATION_SETTING);
+    this.notifyListeners();
+  }
+
+  setLegendLevel(level: number) {
+    this.visualizationSetting.legendOptions.level = level;
+    this.notifyListeners();
+  }
+
+  setLegendColor(color: LegendColor) {
+    this.visualizationSetting.legendOptions.color = color;
+    this.notifyListeners();
+  }
+
+  setLegendPivotPoints(pivotPoints: number[]) {
+    this.visualizationSetting.legendOptions.pivotPoints = pivotPoints;
     this.notifyListeners();
   }
 
