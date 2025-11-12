@@ -6,14 +6,19 @@ interface Stats {
   count: number;
 }
 
-export type AgingStatusFeatureCollection = BaseFeatureCollection<{ stats: Stats }>;
+interface AgingStatusProperties {
+  stats: Stats;
+}
+
+export type AgingStatusFeatureCollection = BaseFeatureCollection<AgingStatusProperties>;
+export type AgingStatusFeature = BaseFeature<AgingStatusProperties>;
 
 export class AgingStatusLayer extends BaseVisualizationLayer<{ stats: Stats }> {
-  public getValue(feature: BaseFeature<{ stats: Stats }>): number | null {
+  public getValue(feature: AgingStatusFeature): number | null {
     return feature.properties.stats?.avg_age ?? null;
   }
 
-  public getTooltipContent(feature: BaseFeature<{ stats: Stats }>): string {
+  public getTooltipContent(feature: AgingStatusFeature): string {
     const regionNm = feature.properties.vrbs_nm;
     const avgAge = feature.properties.stats?.avg_age;
     const count = feature.properties.stats?.count;

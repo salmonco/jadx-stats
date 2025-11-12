@@ -1,7 +1,7 @@
-import { Feature } from "~/features/visualization/layers/AgingStatusLayer";
+import { AgingStatusFeature } from "~/features/visualization/layers/AgingStatusLayer";
 import { AgingChartData } from "~/maps/components/agingStatus/AgingStatusChart";
 
-const transformToChartData = (features: Feature[]): AgingChartData[] => {
+const transformToChartData = (features: AgingStatusFeature[]): AgingChartData[] => {
   const data = features
     .map((f): AgingChartData => {
       const p = f.properties;
