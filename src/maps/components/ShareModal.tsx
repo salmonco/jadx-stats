@@ -1,4 +1,4 @@
-import { Book, Copy, Facebook, MessageCircle, X } from "lucide-react";
+import { Book, Copy, Facebook, MessageCircle, Twitter, X } from "lucide-react";
 import { useRef, useState } from "react";
 
 interface ShareModalProps {
@@ -22,6 +22,11 @@ const ShareModal = ({ url, onClose }: ShareModalProps) => {
   const handleShareFacebook = () => {
     const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
     window.open(facebookShareUrl, "_blank", "width=600,height=400");
+  };
+
+  const handleShareX = () => {
+    const xShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent("JASIS 지도를 공유합니다.")}`;
+    window.open(xShareUrl, "_blank", "width=600,height=400");
   };
 
   const handleShareNaverBlog = () => {
@@ -57,6 +62,10 @@ const ShareModal = ({ url, onClose }: ShareModalProps) => {
           <button onClick={handleShareFacebook} className="flex flex-col items-center gap-1 text-gray-600 hover:text-blue-600">
             <Facebook size={32} />
             <span>페이스북</span>
+          </button>
+          <button onClick={handleShareX} className="flex flex-col items-center gap-1 text-gray-600 hover:text-gray-800">
+            <Twitter size={32} />
+            <span>X</span>
           </button>
           <button onClick={handleShareNaverBlog} className="flex flex-col items-center gap-1 text-gray-600 hover:text-green-600">
             <Book size={32} />
