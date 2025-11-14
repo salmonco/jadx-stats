@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { MenuItem } from "~/components/TopNavbar";
 import { Menu } from "antd";
-import { Map, X, MenuIcon, ChartLine } from "lucide-react";
+import { ChartLine, Map, MenuIcon, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { MenuItem } from "~/components/TopNavbar";
 
 import { useAuth } from "~/contexts/AuthContext";
-import { PRIV_AUTH, ADMIN_AUTH } from "~/utils/common";
+import { ADMIN_AUTH, PRIV_AUTH } from "~/utils/common";
 
 interface Props {
   menuItems: MenuItem[];
@@ -18,7 +18,7 @@ const filterMenuByAuth = (items: MenuItem[], auth: string | null): MenuItem[] =>
   // 권한 없을 때 숨길 자식 키 규칙 (부모 섹션 키별)
   const HIDE_CHILDREN_BY_PARENT: Record<string, Set<string>> = {
     // 특화통계 > 생산
-    "prod": new Set(["rgn-cltvtn-harv", "rgn-cifru-cltvtn"]), // 지역별 재배면적 및 수확현황
+    "prod": new Set(["rgn-cltvtn-harv"]), // 지역별 재배면적 및 수확현황
     "obsrvn": new Set(["qlty"]),
     // 특화통계 > 유통
     "rtl": new Set(["prc-predc", "prc-dsbrd", "garak-prc"]), // 가격예측/대시보드/가락시장
@@ -45,7 +45,6 @@ const filterMenuByAuth = (items: MenuItem[], auth: string | null): MenuItem[] =>
           }
 
           if (!privileged && !isAdmin) {
-
             // 섹션 키별로 자식 중 숨길 항목 제거
             const hideSet = HIDE_CHILDREN_BY_PARENT[node.key];
             if (hideSet && children?.length) {
