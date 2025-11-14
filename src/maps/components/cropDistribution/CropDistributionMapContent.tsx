@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import BaseLegend from "~/features/visualization/components/common/BaseLegend";
 import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
+import ColoredCropFilter from "~/features/visualization/components/common/ColoredCropFilter";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import FloatingMenu from "~/features/visualization/components/common/FloatingMenu";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
@@ -29,6 +29,7 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
 
   const [menuPosition, setMenuPosition] = useState(null);
   const [menuChildren, setMenuChildren] = useState(null);
+  const [selectedCrops, setSelectedCrops] = useState<string[]>([]);
 
   // TODO: API 수정 이후 적용
   // const { data: cropData } = useQuery({
@@ -53,17 +54,19 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
   // TODO: 지역 필터 적용
   const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
+  const cropItems = getCropLegendItems().map((item) => ({ ...item, value: item.label }));
+
   const filteredCropData = CROP_MOCK_DATA
     ? {
         ...CROP_MOCK_DATA,
-        features: CROP_MOCK_DATA.features.filter(filterFeatures),
+        features: CROP_MOCK_DATA.features.filter(filterFeatures).filter((feature) => selectedCrops.length === 0 || selectedCrops.includes(feature.properties.top_pummok)),
       }
     : null;
 
   const filteredHexData = SEMI_MOCK_DATA
     ? {
         ...SEMI_MOCK_DATA,
-        features: SEMI_MOCK_DATA.features.filter(filterFeatures),
+        features: SEMI_MOCK_DATA.features.filter(filterFeatures).filter((feature) => selectedCrops.length === 0 || selectedCrops.includes(feature.properties.top_pummok)),
       }
     : null;
 
@@ -92,8 +95,6 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
     setMenuChildren(null);
   };
 
-  const legendItems = getCropLegendItems();
-
   if (!map) {
     return null;
   }
@@ -112,7 +113,7 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
               selectedValues={map.selectedCropLevel}
               setSelectedValues={map.setSelectedCropLevel}
             />
-            <BaseLegend title="범례" items={legendItems} direction="horizontal" itemsPerRow={3} />
+            <ColoredCropFilter title="작물 선택" options={cropItems} selectedOptions={selectedCrops} onSelectionChange={setSelectedCrops} isMulti />
           </>
         }
       />
