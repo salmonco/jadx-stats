@@ -6,14 +6,14 @@ import VisualizationSettingContainer from "./VisualizationSettingContainer";
 
 interface Props {
   filter?: React.ReactNode;
-  visualizationSetting: React.ReactNode;
-  setLabelOptions: (isShowValue: boolean, isShowRegion: boolean) => void;
-  labelOptions: { isShowValue: boolean; isShowRegion: boolean };
-  resetVisualizationSetting: () => void;
-  setOpacity: (opacity: number) => void;
-  opacity: number;
-  visualType: VisualType;
-  setVisualType: (type: VisualType) => void;
+  visualizationSetting?: React.ReactNode;
+  visualType?: VisualType;
+  labelOptions?: { isShowValue: boolean; isShowRegion: boolean };
+  opacity?: number;
+  setVisualType?: (type: VisualType) => void;
+  setLabelOptions?: (isShowValue: boolean, isShowRegion: boolean) => void;
+  resetVisualizationSetting?: () => void;
+  setOpacity?: (opacity: number) => void;
 }
 
 const FloatingContainer = ({
@@ -35,21 +35,23 @@ const FloatingContainer = ({
       {filter && <FilterContainer isFixed>{filter}</FilterContainer>}
 
       {/* 비주얼세팅 컨테이너 영역 */}
-      <VisualizationSettingContainer isOpen={isVisualizationOpen}>{isVisualizationOpen && visualizationSetting}</VisualizationSettingContainer>
+      {visualizationSetting && <VisualizationSettingContainer isOpen={isVisualizationOpen}>{isVisualizationOpen && visualizationSetting}</VisualizationSettingContainer>}
 
       {/* 데이터 시각화 버튼 - 절대 위치로 하단 고정 */}
-      <div className="absolute bottom-3 left-0 right-0">
-        <DataVisualizationButton
-          onMenuClick={() => setIsVisualizationOpen((prev) => !prev)}
-          setLabelOptions={setLabelOptions}
-          labelOptions={labelOptions}
-          resetVisualizationSetting={resetVisualizationSetting}
-          setOpacity={setOpacity}
-          opacity={opacity}
-          visualType={visualType}
-          setVisualType={setVisualType}
-        />
-      </div>
+      {visualizationSetting && (
+        <div className="absolute bottom-3 left-0 right-0">
+          <DataVisualizationButton
+            onMenuClick={() => setIsVisualizationOpen((prev) => !prev)}
+            setLabelOptions={setLabelOptions}
+            labelOptions={labelOptions}
+            resetVisualizationSetting={resetVisualizationSetting}
+            setOpacity={setOpacity}
+            opacity={opacity}
+            visualType={visualType}
+            setVisualType={setVisualType}
+          />
+        </div>
+      )}
     </div>
   );
 };
