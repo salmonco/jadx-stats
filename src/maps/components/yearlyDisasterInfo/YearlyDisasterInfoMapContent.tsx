@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
-import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
+import DisasterCategoryFilter from "~/features/visualization/components/common/DisasterCategoryFilter";
+import DisasterFilter from "~/features/visualization/components/common/DisasterFilter";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
-import TwoDepthScrollSelector from "~/features/visualization/components/common/TwoDepthScrollSelector";
 import YearFilter from "~/features/visualization/components/common/YearFilter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
 import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
@@ -12,7 +12,7 @@ import YearlyDisasterInfoMap from "~/maps/classes/YearlyDisasterInfoMap";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import YearlyDisasterLegend from "~/maps/components/yearlyDisasterInfo/YearlyDisasterLegend";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
-import { TARGET_YEAR } from "~/maps/constants/yearlyDisasterInfo";
+import { DISASTER_CATEGORY_OPTIONS, TARGET_YEAR } from "~/maps/constants/yearlyDisasterInfo";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import visualizationApi from "~/services/apis/visualizationApi";
@@ -93,24 +93,19 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
           <>
             <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
             <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
-            <ButtonGroupSelector
+            <DisasterCategoryFilter
               title="항목"
-              cols={2}
-              options={[
-                { value: "total_dstr_sprt_amt", label: "재난지원금" },
-                { value: "total_cfmtn_dmg_qnty", label: "피해면적" },
-              ]}
-              selectedValues={map.selectedDisasterCategory}
-              setSelectedValues={map.setSelectedDisasterCategory}
+              options={DISASTER_CATEGORY_OPTIONS}
+              selectedValue={map.selectedDisasterCategory}
+              onSelectionChange={map.setSelectedDisasterCategory}
             />
-            <TwoDepthScrollSelector
+            <DisasterFilter
               options={disasterOptionsMap}
               title="재해 종류 및 세부 항목"
               selectedFirst={map.selectedDisaster}
               onFirstSelect={map.setSelectedDisaster}
               selectedSecond={""} // 세부 항목 선택 기능은 미적용
               onSecondSelect={() => {}} // 세부 항목 선택 기능은 미적용
-              multiSelectSecond={false}
               hasSecondDepth={hasSecondDepth}
             />
           </>

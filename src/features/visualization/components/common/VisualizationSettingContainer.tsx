@@ -5,7 +5,7 @@ interface Props extends PropsWithChildren {
 }
 
 const VisualizationSettingContainer = ({ children, isOpen = false }: Props) => {
-  return <div className={`scrollbar-hide flex flex-[1.5] flex-col gap-5 overflow-y-auto p-4 ${isOpen ? "rounded-lg bg-gray-100" : ""}`}>{children}</div>;
+  return <div className={`scrollbar-hide flex flex-[1.5] flex-col gap-5 overflow-y-auto p-4 ${isOpen ? "rounded-lg bg-white opacity-90" : ""}`}>{children}</div>;
 };
 
 export default VisualizationSettingContainer;

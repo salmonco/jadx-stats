@@ -10,6 +10,8 @@ export const DISASTER_CATEGORY = {
 
 export type DisasterCategory = (typeof DISASTER_CATEGORY)[keyof typeof DISASTER_CATEGORY];
 
+export const DISASTER_CATEGORY_OPTIONS = Object.entries(DISASTER_CATEGORY).map(([label, value]) => ({ label, value }));
+
 export const DEFAULT_DISASTER_CATEGORY: DisasterCategory = DISASTER_CATEGORY.재난지원금;
 
 export const DEFAULT_DISASTER = "호우";

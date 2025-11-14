@@ -1,16 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import dayjs, { Dayjs } from "dayjs";
+import { useEffect, useMemo, useState } from "react";
 import CropFilter from "~/features/visualization/components/common/CropFilter";
+import CultivationTypeFilter from "~/features/visualization/components/common/CultivationTypeFilter";
+import DateRangeFilter from "~/features/visualization/components/common/DateRangeFilter";
+import DisasterFilter from "~/features/visualization/components/common/DisasterFilter";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
-import TwoDepthScrollSelector from "~/features/visualization/components/common/TwoDepthScrollSelector";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
 import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
 import { DisasterTypeHistoryStatsFeatureCollection, DisasterTypeHistoryStatsLayer } from "~/features/visualization/layers/DisasterTypeHistoryStatsLayer";
-import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
 import DisasterTypeHistoryStatsMap from "~/maps/classes/DisasterTypeHistoryStatsMap";
 import DisasterTypeHistoryStatsLegend from "~/maps/components/disasterTypeHistoryStats/DisasterTypeHistoryStatsLegend";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
+import { DISASTER_TYPE_HISTORY_MOCK_DATA } from "~/maps/constants/disasterTypeHistoryMockData";
+import { CULTIVATION_TYPE_OPTIONS } from "~/maps/constants/disasterTypeHistoryStats";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
@@ -26,9 +30,16 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
 
   const { layerManager, ready, map: olMap } = useSetupOL(mapId, 10.5, "jeju");
 
+  const [startDate, setStartDate] = useState<Dayjs | null>(dayjs().subtract(1, "years"));
+  const [endDate, setEndDate] = useState<Dayjs | null>(dayjs());
+
+  const handleDateRangeChange = (dates: [Dayjs | null, Dayjs | null]) => {
+    setStartDate(dates[0]);
+    setEndDate(dates[1]);
+  };
+
   const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
-  // TODO: api 있는지 확인
   const { data: disasterName } = useQuery({
     queryKey: ["disasterName", map.selectedTargetYear],
     queryFn: () => visualizationApi.getDisasterName(map.selectedTargetYear),
@@ -42,16 +53,19 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
     retry: 1,
   });
 
-  const { data: features } = useQuery({
-    queryKey: ["mandarinCultivationInfoFeatures", map.getSelectedRegionLevel(), map.selectedCropGroup, map.selectedCropDetailGroup],
-    queryFn: () =>
-      visualizationApi.getMandarinCultivationInfo(
-        map.getSelectedRegionLevel(),
-        map.selectedCropGroup,
-        map.selectedCropDetailGroup === DEFAULT_ALL_OPTION ? null : map.selectedCropDetailGroup
-      ),
-    enabled: !!ready,
-  });
+  // TODO: 신규 api 추가
+  //  const { data: features } = useQuery({
+  //   queryKey: ["mandarinCultivationInfoFeatures", map.getSelectedRegionLevel(), map.selectedCropGroup, map.selectedCropDetailGroup],
+  //   queryFn: () =>
+  //     visualizationApi.getMandarinCultivationInfo(
+  //       map.getSelectedRegionLevel(),
+  //       map.selectedCropGroup,
+  //       map.selectedCropDetailGroup === DEFAULT_ALL_OPTION ? null : map.selectedCropDetailGroup
+  //     ),
+  //   enabled: !!ready,
+  // });
+
+  const features = DISASTER_TYPE_HISTORY_MOCK_DATA;
 
   const filteredFeatures = features
     ? {
@@ -61,7 +75,7 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
     : null;
 
   const createDisasterTypeHistoryStatsLayer = async (features: DisasterTypeHistoryStatsFeatureCollection, visualizationSetting: VisualizationSetting) => {
-    return DisasterTypeHistoryStatsLayer.createLayer(features, visualizationSetting, map.selectedDisaster, map.selectedCropGroup, map.selectedCropDetailGroup);
+    return DisasterTypeHistoryStatsLayer.createLayer(features, visualizationSetting, map.selectedCultivationType);
   };
 
   useVisualizationLayer({
@@ -71,10 +85,6 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
     layerName: "disasterTypeHistoryStatsLayer",
     createLayer: createDisasterTypeHistoryStatsLayer,
     map,
-    updateProps: {
-      selectedDisaster: map.selectedDisaster,
-      selectedCropDetailGroup: map.selectedCropDetailGroup,
-    },
   });
 
   useEffect(() => {
@@ -102,27 +112,37 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
       <FloatingContainer
         filter={
           <>
-            {/* TODO: 기간 설정 컴포넌트 추가 */}
+            {/* 기간 설정 */}
+            <DateRangeFilter title="기간 설정" startDate={startDate} endDate={endDate} onDateRangeChange={handleDateRangeChange} />
+            {/* 지역 선택 */}
             <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
             {/* 재해 구분 */}
-            <TwoDepthScrollSelector
+            <DisasterFilter
               options={disasterOptionsMap}
-              title="재해 종류 및 세부 항목"
+              title="재해 구분"
               selectedFirst={map.selectedDisaster}
               onFirstSelect={map.setSelectedDisaster}
               selectedSecond={""} // 세부 항목 선택 기능은 미적용
               onSecondSelect={() => {}} // 세부 항목 선택 기능은 미적용
-              multiSelectSecond={false}
               hasSecondDepth={hasSecondDepth}
             />
             {/* 품목, 세부 품목 */}
             <CropFilter cropList={cropList} map={map} />
+            {/* 재배 방식 */}
+            <CultivationTypeFilter
+              title="재배 방식"
+              options={CULTIVATION_TYPE_OPTIONS}
+              selectedValue={map.selectedCultivationType}
+              onSelectionChange={map.setSelectedCultivationType}
+            />
           </>
         }
         visualizationSetting={
           <DisasterTypeHistoryStatsLegend
-            features={features}
+            // TODO: api 적용 이후 타입 단언 제거
+            features={features as unknown as DisasterTypeHistoryStatsFeatureCollection}
             legendOptions={map.visualizationSetting.legendOptions}
+            selectedCultivationType={map.selectedCultivationType}
             onLevelChange={map.setLegendLevel}
             onColorChange={map.setLegendColor}
             onPivotPointsChange={map.setLegendPivotPoints}

@@ -4,6 +4,7 @@ import DisasterTypeHistoryStatsChart from "~/maps/components/disasterTypeHistory
 import DisasterTypeHistoryStatsMapContent from "~/maps/components/disasterTypeHistoryStats/DisasterTypeHistoryStatsMapContent";
 
 import { DEFAULT_CROP_GROUP, DEFAULT_CROP_PUMMOK } from "~/maps/constants/cropDistribution";
+import { CultivationType, DEFAULT_CULTIVATION_TYPE } from "~/maps/constants/disasterTypeHistoryStats";
 import { MapOptions } from "~/maps/constants/mapOptions";
 import { DEFAULT_DISASTER } from "~/maps/constants/yearlyDisasterInfo";
 
@@ -24,6 +25,8 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
 
   #selectedCropDetailGroup = DEFAULT_ALL_OPTION;
 
+  #selectedCultivationType = DEFAULT_CULTIVATION_TYPE;
+
   constructor(mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) {
     super(mapOptions, title, tooltip);
 
@@ -36,6 +39,7 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
     this.setSelectedCropPummok = this.setSelectedCropPummok.bind(this);
     this.setSelectedCropGroup = this.setSelectedCropGroup.bind(this);
     this.setSelectedCropDetailGroup = this.setSelectedCropDetailGroup.bind(this);
+    this.setSelectedCultivationType = this.setSelectedCultivationType.bind(this);
   }
 
   renderMap() {
@@ -110,6 +114,15 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
 
   setSelectedCropDetailGroup(cropDetailGroup: string) {
     this.#selectedCropDetailGroup = cropDetailGroup;
+    this.notifyListeners();
+  }
+
+  get selectedCultivationType() {
+    return this.#selectedCultivationType;
+  }
+
+  setSelectedCultivationType(cultivationType: CultivationType) {
+    this.#selectedCultivationType = cultivationType;
     this.notifyListeners();
   }
 }

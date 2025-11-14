@@ -5,9 +5,22 @@ import { Vector as VectorSource } from "ol/source";
 import { Fill, Stroke, Style } from "ol/style";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { cropColorScale, hexToRgb } from "~/features/visualization/utils/getCropItems";
-import { CROP_COLORS, CropColor, CropLabel, CROPS } from "~/maps/constants/cropDistribution";
+import { CROP_COLORS, CROP_LEVEL, CropColor, CropLabel, CropLevel, CROPS } from "~/maps/constants/cropDistribution";
 
-const useCropDistributionLayer = ({ layerManager, map, ready, selectedLvl, setMenuPosition, setMenuChildren, cropData, hexData, opacity, areaData }) => {
+interface Params {
+  layerManager: any;
+  map: any;
+  ready: boolean;
+  selectedLvl: CropLevel;
+  setMenuPosition: (position: any) => void;
+  setMenuChildren: (children: any) => void;
+  cropData: any;
+  hexData: any;
+  opacity: number;
+  areaData: any;
+}
+
+const useCropDistributionLayer = ({ layerManager, map, ready, selectedLvl, setMenuPosition, setMenuChildren, cropData, hexData, opacity, areaData }: Params) => {
   const labelOverlaysRef = useRef<Overlay[]>([]);
 
   const cropStyleFunc = useCallback(
@@ -53,7 +66,7 @@ const useCropDistributionLayer = ({ layerManager, map, ready, selectedLvl, setMe
   };
 
   useEffect(() => {
-    if (!ready || !map || selectedLvl !== "lvl2" || !cropData) return;
+    if (!ready || !map || selectedLvl !== CROP_LEVEL["상위 1품목"] || !cropData) return;
 
     const labelPoints = [
       { coords: [14084741.54255216, 3968362.445965245], label: "감귤" },
@@ -240,7 +253,7 @@ const useCropDistributionLayer = ({ layerManager, map, ready, selectedLvl, setMe
 
     const view = map.getView();
 
-    if (selectedLvl === "lvl2" && cropData) {
+    if (selectedLvl === CROP_LEVEL["상위 1품목"] && cropData) {
       const targetZoom = 10.5;
       const targetCenter = [14088492.864310395, 3947183.1430401835];
 
@@ -255,7 +268,7 @@ const useCropDistributionLayer = ({ layerManager, map, ready, selectedLvl, setMe
         zoom: targetZoom,
         duration: 500,
       });
-    } else if (selectedLvl === "lvl1" && hexData) {
+    } else if (selectedLvl === CROP_LEVEL["상위 2품목"] && hexData) {
       const targetZoom = 12;
       const targetCenter = [14086425.618121266, 3953829.0508725857]; //제주
 
@@ -274,7 +287,7 @@ const useCropDistributionLayer = ({ layerManager, map, ready, selectedLvl, setMe
 
   // 스타일 업데이트
   useEffect(() => {
-    if (selectedLvl === "lvl2" && map) {
+    if (selectedLvl === CROP_LEVEL["상위 1품목"] && map) {
       const cropLayer = layerManager.getLayer("cropLayer");
       if (cropLayer) cropLayer.setStyle(cropStyleFunc);
     }
@@ -501,7 +514,7 @@ const useCropDistributionLayer = ({ layerManager, map, ready, selectedLvl, setMe
       });
     };
 
-    if (selectedLvl === "lvl1") {
+    if (selectedLvl === CROP_LEVEL["상위 2품목"]) {
       map.un("pointermove", handlePointerMove2);
       map.on("pointermove", handlePointerMove);
       map.on("singleclick", handleClick);
@@ -532,7 +545,7 @@ const useCropDistributionLayer = ({ layerManager, map, ready, selectedLvl, setMe
   useEffect(() => {
     if (!ready || !map) return;
 
-    if (selectedLvl === "lvl2" && areaData) {
+    if (selectedLvl === CROP_LEVEL["상위 1품목"] && areaData) {
       const areaFeatures = new GeoJSON().readFeatures(areaData);
       layerManager.removeLayer("areaLayer");
       layerManager.addOrReplaceLayer("areaLayer", areaFeatures, areaStyleFunc);
