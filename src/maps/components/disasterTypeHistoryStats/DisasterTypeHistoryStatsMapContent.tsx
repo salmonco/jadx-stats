@@ -3,9 +3,9 @@ import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import CropFilter from "~/features/visualization/components/common/CropFilter";
 import DateRangeFilter from "~/features/visualization/components/common/DateRangeFilter";
+import DisasterFilter from "~/features/visualization/components/common/DisasterFilter";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
-import TwoDepthScrollSelector from "~/features/visualization/components/common/TwoDepthScrollSelector";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
 import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
 import { DisasterTypeHistoryStatsFeatureCollection, DisasterTypeHistoryStatsLayer } from "~/features/visualization/layers/DisasterTypeHistoryStatsLayer";
@@ -113,14 +113,13 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
             <DateRangeFilter title="기간 설정" startDate={startDate} endDate={endDate} onDateRangeChange={handleDateRangeChange} />
             <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
             {/* 재해 구분 */}
-            <TwoDepthScrollSelector
+            <DisasterFilter
               options={disasterOptionsMap}
-              title="재해 종류 및 세부 항목"
+              title="재해 구분"
               selectedFirst={map.selectedDisaster}
               onFirstSelect={map.setSelectedDisaster}
               selectedSecond={""} // 세부 항목 선택 기능은 미적용
               onSecondSelect={() => {}} // 세부 항목 선택 기능은 미적용
-              multiSelectSecond={false}
               hasSecondDepth={hasSecondDepth}
             />
             {/* 품목, 세부 품목 */}
