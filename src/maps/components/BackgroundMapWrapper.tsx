@@ -16,7 +16,7 @@ const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
   const isFixedLayout = maps.length <= 2;
 
   return (
-    <div ref={containerRef} className="relative flex h-[70%] min-h-[600px] 3xl:min-h-[850px] 4xl:min-h-[1000px]">
+    <div ref={containerRef} className="relative flex h-[85%] min-h-[750px] 3xl:min-h-[950px] 4xl:min-h-[1100px]">
       {isFixedLayout ? (
         <>
           {maps.map((map) => (

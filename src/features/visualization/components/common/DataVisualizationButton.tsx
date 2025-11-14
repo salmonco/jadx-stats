@@ -90,19 +90,19 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
 
   return (
     <>
-      <div ref={buttonRef} className="relative mx-2 flex items-center justify-between rounded-full border border-gray-300 bg-white px-4 py-2 shadow-sm">
+      <div ref={buttonRef} className="relative mx-2 flex items-center justify-between rounded-[5px] bg-[#3D4B7B] px-4 py-2 shadow-sm">
         {/* 메뉴 아이콘 */}
-        <button onClick={onMenuClick} className="flex items-center justify-center text-gray-600 hover:text-gray-800" title="범례 설정">
+        <button onClick={onMenuClick} className="flex items-center justify-center text-white hover:text-gray-800" title="범례 설정">
           ☰
         </button>
 
         {/* 텍스트 */}
-        <span className="mx-4 text-sm font-medium text-gray-700">데이터 시각화</span>
+        <span className="mx-4 text-sm font-medium text-white">데이터 시각화</span>
 
         {/* 설정 아이콘 */}
         <button
           onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-          className="flex items-center justify-center text-lg text-gray-600 hover:text-gray-800"
+          className="flex items-center justify-center text-lg text-white hover:text-gray-800"
           title="시각화 설정"
         >
           ⚙
