@@ -32,7 +32,7 @@ const FloatingContainer = ({
   return (
     <div className="absolute bottom-4 left-4 top-16 flex w-[220px] flex-col gap-5">
       {/* 필터 컨테이너 영역 */}
-      {filter && <FilterContainer isFixed>{filter}</FilterContainer>}
+      {filter && <FilterContainer isFixed={!!visualizationSetting}>{filter}</FilterContainer>}
 
       {/* 비주얼세팅 컨테이너 영역 */}
       {visualizationSetting && <VisualizationSettingContainer isOpen={isVisualizationOpen}>{isVisualizationOpen && visualizationSetting}</VisualizationSettingContainer>}

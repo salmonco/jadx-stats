@@ -13,7 +13,7 @@ export const DEFAULT_MAP_OPTIONS: MapOptions = {
 
 export const DEFAULT_LIST_MANAGED_MAP_OPTIONS: MapOptions = {
   type: "Base",
-  layerSwitcher: true,
+  layerSwitcher: false,
   mapTypeSwitcher: true,
   roundCorners: true,
 };

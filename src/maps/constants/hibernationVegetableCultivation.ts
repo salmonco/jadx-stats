@@ -1,5 +1,3 @@
-import { ButtonGroupSelectorOption } from "~/features/visualization/components/common/ButtonGroupSelector";
-
 export const TARGET_YEAR = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023];
 
 export const DEFAULT_TARGET_YEAR = TARGET_YEAR[TARGET_YEAR.length - 1];
@@ -19,8 +17,8 @@ const CROP_TYPE = {
   방울다다기양배추: "방울다다기양배추",
 } as const;
 
-export const CROP_LEGEND_ITEMS: ButtonGroupSelectorOption[] = Object.entries(CROP_TYPE).map(([value, label]) => ({ value, label }));
+export const CROP_LEGEND_ITEMS = Object.entries(CROP_TYPE).map(([label, value]) => ({ label, value }));
 
-export type CropType = keyof typeof CROP_TYPE;
+export type CropType = (typeof CROP_TYPE)[keyof typeof CROP_TYPE];
 
-export const DEFAULT_CROP = "월동무";
+export const DEFAULT_CROP: CropType = "월동무";

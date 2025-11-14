@@ -4,13 +4,11 @@ const ListManagedVisualizationContainer = () => {
   const mapList = useMapList();
 
   return (
-    <div className="flex min-h-screen w-full flex-col gap-5 p-5">
-      <div className="flex flex-col gap-5 rounded-lg bg-[#37445E] px-5 py-4">
-        {/* 지도 */}
-        {mapList.renderMaps()}
-        {/* 차트 */}
-        {mapList.renderFirstChart()}
-      </div>
+    <div className="flex flex-col gap-5 bg-[#37445E] px-5 py-4">
+      {/* 지도 */}
+      {mapList.renderMaps()}
+      {/* 차트 */}
+      {mapList.renderFirstChart()}
     </div>
   );
 };

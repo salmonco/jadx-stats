@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
+import VegetableFilter from "~/features/visualization/components/common/VegetableFilter";
 import YearFilter from "~/features/visualization/components/common/YearFilter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
 import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
@@ -66,7 +66,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
           <>
             <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
             <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
-            <ButtonGroupSelector title="범례" cols={3} options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} setSelectedValues={map.setSelectedCrop} />
+            <VegetableFilter title="작물 종류" options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} onSelectionChange={map.setSelectedCrop} />
           </>
         }
         visualizationSetting={

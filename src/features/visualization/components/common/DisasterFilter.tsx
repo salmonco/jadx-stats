@@ -11,7 +11,7 @@ interface DisasterFilterProps {
   hasSecondDepth?: boolean;
 }
 
-const DisasterFilter: React.FC<DisasterFilterProps> = ({
+const DisasterFilter = ({
   title,
   options,
   selectedFirst,
@@ -20,7 +20,7 @@ const DisasterFilter: React.FC<DisasterFilterProps> = ({
   onSecondSelect,
   isMultiSecond = false,
   hasSecondDepth = false,
-}) => {
+}: DisasterFilterProps) => {
   const firstLevelOptions = Object.keys(options).map((key) => ({ label: key, value: key }));
   const secondLevelOptions = options[selectedFirst]?.map((item) => ({ label: item, value: item })) || [];
 
