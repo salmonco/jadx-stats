@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 import CropFilter from "~/features/visualization/components/common/CropFilter";
+import CultivationTypeFilter from "~/features/visualization/components/common/CultivationTypeFilter";
 import DateRangeFilter from "~/features/visualization/components/common/DateRangeFilter";
 import DisasterFilter from "~/features/visualization/components/common/DisasterFilter";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
@@ -13,6 +14,7 @@ import DisasterTypeHistoryStatsMap from "~/maps/classes/DisasterTypeHistoryStats
 import DisasterTypeHistoryStatsLegend from "~/maps/components/disasterTypeHistoryStats/DisasterTypeHistoryStatsLegend";
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import { DISASTER_TYPE_HISTORY_MOCK_DATA } from "~/maps/constants/disasterTypeHistoryMockData";
+import { CULTIVATION_TYPE_OPTIONS } from "~/maps/constants/disasterTypeHistoryStats";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
@@ -110,7 +112,9 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
       <FloatingContainer
         filter={
           <>
+            {/* 기간 설정 */}
             <DateRangeFilter title="기간 설정" startDate={startDate} endDate={endDate} onDateRangeChange={handleDateRangeChange} />
+            {/* 지역 선택 */}
             <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
             {/* 재해 구분 */}
             <DisasterFilter
@@ -124,6 +128,13 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
             />
             {/* 품목, 세부 품목 */}
             <CropFilter cropList={cropList} map={map} />
+            {/* 재배 방식 */}
+            <CultivationTypeFilter
+              title="재배 방식"
+              options={CULTIVATION_TYPE_OPTIONS}
+              selectedValue={map.selectedCultivationType}
+              onSelectionChange={map.setSelectedCultivationType}
+            />
           </>
         }
         visualizationSetting={
