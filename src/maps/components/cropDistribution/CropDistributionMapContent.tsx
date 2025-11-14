@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import ButtonGroupSelector from "~/features/visualization/components/common/ButtonGroupSelector";
 import ColoredCropFilter from "~/features/visualization/components/common/ColoredCropFilter";
+import CropLevelFilter from "~/features/visualization/components/common/CropLevelFilter";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import FloatingMenu from "~/features/visualization/components/common/FloatingMenu";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
@@ -106,13 +106,7 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
         filter={
           <>
             <RegionFilter features={areaData} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
-            <ButtonGroupSelector
-              title="작물 정보"
-              cols={2}
-              options={cropInfoOptions}
-              selectedValues={map.selectedCropLevel}
-              setSelectedValues={map.setSelectedCropLevel}
-            />
+            <CropLevelFilter title="작물 정보" options={cropInfoOptions} selectedValue={map.selectedCropLevel} onSelectionChange={map.setSelectedCropLevel} />
             <ColoredCropFilter title="작물 선택" options={cropItems} selectedOptions={selectedCrops} onSelectionChange={setSelectedCrops} isMulti />
           </>
         }
