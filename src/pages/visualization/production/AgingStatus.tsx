@@ -3,7 +3,7 @@ import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import { MapListProvider } from "~/maps/contexts/MapListContext";
 import useMapInitializer from "~/maps/hooks/useMapInitializer";
 
-const TITLE = "고령화 현황";
+const TITLE = "고령화 통계";
 
 const AgingStatus = () => {
   const mapList = useMapInitializer({

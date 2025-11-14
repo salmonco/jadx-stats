@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
 import { Map as OLMap, View } from "ol";
 import { MapOptions } from "ol/Map";
+import { defaults as defaultControls } from "ol/control";
 import { Coordinate } from "ol/coordinate";
 import { Extent } from "ol/extent";
-import { defaults as defaultControls } from "ol/control";
+import { useEffect, useMemo, useState } from "react";
 // @ts-ignore
 import { v4 as uuidv4 } from "uuid";
 
@@ -23,6 +23,9 @@ export interface UseOLMapOptions extends Omit<MapOptions, "target"> {
   extent?: [number, number, number, number] | Extent;
 }
 
+const MAX_ZOOM_LEVEL = 19;
+const MIN_ZOOM_LEVEL = 0;
+
 const useOLMap = (mapId: string, { center, zoom, extent, ...mapOptions }: UseOLMapOptions): ExtendedOLMap => {
   const memoizedCenter = useMemo(() => center, [JSON.stringify(center)]);
   const memoizedExtent = useMemo(() => extent, [JSON.stringify(extent)]);
@@ -38,6 +41,12 @@ const useOLMap = (mapId: string, { center, zoom, extent, ...mapOptions }: UseOLM
           center: memoizedCenter,
           zoom,
           extent: memoizedExtent,
+          /**
+           * OpenLayers의 기본 최대/최소 줌 레벨 설정
+           * @see https://openlayers.org/en/latest/examples/layer-zoom-limits.html
+           */
+          maxZoom: MAX_ZOOM_LEVEL,
+          minZoom: MIN_ZOOM_LEVEL,
         }),
         controls: defaultControls({ zoom: false }),
         ...memoizedMapOptions,

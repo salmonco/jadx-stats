@@ -1,13 +1,13 @@
 /* openlayers */
 .ol-zoom {
   left: unset !important;
-  top: 0.5em !important;
+  top: 24.5% !important;
   right: 0.5em !important;
 }
 
 .ol-zoomslider {
   left: unset !important;
-  top: 4.5em !important;
+  top: 35% !important;
   right: 0.5em !important;
   background: repeating-linear-gradient(to bottom, #888, /* 눈금색 */ #888 1px, transparent 1px, transparent 10.597px);
   background-repeat: no-repeat;
@@ -76,7 +76,7 @@
   background: transparent !important;
   left: unset !important;
   bottom: unset !important;
-  top: 17.5em !important;
+  top: 69.5% !important;
   right: 0.5em !important;
 }
 .ol-scale-line-inner {

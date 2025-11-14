@@ -16,7 +16,7 @@ const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
   const isFixedLayout = maps.length <= 2;
 
   return (
-    <div ref={containerRef} className="relative flex h-[85%] min-h-[750px] 3xl:min-h-[1000px] 4xl:min-h-[1150px]">
+    <div ref={containerRef} className="relative flex h-[70%] min-h-[600px] 3xl:min-h-[850px] 4xl:min-h-[1000px]">
       {isFixedLayout ? (
         <>
           {maps.map((map) => (
@@ -25,7 +25,7 @@ const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
             </div>
           ))}
           {maps.length === 2 && (
-            <button className="absolute right-4 top-14 rounded-md bg-white px-4 py-2 text-black shadow-lg" onClick={() => mapList.removeMap(mapList.getFirstMap().mapId)}>
+            <button className="absolute right-4 top-14 rounded-md bg-white px-4 py-2 text-black shadow-lg" onClick={() => mapList.removeMap(mapList.getLastMap().mapId)}>
               X
             </button>
           )}

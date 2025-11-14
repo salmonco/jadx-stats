@@ -1,4 +1,4 @@
-import { FileText, Maximize, Share2 } from "lucide-react";
+import { FileText, Maximize, PlusIcon, Share2 } from "lucide-react";
 import { useState } from "react";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import { useMapList } from "~/maps/hooks/useMapList";
@@ -34,9 +34,9 @@ const LayerHeader = <M extends CommonBackgroundMap>({ map, olMap, onClickFullScr
 
   return (
     <>
-      <div className="absolute left-0 top-0 z-10 flex w-full justify-between bg-[#37445E] p-3">
+      <div className="absolute left-0 top-0 z-10 flex w-full justify-between bg-[#3D4B7BB2] px-8 py-2">
         <div className="flex items-center gap-2.5">
-          <div className="text-2xl font-semibold text-white">{map.title}</div>
+          <div className="text-[22px] font-bold text-white">{map.title}</div>
           {map.tooltip}
         </div>
         <div className="flex items-center gap-4">
@@ -50,7 +50,7 @@ const LayerHeader = <M extends CommonBackgroundMap>({ map, olMap, onClickFullScr
             <Share2 />
           </button>
           <button onClick={() => mapList.addMap()} className="text-white" aria-label="지도 추가" title="지도 추가">
-            +
+            <PlusIcon />
           </button>
         </div>
       </div>

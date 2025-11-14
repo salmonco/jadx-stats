@@ -39,6 +39,7 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
     this.removeMap = this.removeMap.bind(this);
     this.updateMapPosition = this.updateMapPosition.bind(this);
     this.getMapPosition = this.getMapPosition.bind(this);
+    this.getLastMap = this.getLastMap.bind(this);
   }
 
   destroy() {
@@ -90,6 +91,10 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
 
   getFirstMap() {
     return this.#maps[0];
+  }
+
+  getLastMap() {
+    return this.#maps[this.#maps.length - 1];
   }
 
   initSharedState(state: unknown) {
