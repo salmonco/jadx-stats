@@ -99,7 +99,7 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[18px] font-semibold">지역선택</p>
+      <p className="text-sm font-bold">지역선택</p>
       <Select title={REGION_LEVEL_LABEL} options={regionLevelOptions} value={selectedRegion.구분} onChange={handleLevelChange} size="large" />
 
       {selectedRegion.구분 !== REGION_LEVEL_OPTIONS.제주도 && (

@@ -12,7 +12,7 @@ const YearFilter = ({ targetYear, selectedTargetYear, setSelectedTargetYear }: P
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[18px] font-semibold">기준연도</p>
+      <p className="text-sm font-bold">기준연도</p>
       <Select options={yearOptions} value={selectedTargetYear} onChange={setSelectedTargetYear} size="large" />
     </div>
   );

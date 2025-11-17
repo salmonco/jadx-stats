@@ -66,13 +66,13 @@ const CropFilter = <M extends CommonBackgroundMap & CropMapProps>({ cropList, ma
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[18px] font-semibold">품목</p>
+      <p className="text-sm font-bold">품목</p>
       <Select options={pummokOptions.map((p) => ({ label: p, value: p }))} value={selectedCropPummok} onChange={handlePummokChange} size="large" />
 
-      <p className="text-[18px] font-semibold">품종</p>
+      <p className="text-sm font-bold">품종</p>
       <Select options={groupOptions.map((v) => ({ label: v, value: v }))} value={selectedCropGroup} onChange={handleGroupChange} size="large" />
 
-      <p className="text-[18px] font-semibold">세부 품종</p>
+      <p className="text-sm font-bold">세부 품종</p>
       <Select options={detailGroupOptions.map((d) => ({ label: d, value: d }))} value={selectedCropDetailGroup} onChange={handleDetailGroupChange} size="large" />
     </div>
   );

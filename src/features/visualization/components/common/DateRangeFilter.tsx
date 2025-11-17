@@ -14,7 +14,7 @@ interface DateRangeFilterProps {
 const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ title, startDate, endDate, onDateRangeChange }) => {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[18px] font-semibold">{title}</p>
+      <p className="text-sm font-bold">{title}</p>
       <RangePicker className="w-full" value={[startDate, endDate]} onChange={onDateRangeChange} format="YYYY-MM-DD" size="large" />
     </div>
   );
