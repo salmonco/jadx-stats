@@ -19,7 +19,8 @@ const filterMenuByAuth = (items: MenuItem[], auth: string | null): MenuItem[] =>
   const HIDE_CHILDREN_BY_PARENT: Record<string, Set<string>> = {
     // 특화통계 > 생산
     "prod": new Set(["rgn-cltvtn-harv"]), // 지역별 재배면적 및 수확현황
-    "obsrvn": new Set(["qlty"]),
+    // 특화통계 > 관측
+    "obsrvn": new Set(["qlty", "obsrvn-info-cmp"]), // 감귤 관측조사
     // 특화통계 > 유통
     "rtl": new Set(["prc-predc", "prc-dsbrd", "garak-prc"]), // 가격예측/대시보드/가락시장
     // 특화통계 > 농업환경 (연도별 현황 외 5개 숨김)
