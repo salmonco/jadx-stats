@@ -16,7 +16,7 @@ interface Props {
 }
 
 const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, resetVisualizationSetting, setOpacity, opacity, visualType, setVisualType }: Props) => {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(true);
   const [openSubMenu, setOpenSubMenu] = useState<VisualSettingButtonId | null>(null);
   const [isOpacityModalOpen, setIsOpacityModalOpen] = useState(false);
 

@@ -27,7 +27,7 @@ const FloatingContainer = ({
   visualType,
   setVisualType,
 }: Props) => {
-  const [isVisualizationOpen, setIsVisualizationOpen] = useState(false);
+  const [isVisualizationOpen, setIsVisualizationOpen] = useState(true);
 
   return (
     <div className="absolute bottom-4 left-4 top-16 flex w-[220px] flex-col gap-5">
