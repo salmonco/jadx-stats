@@ -1,3 +1,8 @@
+/**
+ * @todo 목데이터를 실제 API 요청으로 대체해야 합니다.
+ * - 1. 요청 쿼리 파라미터: startDate, endDate, 지역 구분(level), 재해 구분(disaster_name), 품종(pummok), 세부품종(variety)
+ * - 2. 응답 properties: 지역명(vrbs_nm), 총 피해 면적, 피해 농가수, 노지 재배 피해 면적, 시설 재배 피해 면적
+ */
 export const DISASTER_TYPE_HISTORY_MOCK_DATA = {
   "type": "FeatureCollection",
   "features": [
