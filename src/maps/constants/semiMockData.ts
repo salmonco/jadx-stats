@@ -1,7 +1,7 @@
 /**
  * @todo 목데이터를 실제 API 요청으로 대체해야 합니다.
  * - 1. 요청 쿼리 파라미터: 지역 구분(level)*
- * - 2. 응답 properties: 지역명(vrbs_nm)*, 재배면적(mandarin_area), 작물(top_pummok), side, opacity, top_pummok, pummok_data({pummok, area} 배열)
+ * - 2. 응답 properties: 지역명(vrbs_nm)*, 재배면적(mandarin_area), 작물(top_pummok), side, opacity, pummok_data({pummok, area} 배열)
  * - *는 새로 추가될 필드를 의미함
  */
 export const SEMI_MOCK_DATA = {
