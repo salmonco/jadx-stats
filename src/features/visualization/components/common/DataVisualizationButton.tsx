@@ -97,7 +97,7 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
         </button>
 
         {/* 텍스트 */}
-        <span className="mx-4 text-sm font-medium text-white">데이터 시각화</span>
+        <span className="mx-4 font-medium text-white">데이터 시각화</span>
 
         {/* 설정 아이콘 */}
         <button
