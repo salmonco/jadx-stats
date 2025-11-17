@@ -28,7 +28,7 @@ const ListManagedMapTypeSwitcher = ({ mapId }: MapTypeSwitcherProps) => {
             <button
               key={key}
               onClick={() => handleTypeSelect(key)}
-              className={`flex h-12 w-12 items-center justify-center rounded-full text-sm text-white shadow-lg transition-transform hover:scale-105 ${map.mapType === key ? "bg-blue-500" : "bg-gray-400"}`}
+              className={`flex h-12 w-12 items-center justify-center rounded-full p-1 text-xs text-white shadow-lg transition-transform hover:scale-105 ${map.mapType === key ? "bg-blue-500" : "bg-gray-400"}`}
             >
               {label}
             </button>
@@ -37,7 +37,7 @@ const ListManagedMapTypeSwitcher = ({ mapId }: MapTypeSwitcherProps) => {
       )}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="z-10 flex h-12 w-12 items-center justify-center rounded-full bg-gray-700 text-sm text-white shadow-lg transition-transform hover:scale-105"
+        className="z-10 flex h-12 w-12 items-center justify-center rounded-full bg-gray-700 p-1 text-xs text-white shadow-lg transition-transform hover:scale-105"
       >
         지도
       </button>
