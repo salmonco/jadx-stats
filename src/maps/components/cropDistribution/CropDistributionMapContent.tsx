@@ -112,6 +112,10 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
       {menuPosition && menuChildren && <FloatingMenu position={menuPosition} onClose={closeMenu} menuChildren={menuChildren as any} />}
       <FloatingContainer
+        /**
+         * NOTE: 작물 재배지도 레이어는 다른 페이지와 다르게 작물마다 레이어 색깔이 다르며 육각형입니다.
+         * - 따라서 레이어를 공통 프레임인 범례, 시각화 설정과 통합하지 않고 필터 컨테이너로만 구성됩니다.
+         */
         filter={
           <>
             <RegionFilter features={areaData} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
