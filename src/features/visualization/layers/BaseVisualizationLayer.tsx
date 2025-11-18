@@ -487,7 +487,7 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
 
       return d3.scaleThreshold<number, string>().domain(pivotPoints).range(colors);
     } else {
-      return d3.scaleSequential(colorGradient).domain([minValue, maxValue]);
+      return d3.scaleSequential(colorGradient).domain([maxValue, minValue]);
     }
   }
 
