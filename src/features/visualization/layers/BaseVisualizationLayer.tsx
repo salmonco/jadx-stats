@@ -80,8 +80,31 @@ const BaseInnerLayerComponent = <T,>({
 
   const radiusScale = useMemo(() => {
     const values = features.features.map((d) => getValue(d)).filter((v): v is number => v != null && typeof v === "number");
-    const [minValue, maxValue] = values.length > 0 ? (d3.extent(values) as [number, number]) : [0, 1];
-    return d3.scaleLinear().domain([minValue, maxValue]).range([5, 20]);
+    if (values.length === 0) {
+      return () => 10; // 데이터가 없을 경우 기본 크기
+    }
+
+    const [minValue, maxValue] = d3.extent(values) as [number, number];
+    const medianValue = d3.median(values) as number;
+
+    // 모든 값이 동일한 경우 고정 크기 반환
+    if (minValue === medianValue && medianValue === maxValue) {
+      return () => 12;
+    }
+
+    // 도메인에 중복 값이 없도록 처리
+    let domain = [minValue, medianValue, maxValue];
+    let range = [5, 12, 25];
+
+    if (medianValue === minValue) {
+      domain = [minValue, maxValue];
+      range = [5, 25];
+    } else if (medianValue === maxValue) {
+      domain = [minValue, maxValue];
+      range = [5, 25];
+    }
+
+    return d3.scaleLinear().domain(domain).range(range);
   }, [features, getValue]);
 
   useEffect(() => {
@@ -125,7 +148,7 @@ const BaseInnerLayerComponent = <T,>({
         .join("circle")
         .attr("cx", (d: BaseFeature<T>) => path.centroid(toGeoJsonGeometry(d.geometry))[0])
         .attr("cy", (d: BaseFeature<T>) => path.centroid(toGeoJsonGeometry(d.geometry))[1])
-        .attr("r", 5) // Fixed radius for dots
+        .attr("r", 8) // Fixed radius for dots
         .attr("fill", (d: BaseFeature<T>) => getAreaFill(d, colorScale))
         .attr("fill-opacity", visualizationSetting.opacity)
         .attr("stroke", "white")
