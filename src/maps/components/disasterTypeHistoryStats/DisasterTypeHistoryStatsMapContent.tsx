@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import dayjs, { Dayjs } from "dayjs";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import CropFilter from "~/features/visualization/components/common/CropFilter";
 import CultivationTypeFilter from "~/features/visualization/components/common/CultivationTypeFilter";
 import DateRangeFilter from "~/features/visualization/components/common/DateRangeFilter";
@@ -29,14 +28,6 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
   const map = mapList.getMapById(mapId);
 
   const { layerManager, ready, map: olMap } = useSetupOL(mapId, 10.5, "jeju");
-
-  const [startDate, setStartDate] = useState<Dayjs | null>(dayjs().subtract(1, "years"));
-  const [endDate, setEndDate] = useState<Dayjs | null>(dayjs());
-
-  const handleDateRangeChange = (dates: [Dayjs | null, Dayjs | null]) => {
-    setStartDate(dates[0]);
-    setEndDate(dates[1]);
-  };
 
   const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
@@ -117,7 +108,15 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
         filter={
           <>
             {/* 기간 설정 */}
-            <DateRangeFilter title="기간 설정" startDate={startDate} endDate={endDate} onDateRangeChange={handleDateRangeChange} />
+            <DateRangeFilter
+              title="기간 설정"
+              startDate={map.selectedStartDate}
+              endDate={map.selectedEndDate}
+              onDateRangeChange={([startDate, endDate]) => {
+                map.setSelectedStartDate(startDate);
+                map.setSelectedEndDate(endDate);
+              }}
+            />
             {/* 지역 선택 */}
             <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
             {/* 재해 구분 */}
