@@ -11,14 +11,19 @@ export const jejuMapCenter = [126.54652, 33.37358]; // 제주도 중심 좌표 (
 const jejuTopLeft = [125.87748, 33.63742];
 const jejuBottomRight = [127.53276, 33.04861];
 
+// 제주도 주변으로 살짝 넓힌 범위
+const jejuWiderTopLeft = [125.0, 34.4];
+const jejuWiderBottomRight = [128.3, 32.2];
+
 export const jejuMapCorners = [jejuTopLeft, jejuBottomRight];
 export const jejuCenterCoord = fromLonLat(jejuMapCenter);
 export const jejuMapExtent = boundingExtent([fromLonLat(jejuMapCorners[0]), fromLonLat(jejuMapCorners[1])]);
+export const jejuWiderMapExtent = boundingExtent([fromLonLat(jejuWiderTopLeft), fromLonLat(jejuWiderBottomRight)]);
 
 export const jejuMapConfig = {
   center: jejuCenterCoord,
   zoom: 11,
-  extent: jejuMapExtent,
+  extent: jejuWiderMapExtent,
 };
 
 export const jejuMainRegions = [
@@ -129,4 +134,4 @@ export const EMD_ENG: Record<EmdEng, EmdKor> = Object.fromEntries(Object.entries
 const AEWOL_CENTER = [126.38876, 33.43198];
 export const AEWOL_CENTER_COORD = fromLonLat(AEWOL_CENTER);
 export const DEFAULT_ZOOM_LEVEL_FOR_AEWOL = 12;
-export const DEFAULT_ZOOM_LEVEL = 10;
+export const DEFAULT_ZOOM_LEVEL = 10.5;
