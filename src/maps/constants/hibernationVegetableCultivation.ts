@@ -2,7 +2,7 @@ export const TARGET_YEAR = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023
 
 export const DEFAULT_TARGET_YEAR = TARGET_YEAR[TARGET_YEAR.length - 1];
 
-const CROP_TYPE = {
+export const CROP_TYPE = {
   월동무: "월동무",
   양배추: "양배추",
   당근: "당근",

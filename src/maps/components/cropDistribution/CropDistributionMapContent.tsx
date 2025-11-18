@@ -29,7 +29,6 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
 
   const [menuPosition, setMenuPosition] = useState(null);
   const [menuChildren, setMenuChildren] = useState(null);
-  const [selectedCrops, setSelectedCrops] = useState<string[]>([]);
 
   /**
    * @todo CROP_MOCK_DATA 목데이터를 실제 API 요청으로 대체해야 합니다.
@@ -68,14 +67,18 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
   const filteredCropData = CROP_MOCK_DATA
     ? {
         ...CROP_MOCK_DATA,
-        features: CROP_MOCK_DATA.features.filter(filterFeatures).filter((feature) => selectedCrops.length === 0 || selectedCrops.includes(feature.properties.top_pummok)),
+        features: CROP_MOCK_DATA.features
+          .filter(filterFeatures)
+          .filter((feature) => map.selectedCrops.length === 0 || map.selectedCrops.includes(feature.properties.top_pummok)),
       }
     : null;
 
   const filteredHexData = SEMI_MOCK_DATA
     ? {
         ...SEMI_MOCK_DATA,
-        features: SEMI_MOCK_DATA.features.filter(filterFeatures).filter((feature) => selectedCrops.length === 0 || selectedCrops.includes(feature.properties.top_pummok)),
+        features: SEMI_MOCK_DATA.features
+          .filter(filterFeatures)
+          .filter((feature) => map.selectedCrops.length === 0 || map.selectedCrops.includes(feature.properties.top_pummok)),
       }
     : null;
 
@@ -120,7 +123,7 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
           <>
             <RegionFilter features={areaData} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
             <CropLevelFilter title="작물 정보" options={cropInfoOptions} selectedValue={map.selectedCropLevel} onSelectionChange={map.setSelectedCropLevel} />
-            <ColoredCropFilter title="작물 선택" options={cropItems} selectedOptions={selectedCrops} onSelectionChange={setSelectedCrops} isMulti />
+            <ColoredCropFilter title="작물 선택" options={cropItems} selectedOptions={map.selectedCrops} onSelectionChange={map.setSelectedCrops} isMulti />
           </>
         }
       />
