@@ -1,10 +1,11 @@
+import dayjs, { Dayjs } from "dayjs";
+import { getKeyByValue } from "~/features/visualization/utils/getKeyByValue";
 import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import DisasterTypeHistoryStatsChart from "~/maps/components/disasterTypeHistoryStats/DisasterTypeHistoryStatsChart";
 import DisasterTypeHistoryStatsMapContent from "~/maps/components/disasterTypeHistoryStats/DisasterTypeHistoryStatsMapContent";
-
 import { DEFAULT_CROP_GROUP, DEFAULT_CROP_PUMMOK } from "~/maps/constants/cropDistribution";
-import { CultivationType, DEFAULT_CULTIVATION_TYPE } from "~/maps/constants/disasterTypeHistoryStats";
+import { CULTIVATION_TYPE, CultivationType, DEFAULT_CULTIVATION_TYPE } from "~/maps/constants/disasterTypeHistoryStats";
 import { MapOptions } from "~/maps/constants/mapOptions";
 import { DEFAULT_DISASTER } from "~/maps/constants/yearlyDisasterInfo";
 
@@ -13,9 +14,9 @@ const DEFAULT_TARGET_YEAR = 2024;
 class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
   #selectedTargetYear = DEFAULT_TARGET_YEAR;
 
-  #selectedStartDate: string;
+  #selectedStartDate = dayjs().subtract(1, "years");
 
-  #selectedEndDate: string;
+  #selectedEndDate = dayjs();
 
   #selectedDisaster = DEFAULT_DISASTER;
 
@@ -40,6 +41,19 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
     this.setSelectedCropGroup = this.setSelectedCropGroup.bind(this);
     this.setSelectedCropDetailGroup = this.setSelectedCropDetailGroup.bind(this);
     this.setSelectedCultivationType = this.setSelectedCultivationType.bind(this);
+  }
+
+  getFilterText() {
+    const filterParts = super.getFilterText();
+
+    filterParts.push(`${this.#selectedStartDate} ~ ${this.#selectedEndDate}`);
+    filterParts.push(`${this.#selectedDisaster}`);
+    filterParts.push(`${this.#selectedCropPummok}`);
+    filterParts.push(`${this.#selectedCropGroup}`);
+    filterParts.push(`${this.#selectedCropDetailGroup}`);
+    filterParts.push(`${getKeyByValue(CULTIVATION_TYPE, this.#selectedCultivationType)}`);
+
+    return filterParts;
   }
 
   renderMap() {
@@ -67,7 +81,7 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
     return this.#selectedStartDate;
   }
 
-  setSelectedStartDate(date: string) {
+  setSelectedStartDate(date: Dayjs) {
     this.#selectedStartDate = date;
     this.notifyListeners();
   }
@@ -76,7 +90,7 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
     return this.#selectedEndDate;
   }
 
-  setSelectedEndDate(date: string) {
+  setSelectedEndDate(date: Dayjs) {
     this.#selectedEndDate = date;
     this.notifyListeners();
   }

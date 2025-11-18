@@ -1,10 +1,7 @@
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { FileText, Printer, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { getKeyByValue } from "~/features/visualization/utils/getKeyByValue";
-import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
-import { REGION_LEVEL_OPTIONS } from "~/features/visualization/utils/regionLevelOptions";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import { ExtendedOLMap } from "../hooks/useOLMap";
 
@@ -55,7 +52,8 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       console.error("Map viewport element not found.");
     }
 
-    const legendElement = document.querySelector(".legend-container");
+    const parentElement = olMap.getTargetElement().parentElement;
+    const legendElement = parentElement ? parentElement.querySelector(".legend-container") : null;
 
     if (legendElement) {
       try {
@@ -72,34 +70,13 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     }
   };
 
-  const filterText = (() => {
-    const filterParts: string[] = [];
-    const regionSetting = map.regionFilterSetting;
-
-    const selectedRegionLevel = getKeyByValue(REGION_LEVEL_OPTIONS, regionSetting.구분);
-    if (selectedRegionLevel) {
-      filterParts.push(selectedRegionLevel);
+  const filterText = useMemo(() => {
+    const parts = map.getFilterText();
+    if (parts.length > 0) {
+      return parts.join(" + ");
     }
-
-    if (regionSetting.행정시 && regionSetting.행정시 !== DEFAULT_ALL_OPTION) {
-      filterParts.push(regionSetting.행정시);
-    }
-    if (regionSetting.권역 && regionSetting.권역.length > 0) {
-      filterParts.push(regionSetting.권역.join(", "));
-    }
-    if (regionSetting.읍면 && regionSetting.읍면.length > 0) {
-      filterParts.push(regionSetting.읍면.join(", "));
-    }
-    if (regionSetting.리동 && regionSetting.리동.length > 0) {
-      filterParts.push(regionSetting.리동.join(", "));
-    }
-
-    if (filterParts.length > 0) {
-      return filterParts.join(" + ");
-    }
-
     return "적용된 필터가 없습니다.";
-  })();
+  }, [map]);
 
   const handlePrint = () => {
     window.print();
