@@ -493,7 +493,10 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
 
   public getAreaFill(feature: BaseFeature<T>, colorScale: (value: number) => string): string {
     const value = this.getValue(feature);
-    return value !== null ? colorScale(value) : "#ccc";
+    if (!value || value === 0) {
+      return "#ccc";
+    }
+    return colorScale(value);
   }
 
   public getLabels(feature: BaseFeature<T>, labelOptions: any): string[] {
@@ -505,7 +508,7 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
 
     if (labelOptions.isShowValue) {
       const value = this.getValue(feature);
-      if (value != null) {
+      if (value) {
         labels.push(value.toFixed(1));
       }
     }
