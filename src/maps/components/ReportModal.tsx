@@ -55,7 +55,8 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       console.error("Map viewport element not found.");
     }
 
-    const legendElement = document.querySelector(".legend-container");
+    const parentElement = olMap.getTargetElement().parentElement;
+    const legendElement = parentElement ? parentElement.querySelector(".legend-container") : null;
 
     if (legendElement) {
       try {
