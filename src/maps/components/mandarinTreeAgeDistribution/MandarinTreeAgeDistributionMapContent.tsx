@@ -63,7 +63,7 @@ const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
   // }, [map.getSelectedRegionLevel(), map.selectedCropGroup, map.selectedCropDetailGroup]);
 
   const createTreeAgeDistributionLayer = async (features: MandarinTreeAgeDistributionFeatureCollection, visualizationSetting: VisualizationSetting) => {
-    return MandarinTreeAgeDistributionLayer.createLayer(features, visualizationSetting, map.selectedCropGroup, map.selectedCropDetailGroup);
+    return MandarinTreeAgeDistributionLayer.createLayer(features, visualizationSetting, map.mapType, map.selectedCropGroup, map.selectedCropDetailGroup);
   };
 
   useVisualizationLayer({

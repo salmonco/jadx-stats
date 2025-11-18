@@ -1,4 +1,5 @@
 import { BaseFeature, BaseFeatureCollection, BaseVisualizationLayer } from "~/features/visualization/layers/BaseVisualizationLayer";
+import { BackgroundMapType } from "~/maps/constants/backgroundMapType";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 
 interface AgeGroupStats {
@@ -32,10 +33,11 @@ export class MandarinTreeAgeDistributionLayer extends BaseVisualizationLayer<Man
     featureCollection: MandarinTreeAgeDistributionFeatureCollection,
     verboseName: string | null,
     visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
     selectedCropGroup: string,
     selectedCropDetailGroup: string
   ) {
-    super(featureCollection, verboseName, visualizationSetting);
+    super(featureCollection, verboseName, visualizationSetting, mapType);
     this.selectedCropGroup = selectedCropGroup;
     this.selectedCropDetailGroup = selectedCropDetailGroup;
   }
@@ -109,11 +111,19 @@ export class MandarinTreeAgeDistributionLayer extends BaseVisualizationLayer<Man
   public static async createLayer(
     featureCollection: MandarinTreeAgeDistributionFeatureCollection,
     visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
     selectedCropGroup: string,
     selectedCropDetailGroup: string
   ): Promise<MandarinTreeAgeDistributionLayer> {
     try {
-      const layer = new MandarinTreeAgeDistributionLayer(featureCollection, "감귤 수령분포", visualizationSetting, selectedCropGroup, selectedCropDetailGroup);
+      const layer = new MandarinTreeAgeDistributionLayer(
+        featureCollection,
+        "감귤 수령분포",
+        visualizationSetting,
+        mapType,
+        selectedCropGroup,
+        selectedCropDetailGroup
+      );
       return layer;
     } catch (error) {
       throw new Error("Failed to create MandarinTreeAgeDistributionLayer: " + error.message);

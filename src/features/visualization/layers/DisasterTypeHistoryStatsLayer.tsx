@@ -1,4 +1,5 @@
 import { BaseFeature, BaseFeatureCollection, BaseVisualizationLayer } from "~/features/visualization/layers/BaseVisualizationLayer";
+import { BackgroundMapType } from "~/maps/constants/backgroundMapType";
 import { CULTIVATION_TYPE, CultivationType } from "~/maps/constants/disasterTypeHistoryStats";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 
@@ -23,9 +24,10 @@ export class DisasterTypeHistoryStatsLayer extends BaseVisualizationLayer<Disast
     featureCollection: DisasterTypeHistoryStatsFeatureCollection,
     verboseName: string | null,
     visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
     selectedCultivationType: CultivationType
   ) {
-    super(featureCollection, verboseName, visualizationSetting);
+    super(featureCollection, verboseName, visualizationSetting, mapType);
     this.selectedCultivationType = selectedCultivationType;
   }
 
@@ -75,10 +77,11 @@ export class DisasterTypeHistoryStatsLayer extends BaseVisualizationLayer<Disast
   public static async createLayer(
     featureCollection: DisasterTypeHistoryStatsFeatureCollection,
     visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
     selectedCultivationType: CultivationType
   ): Promise<DisasterTypeHistoryStatsLayer> {
     try {
-      const layer = new DisasterTypeHistoryStatsLayer(featureCollection, "농업재해 유형별 과거통계", visualizationSetting, selectedCultivationType);
+      const layer = new DisasterTypeHistoryStatsLayer(featureCollection, "농업재해 유형별 과거통계", visualizationSetting, mapType, selectedCultivationType);
       return layer;
     } catch (error) {
       throw new Error("Failed to create DisasterTypeHistoryStatsLayer: " + error.message);

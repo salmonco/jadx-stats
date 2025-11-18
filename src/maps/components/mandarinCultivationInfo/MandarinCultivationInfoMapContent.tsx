@@ -51,7 +51,7 @@ const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
     : null;
 
   const createCultivationInfoLayer = async (features: MandarinCultivationFeatureCollection, visualizationSetting: VisualizationSetting) => {
-    return MandarinCultivationLayer.createLayer(features, visualizationSetting, map.selectedCropDetailGroup);
+    return MandarinCultivationLayer.createLayer(features, visualizationSetting, map.mapType, map.selectedCropDetailGroup);
   };
 
   useVisualizationLayer({
