@@ -18,7 +18,7 @@ interface ColoredCropFilterProps {
 const ColoredCropFilter: React.FC<ColoredCropFilterProps> = ({ title, options, selectedOptions, onSelectionChange, isMulti = false }) => {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[18px] font-semibold">{title}</p>
+      <p className="text-sm font-bold">{title}</p>
       <Select
         mode={isMulti ? "multiple" : undefined}
         allowClear

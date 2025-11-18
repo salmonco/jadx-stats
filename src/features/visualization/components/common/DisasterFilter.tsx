@@ -26,7 +26,7 @@ const DisasterFilter = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[18px] font-semibold">{title}</p>
+      <p className="text-sm font-bold">{title}</p>
       <Select style={{ width: "100%" }} placeholder="재해 종류를 선택하세요" value={selectedFirst} onChange={onFirstSelect} options={firstLevelOptions} size="large" />
       {hasSecondDepth && (
         <Select

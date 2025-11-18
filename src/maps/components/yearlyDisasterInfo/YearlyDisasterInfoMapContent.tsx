@@ -51,7 +51,7 @@ const YearlyDisasterInfoMapContent = ({ mapId }: Props) => {
     : null;
 
   const createYearlyDisasterInfoLayer = async (features: YearlyDisasterFeatureCollection, visualizationSetting: VisualizationSetting) => {
-    return YearlyDisasterLayer.createLayer(features, visualizationSetting, map.selectedDisasterCategory);
+    return YearlyDisasterLayer.createLayer(features, visualizationSetting, map.mapType, map.selectedDisasterCategory);
   };
 
   useVisualizationLayer({

@@ -79,7 +79,7 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
     : null;
 
   const createDisasterTypeHistoryStatsLayer = async (features: DisasterTypeHistoryStatsFeatureCollection, visualizationSetting: VisualizationSetting) => {
-    return DisasterTypeHistoryStatsLayer.createLayer(features, visualizationSetting, map.selectedCultivationType);
+    return DisasterTypeHistoryStatsLayer.createLayer(features, visualizationSetting, map.mapType, map.selectedCultivationType);
   };
 
   useVisualizationLayer({

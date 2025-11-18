@@ -1,4 +1,5 @@
 import { BaseFeature, BaseFeatureCollection, BaseVisualizationLayer } from "~/features/visualization/layers/BaseVisualizationLayer";
+import { BackgroundMapType } from "~/maps/constants/backgroundMapType";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 
 interface Stats {
@@ -20,9 +21,10 @@ export class YearlyDisasterLayer extends BaseVisualizationLayer<YearlyDisasterPr
     featureCollection: YearlyDisasterFeatureCollection,
     verboseName: string | null,
     visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
     selectedDisasterCategory: string
   ) {
-    super(featureCollection, verboseName, visualizationSetting);
+    super(featureCollection, verboseName, visualizationSetting, mapType);
     this.selectedDisasterCategory = selectedDisasterCategory;
   }
 
@@ -63,10 +65,11 @@ export class YearlyDisasterLayer extends BaseVisualizationLayer<YearlyDisasterPr
   public static async createLayer(
     featureCollection: YearlyDisasterFeatureCollection,
     visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
     selectedDisasterCategory: string
   ): Promise<YearlyDisasterLayer> {
     try {
-      const layer = new YearlyDisasterLayer(featureCollection, "농업재해 연도별 현황", visualizationSetting, selectedDisasterCategory);
+      const layer = new YearlyDisasterLayer(featureCollection, "농업재해 연도별 현황", visualizationSetting, mapType, selectedDisasterCategory);
       return layer;
     } catch (error) {
       throw new Error("Failed to create YearlyDisasterLayer: " + error.message);

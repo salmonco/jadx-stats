@@ -16,7 +16,7 @@ interface Props {
 }
 
 const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, resetVisualizationSetting, setOpacity, opacity, visualType, setVisualType }: Props) => {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(true);
   const [openSubMenu, setOpenSubMenu] = useState<VisualSettingButtonId | null>(null);
   const [isOpacityModalOpen, setIsOpacityModalOpen] = useState(false);
 
@@ -76,7 +76,7 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
         {items.map((item) => (
           <button
             key={item.id}
-            className={`flex h-10 w-10 items-center justify-center rounded-full text-xs text-white shadow-lg transition-transform hover:scale-105 ${
+            className={`flex h-12 w-12 items-center justify-center rounded-full p-1 text-xs text-white shadow-lg transition-transform hover:scale-105 ${
               isSelected(item.id) ? "bg-blue-500" : "bg-gray-400"
             }`}
             onClick={() => handleItemClick(item.id)}
@@ -97,7 +97,7 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
         </button>
 
         {/* 텍스트 */}
-        <span className="mx-4 text-sm font-medium text-white">데이터 시각화</span>
+        <span className="mx-4 font-medium text-white">데이터 시각화</span>
 
         {/* 설정 아이콘 */}
         <button
@@ -115,7 +115,7 @@ const DataVisualizationButton = ({ onMenuClick, setLabelOptions, labelOptions, r
           {Object.entries(VISUAL_SETTING_BUTTONS).map(([label, id]) => (
             <div key={id} className="relative">
               <button
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-700 text-sm text-white shadow-lg transition-transform hover:scale-105"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-700 p-1 text-xs text-white shadow-lg transition-transform hover:scale-105"
                 onClick={() => handleButtonClick(id)}
               >
                 {label}

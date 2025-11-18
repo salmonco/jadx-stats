@@ -1,3 +1,4 @@
+import { BackgroundMapType } from "~/maps/constants/backgroundMapType";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import { BaseFeature, BaseFeatureCollection, BaseVisualizationLayer } from "./BaseVisualizationLayer";
 
@@ -14,6 +15,10 @@ export type AgingStatusFeatureCollection = BaseFeatureCollection<AgingStatusProp
 export type AgingStatusFeature = BaseFeature<AgingStatusProperties>;
 
 export class AgingStatusLayer extends BaseVisualizationLayer<{ stats: Stats }> {
+  constructor(featureCollection: AgingStatusFeatureCollection, verboseName: string | null, visualizationSetting: VisualizationSetting, mapType: BackgroundMapType) {
+    super(featureCollection, verboseName, visualizationSetting, mapType);
+  }
+
   public getValue(feature: AgingStatusFeature): number | null {
     return feature.properties.stats?.avg_age ?? null;
   }
@@ -37,9 +42,13 @@ export class AgingStatusLayer extends BaseVisualizationLayer<{ stats: Stats }> {
     `;
   }
 
-  public static async createLayer(featureCollection: AgingStatusFeatureCollection, visualizationSetting: VisualizationSetting): Promise<AgingStatusLayer> {
+  public static async createLayer(
+    featureCollection: AgingStatusFeatureCollection,
+    visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType
+  ): Promise<AgingStatusLayer> {
     try {
-      const layer = new AgingStatusLayer(featureCollection, "고령화 통계", visualizationSetting);
+      const layer = new AgingStatusLayer(featureCollection, "고령화 통계", visualizationSetting, mapType);
       return layer;
     } catch (error) {
       throw new Error("Failed to create AgingStatusLayer: " + error.message);
