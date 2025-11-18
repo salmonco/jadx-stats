@@ -10,6 +10,7 @@ import { geometryToPoint } from "~/features/visualization/utils/geometryToPoint"
 import { normalizeWeightMinMax } from "~/features/visualization/utils/normalizeWeightMinMax";
 import { toGeoJsonGeometry } from "~/features/visualization/utils/toGeoJsonGeometry";
 import { FeatureCollection } from "~/maps/classes/interfaces"; // Remove Geometry from here
+import { BACKGROUND_MAP_TYPE, BackgroundMapType } from "~/maps/constants/backgroundMapType";
 import { DEFAULT_HEATMAP_BLUR, DEFAULT_HEATMAP_RADIUS, VISUAL_TYPES, VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import BaseLayer from "~/maps/layers/BaseLayer";
 import { getColorGradient } from "~/utils/colorGradient";
@@ -37,6 +38,7 @@ interface BaseInnerLayerProps<T = any> {
   visible: boolean;
   zIndex: number;
   visualizationSetting: VisualizationSetting;
+  mapType: BackgroundMapType;
   createColorScale: (features: BaseFeatureCollection<T>, visualizationSetting: VisualizationSetting) => d3.ScaleSequential<string> | d3.ScaleThreshold<number, string>;
   getAreaFill: (feature: BaseFeature<T>, colorScale: (value: number) => string) => string;
   getLabels: (feature: BaseFeature<T>, labelOptions: any) => string[];
@@ -50,6 +52,7 @@ const BaseInnerLayerComponent = <T,>({
   visible,
   zIndex,
   visualizationSetting,
+  mapType,
   createColorScale,
   getAreaFill,
   getLabels,
@@ -77,8 +80,31 @@ const BaseInnerLayerComponent = <T,>({
 
   const radiusScale = useMemo(() => {
     const values = features.features.map((d) => getValue(d)).filter((v): v is number => v != null && typeof v === "number");
-    const [minValue, maxValue] = values.length > 0 ? (d3.extent(values) as [number, number]) : [0, 1];
-    return d3.scaleLinear().domain([minValue, maxValue]).range([5, 20]);
+    if (values.length === 0) {
+      return () => 10; // 데이터가 없을 경우 기본 크기
+    }
+
+    const [minValue, maxValue] = d3.extent(values) as [number, number];
+    const medianValue = d3.median(values) as number;
+
+    // 모든 값이 동일한 경우 고정 크기 반환
+    if (minValue === medianValue && medianValue === maxValue) {
+      return () => 12;
+    }
+
+    // 도메인에 중복 값이 없도록 처리
+    let domain = [minValue, medianValue, maxValue];
+    let range = [5, 12, 25];
+
+    if (medianValue === minValue) {
+      domain = [minValue, maxValue];
+      range = [5, 25];
+    } else if (medianValue === maxValue) {
+      domain = [minValue, maxValue];
+      range = [5, 25];
+    }
+
+    return d3.scaleLinear().domain(domain).range(range);
   }, [features, getValue]);
 
   useEffect(() => {
@@ -122,7 +148,7 @@ const BaseInnerLayerComponent = <T,>({
         .join("circle")
         .attr("cx", (d: BaseFeature<T>) => path.centroid(toGeoJsonGeometry(d.geometry))[0])
         .attr("cy", (d: BaseFeature<T>) => path.centroid(toGeoJsonGeometry(d.geometry))[1])
-        .attr("r", 5) // Fixed radius for dots
+        .attr("r", 8) // Fixed radius for dots
         .attr("fill", (d: BaseFeature<T>) => getAreaFill(d, colorScale))
         .attr("fill-opacity", visualizationSetting.opacity)
         .attr("stroke", "white")
@@ -175,6 +201,14 @@ const BaseInnerLayerComponent = <T,>({
     // 레이블 표시
     const { labelOptions } = visualizationSetting;
     if (labelOptions.isShowValue || labelOptions.isShowRegion) {
+      const labelColor =
+        (visualizationSetting.visualType === VISUAL_TYPES.점 ||
+          visualizationSetting.visualType === VISUAL_TYPES.버블 ||
+          visualizationSetting.visualType === VISUAL_TYPES.히트) &&
+        (mapType === BACKGROUND_MAP_TYPE.일반 || mapType === BACKGROUND_MAP_TYPE.백지도)
+          ? "black"
+          : "white";
+
       svg.selectAll("text").remove();
 
       features.features.forEach((d: BaseFeature<T>) => {
@@ -188,7 +222,7 @@ const BaseInnerLayerComponent = <T,>({
             .attr("y", centroid[1])
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "middle")
-            .attr("fill", "white")
+            .attr("fill", labelColor)
             .attr("font-weight", "bold")
             .attr("font-size", "14px")
             .style("pointer-events", "none");
@@ -205,7 +239,7 @@ const BaseInnerLayerComponent = <T,>({
     } else {
       svg.selectAll("text").remove();
     }
-  }, [features, frameState, visible, zIndex, visualizationSetting, path, colorScale, createColorScale, getAreaFill, getLabels, getTooltipContent, getValue]);
+  }, [features, frameState, visible, zIndex, visualizationSetting, path, colorScale, createColorScale, getAreaFill, getLabels, getTooltipContent, getValue, mapType]);
 
   if (!frameState || !visible || !features?.features?.length) {
     return null;
@@ -230,6 +264,7 @@ export class BaseInnerLayer<T = any> extends VectorLayer<Feature<Geometry>> {
   container: HTMLElement;
   root: Root;
   visualizationSetting: VisualizationSetting;
+  mapType: BackgroundMapType;
   createColorScale: (features: BaseFeatureCollection<T>, visualizationSetting: VisualizationSetting) => d3.ScaleSequential<string> | d3.ScaleThreshold<number, string>;
   getAreaFill: (feature: BaseFeature<T>, colorScale: (value: number) => string) => string;
   getLabels: (feature: BaseFeature<T>, labelOptions: any) => string[];
@@ -240,6 +275,7 @@ export class BaseInnerLayer<T = any> extends VectorLayer<Feature<Geometry>> {
     features: BaseFeatureCollection<T>,
     zIndex: number,
     visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
     createColorScale: (features: BaseFeatureCollection<T>, visualizationSetting: VisualizationSetting) => d3.ScaleSequential<string> | d3.ScaleThreshold<number, string>,
     getAreaFill: (feature: BaseFeature<T>, colorScale: (value: number) => string) => string,
     getLabels: (feature: BaseFeature<T>, labelOptions: any) => string[],
@@ -253,6 +289,7 @@ export class BaseInnerLayer<T = any> extends VectorLayer<Feature<Geometry>> {
     this.visible = true;
     this.zIndex = zIndex;
     this.visualizationSetting = visualizationSetting;
+    this.mapType = mapType;
     this.createColorScale = createColorScale;
     this.getAreaFill = getAreaFill;
     this.getLabels = getLabels;
@@ -289,6 +326,7 @@ export class BaseInnerLayer<T = any> extends VectorLayer<Feature<Geometry>> {
         visible={this.visible}
         zIndex={this.zIndex}
         visualizationSetting={this.visualizationSetting}
+        mapType={this.mapType}
         createColorScale={this.createColorScale}
         getAreaFill={this.getAreaFill}
         getLabels={this.getLabels}
@@ -311,8 +349,9 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
   private currentLayer: BaseInnerLayer<T> | OLHeatmapLayer<Feature<Geometry>> | null = null;
   private featureCollection: BaseFeatureCollection<T>;
   private visualizationSetting: VisualizationSetting;
+  private mapType: BackgroundMapType;
 
-  constructor(featureCollection: BaseFeatureCollection<T>, verboseName: string | null, visualizationSetting: VisualizationSetting) {
+  constructor(featureCollection: BaseFeatureCollection<T>, verboseName: string | null, visualizationSetting: VisualizationSetting, mapType: BackgroundMapType) {
     const layerType = "custom";
     const initialLayer = new VectorLayer<Feature<Geometry>>({
       source: new SourceVector<Feature<Geometry>>({ features: [] }),
@@ -321,6 +360,7 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
 
     this.featureCollection = featureCollection;
     this.visualizationSetting = visualizationSetting;
+    this.mapType = mapType;
 
     this.createAndSetLayer();
   }
@@ -375,6 +415,7 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
         this.featureCollection,
         50, // zIndex
         this.visualizationSetting,
+        this.mapType,
         this.createColorScale.bind(this),
         this.getAreaFill.bind(this),
         this.getLabels.bind(this),
@@ -446,13 +487,16 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
 
       return d3.scaleThreshold<number, string>().domain(pivotPoints).range(colors);
     } else {
-      return d3.scaleSequential(colorGradient).domain([minValue, maxValue]);
+      return d3.scaleSequential(colorGradient).domain([maxValue, minValue]);
     }
   }
 
   public getAreaFill(feature: BaseFeature<T>, colorScale: (value: number) => string): string {
     const value = this.getValue(feature);
-    return value !== null ? colorScale(value) : "#ccc";
+    if (!value || value === 0) {
+      return "#ccc";
+    }
+    return colorScale(value);
   }
 
   public getLabels(feature: BaseFeature<T>, labelOptions: any): string[] {
@@ -464,7 +508,7 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
 
     if (labelOptions.isShowValue) {
       const value = this.getValue(feature);
-      if (value != null) {
+      if (value) {
         labels.push(value.toFixed(1));
       }
     }

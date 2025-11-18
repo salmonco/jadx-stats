@@ -49,7 +49,7 @@ const LayerHeader = <M extends CommonBackgroundMap>({ map, olMap, onClickFullScr
           <button onClick={onClickShare} className="text-white" aria-label="공유" title="공유">
             <Share2 />
           </button>
-          <button onClick={() => mapList.addMap()} className="text-white" aria-label="지도 추가" title="지도 추가">
+          <button onClick={() => mapList.addMap()} className="text-white" aria-label="지도 추가" title="다중뷰">
             <PlusIcon />
           </button>
         </div>

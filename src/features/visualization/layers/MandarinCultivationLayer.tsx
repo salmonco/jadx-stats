@@ -1,6 +1,7 @@
 import { isArray } from "lodash";
 import { BaseFeature, BaseFeatureCollection, BaseVisualizationLayer } from "~/features/visualization/layers/BaseVisualizationLayer";
 import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
+import { BackgroundMapType } from "~/maps/constants/backgroundMapType";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 
 interface Stats {
@@ -25,9 +26,10 @@ export class MandarinCultivationLayer extends BaseVisualizationLayer<MandarinCul
     featureCollection: MandarinCultivationFeatureCollection,
     verboseName: string | null,
     visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
     selectedCropDetailGroup: string
   ) {
-    super(featureCollection, verboseName, visualizationSetting);
+    super(featureCollection, verboseName, visualizationSetting, mapType);
     this.selectedCropDetailGroup = selectedCropDetailGroup;
   }
 
@@ -129,10 +131,11 @@ export class MandarinCultivationLayer extends BaseVisualizationLayer<MandarinCul
   public static async createLayer(
     featureCollection: MandarinCultivationFeatureCollection,
     visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
     selectedCropDetailGroup: string
   ): Promise<MandarinCultivationLayer> {
     try {
-      const layer = new MandarinCultivationLayer(featureCollection, "지역별 감귤 재배정보", visualizationSetting, selectedCropDetailGroup);
+      const layer = new MandarinCultivationLayer(featureCollection, "지역별 감귤 재배정보", visualizationSetting, mapType, selectedCropDetailGroup);
       return layer;
     } catch (error) {
       throw new Error("Failed to create MandarinCultivationLayer: " + error.message);

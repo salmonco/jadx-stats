@@ -38,7 +38,7 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
     : null;
 
   const createAgingStatusLayer = async (features: any, visualizationSetting: any) => {
-    return AgingStatusLayer.createLayer(features, visualizationSetting);
+    return AgingStatusLayer.createLayer(features, visualizationSetting, map.mapType);
   };
 
   useVisualizationLayer({

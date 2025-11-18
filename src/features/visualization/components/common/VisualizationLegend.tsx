@@ -45,7 +45,7 @@ const VisualizationLegend = ({ minValue, maxValue, legendOptions, onLevelChange,
 
         return {
           value: rangeText,
-          color: colorGradient(1 - i / (actualLevel - 1)),
+          color: colorGradient(i / (actualLevel - 1)),
           step: actualLevel - i,
         };
       });
@@ -67,7 +67,7 @@ const VisualizationLegend = ({ minValue, maxValue, legendOptions, onLevelChange,
 
         return {
           value: rangeText,
-          color: colorGradient(1 - i / (level - 1)),
+          color: colorGradient(i / (level - 1)),
           step: level - i,
         };
       });

@@ -1,3 +1,5 @@
+import { Coordinate } from "ol/coordinate";
+import OLMap from "ol/Map";
 import { v4 as uuidv4 } from "uuid";
 import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
 import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
@@ -11,6 +13,7 @@ class CommonBackgroundMap {
   #excludeDong = true;
   #title: string;
   #tooltip: React.ReactNode | null;
+  #olMap: OLMap | null = null;
 
   /**
    * 지역 필터 설정
@@ -61,6 +64,7 @@ class CommonBackgroundMap {
     this.setLegendColor = this.setLegendColor.bind(this);
     this.setLegendPivotPoints = this.setLegendPivotPoints.bind(this);
     this.setVisualType = this.setVisualType.bind(this);
+    this.setOlMap = this.setOlMap.bind(this);
   }
 
   destroy() {
@@ -87,6 +91,13 @@ class CommonBackgroundMap {
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
   renderChart() {
     return <></>;
+  }
+
+  setMapView(center: Coordinate, zoom: number) {
+    if (this.#olMap) {
+      this.#olMap.getView().setCenter(center);
+      this.#olMap.getView().setZoom(zoom);
+    }
   }
 
   /**
@@ -240,6 +251,10 @@ class CommonBackgroundMap {
 
   get tooltip() {
     return this.#tooltip;
+  }
+
+  setOlMap(olMap: OLMap) {
+    this.#olMap = olMap;
   }
 }
 

@@ -40,7 +40,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
     : null;
 
   const createHibernationLayer = async (features: any, visualizationSetting: any) => {
-    return HibernationVegetableCultivationLayer.createLayer(features, visualizationSetting, map.selectedCrop);
+    return HibernationVegetableCultivationLayer.createLayer(features, visualizationSetting, map.mapType, map.selectedCrop);
   };
 
   useVisualizationLayer({
