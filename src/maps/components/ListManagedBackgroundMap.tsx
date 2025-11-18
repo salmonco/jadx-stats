@@ -80,6 +80,12 @@ const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMa
     };
   }, [ready, map?.mapType, layerManager]);
 
+  useEffect(() => {
+    if (olMap) {
+      map.setOlMap(olMap);
+    }
+  }, [olMap, map]);
+
   if (!map) {
     return null;
   }

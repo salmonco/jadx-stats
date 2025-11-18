@@ -1,6 +1,6 @@
-import { fromLonLat } from "ol/proj";
 import { boundingExtent } from "ol/extent";
-import { Style, Fill, Stroke } from "ol/style";
+import { fromLonLat } from "ol/proj";
+import { Fill, Stroke, Style } from "ol/style";
 
 export const defaultMaxZoom = 14;
 
@@ -124,3 +124,9 @@ export type EmdKor = keyof typeof EMD_KOR;
 export type EmdEng = (typeof EMD_KOR)[EmdKor];
 
 export const EMD_ENG: Record<EmdEng, EmdKor> = Object.fromEntries(Object.entries(EMD_KOR).map(([k, v]) => [v, k])) as Record<EmdEng, EmdKor>;
+
+/** 애월 지역 좌표 */
+const AEWOL_CENTER = [126.38876, 33.43198];
+export const AEWOL_CENTER_COORD = fromLonLat(AEWOL_CENTER);
+export const DEFAULT_ZOOM_LEVEL_FOR_AEWOL = 12;
+export const DEFAULT_ZOOM_LEVEL = 10;
