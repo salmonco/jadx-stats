@@ -8,7 +8,7 @@ const ListManagedVisualizationContainer = () => {
       {/* 지도 */}
       {mapList.renderMaps()}
       {/* 차트 */}
-      {mapList.renderFirstChart()}
+      <div id="main-chart-container">{mapList.renderFirstChart()}</div>
     </div>
   );
 };
