@@ -1,5 +1,5 @@
-import { Table } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { Button, Table } from "antd";
+import type { ColumnType, ColumnsType } from "antd/es/table";
 import { AgingChartData } from "~/maps/components/agingStatus/AgingStatusChart";
 
 interface TransposedRow {
@@ -50,8 +50,43 @@ const AgingStatusTransposedTable = ({ chartData }: Props) => {
     countRow[d.label] = d.count?.toLocaleString() ?? "-";
   }
 
+  const handleDownloadCsv = () => {
+    const header = columns.map((col) => col.title).join(",");
+    const dataRows = [avgAgeRow, countRow];
+
+    const csvContent =
+      header +
+      "\n" +
+      dataRows
+        .map((row) =>
+          columns
+            .map((col) => {
+              const column = col as ColumnType<TransposedRow>;
+              const value = row[column.dataIndex as string];
+              return typeof value === "string" ? `"${value.replace(/"/g, '""')}"` : value;
+            })
+            .join(",")
+        )
+        .join("\n");
+
+    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "경영체_연령_분포_현황.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="rounded-lg bg-[#43516D] p-5 pt-2">
+      <div className="mb-2 flex justify-end">
+        <Button type="primary" onClick={handleDownloadCsv}>
+          CSV 다운로드
+        </Button>
+      </div>
       <Table columns={columns} dataSource={[avgAgeRow, countRow]} size="middle" pagination={false} bordered={false} scroll={{ x: true }} className="custom-dark-table" />
     </div>
   );
