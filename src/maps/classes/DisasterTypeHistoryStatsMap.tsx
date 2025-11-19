@@ -43,6 +43,49 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
     this.setSelectedCultivationType = this.setSelectedCultivationType.bind(this);
   }
 
+  getShareableState() {
+    const state = super.getShareableState();
+    return {
+      ...state,
+      selectedTargetYear: this.selectedTargetYear,
+      selectedStartDate: this.selectedStartDate,
+      selectedEndDate: this.selectedEndDate,
+      selectedDisaster: this.selectedDisaster,
+      selectedCropPummok: this.selectedCropPummok,
+      selectedCropGroup: this.selectedCropGroup,
+      selectedCropDetailGroup: this.selectedCropDetailGroup,
+      selectedCultivationType: this.selectedCultivationType,
+    };
+  }
+
+  applySharedState(state: Record<string, any>) {
+    super.applySharedState(state);
+    if (state.selectedTargetYear) {
+      this.setSelectedTargetYear(state.selectedTargetYear);
+    }
+    if (state.selectedStartDate) {
+      this.setSelectedStartDate(dayjs(state.selectedStartDate));
+    }
+    if (state.selectedEndDate) {
+      this.setSelectedEndDate(dayjs(state.selectedEndDate));
+    }
+    if (state.selectedDisaster) {
+      this.setSelectedDisaster(state.selectedDisaster);
+    }
+    if (state.selectedCropPummok) {
+      this.setSelectedCropPummok(state.selectedCropPummok);
+    }
+    if (state.selectedCropGroup) {
+      this.setSelectedCropGroup(state.selectedCropGroup);
+    }
+    if (state.selectedCropDetailGroup) {
+      this.setSelectedCropDetailGroup(state.selectedCropDetailGroup);
+    }
+    if (state.selectedCultivationType) {
+      this.setSelectedCultivationType(state.selectedCultivationType);
+    }
+  }
+
   getFilterText() {
     const filterParts = super.getFilterText();
 

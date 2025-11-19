@@ -66,6 +66,9 @@ class CommonBackgroundMap {
     this.setLegendPivotPoints = this.setLegendPivotPoints.bind(this);
     this.setVisualType = this.setVisualType.bind(this);
     this.setOlMap = this.setOlMap.bind(this);
+    this.getShareableState = this.getShareableState.bind(this);
+    this.applySharedState = this.applySharedState.bind(this);
+    this.getFilterText = this.getFilterText.bind(this);
   }
 
   destroy() {
@@ -195,7 +198,7 @@ class CommonBackgroundMap {
    */
   getShareableState(): Record<string, any> {
     return {
-      mapType: this.mapType,
+      mapType: this.#mapType,
       regionFilterSetting: this.#regionFilterSetting,
       visualizationSetting: this.#visualizationSetting,
     };

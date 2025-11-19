@@ -18,6 +18,25 @@ class CropDistributionMap extends CommonBackgroundMap {
     this.setSelectedCrops = this.setSelectedCrops.bind(this);
   }
 
+  getShareableState() {
+    const state = super.getShareableState();
+    return {
+      ...state,
+      selectedCropLevel: this.selectedCropLevel,
+      selectedCrops: this.selectedCrops,
+    };
+  }
+
+  applySharedState(state: Record<string, any>) {
+    super.applySharedState(state);
+    if (state.selectedCropLevel) {
+      this.setSelectedCropLevel(state.selectedCropLevel);
+    }
+    if (state.selectedCrops) {
+      this.setSelectedCrops(state.selectedCrops);
+    }
+  }
+
   getFilterText() {
     const filterParts = super.getFilterText();
 
