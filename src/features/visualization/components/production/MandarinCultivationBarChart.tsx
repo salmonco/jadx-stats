@@ -1,5 +1,6 @@
 import * as Plot from "@observablehq/plot";
-import { useEffect, useRef, useState } from "react";
+import { Button } from "antd"; // Import Button
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getColor } from "~/maps/constants/mandarinCultivationInfo";
 
 interface Props {
@@ -57,18 +58,37 @@ const MandarinCultivationBarChart = ({ chartData, selectedVariety }: Props) => {
     setSize((prev) => ({ ...prev, height: 420 * multiplier }));
   }, [windowWidth]);
 
-  useEffect(() => {
-    if (!chartData) return;
+  const regionTotals = useMemo(() => {
+    if (!chartData) return [];
 
-    const regionTotals = Object.entries(chartData)
+    return Object.entries(chartData)
       .map(([region, products]) => {
         const match = (products as any[]).find((p) => p.prdct_nm === selectedVariety);
         return match ? { region: region, total_area: match.total_area } : null;
       })
       .filter((d) => d !== null)
       .sort((a, b) => b.total_area - a.total_area);
+  }, [chartData, selectedVariety]);
 
-    if (regionTotals.length === 0) return;
+  const handleDownloadCsv = () => {
+    if (!regionTotals.length) return;
+
+    const headers = ["지역", "총 재배 면적(ha)"];
+    const csvContent = headers.join(",") + "\n" + regionTotals.map((d) => `${d.region},${(d.total_area / 10000).toFixed(2)}`).join("\n");
+
+    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `지역별_재배면적.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  useEffect(() => {
+    if (!regionTotals.length) return;
 
     const margin = { top: 10, right: 100, bottom: 0, left: 70 };
     const barHeight = regionTotals.length > 12 ? 32 : 48;
@@ -135,22 +155,27 @@ const MandarinCultivationBarChart = ({ chartData, selectedVariety }: Props) => {
         containerRef.current.innerHTML = "";
       }
     };
-  }, [chartData, selectedVariety, size]);
+  }, [regionTotals, size]);
 
   return (
     <div className="h-full w-full">
-      <p className="mb-2 text-xl font-semibold">
-        {selectedVariety === "YN-26"
-          ? "유사실생"
-          : selectedVariety === "감평"
-            ? "레드향"
-            : selectedVariety === "세토카"
-              ? "천혜향"
-              : selectedVariety === "부지화"
-                ? "한라봉"
-                : (selectedVariety ?? "")}{" "}
-        지역별 재배면적 (막대 그래프)
-      </p>
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-xl font-semibold">
+          {selectedVariety === "YN-26"
+            ? "유사실생"
+            : selectedVariety === "감평"
+              ? "레드향"
+              : selectedVariety === "세토카"
+                ? "천혜향"
+                : selectedVariety === "부지화"
+                  ? "한라봉"
+                  : (selectedVariety ?? "")}{" "}
+          지역별 재배면적 (막대 그래프)
+        </p>
+        <Button type="primary" onClick={handleDownloadCsv}>
+          CSV 다운로드
+        </Button>
+      </div>
       <div ref={containerRef} style={{ height: `${size.height}px` }} className="custom-dark-scroll min-w-full overflow-y-auto" />
     </div>
   );

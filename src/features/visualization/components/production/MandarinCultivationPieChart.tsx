@@ -1,5 +1,6 @@
+import { Button } from "antd";
 import * as d3 from "d3";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getColor } from "~/maps/constants/mandarinCultivationInfo";
 
 interface Props {
@@ -29,8 +30,38 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety }: Props) => {
     return () => observer.disconnect();
   }, []);
 
+  const pieData = useMemo(() => {
+    if (!chartData) return [];
+
+    return Object.entries(chartData)
+      .map(([region, products]) => {
+        const match = (products as any[]).find((p) => p.prdct_nm === selectedVariety);
+        return match ? { region, total_area: match.total_area } : null;
+      })
+      .filter((d) => d !== null) as { region: string; total_area: number }[];
+  }, [chartData, selectedVariety]);
+
+  const handleDownloadCsv = () => {
+    if (!pieData.length) return;
+
+    const sortedData = [...pieData].sort((a, b) => b.total_area - a.total_area);
+
+    const headers = ["지역", "총 재배 면적(ha)"];
+    const csvContent = headers.join(",") + "\n" + sortedData.map((d) => `${d.region},${(d.total_area / 10000).toFixed(2)}`).join("\n");
+
+    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `지역별_재배면적_원형.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
-    if (!chartData) return;
+    if (!pieData.length) return;
 
     const { width, height } = size;
     const radius = Math.min(width, height) / 2 - 40;
@@ -40,15 +71,6 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety }: Props) => {
     svg.attr("width", width).attr("height", height);
 
     const group = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
-
-    const pieData = Object.entries(chartData)
-      .map(([region, products]) => {
-        const match = (products as any[]).find((p) => p.prdct_nm === selectedVariety);
-        return match ? { region, total_area: match.total_area } : null;
-      })
-      .filter((d) => d !== null) as { region: string; total_area: number }[];
-
-    if (pieData.length === 0) return;
 
     const pieDataSorted = [...pieData].sort((a, b) => b.total_area - a.total_area);
 
@@ -117,22 +139,27 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety }: Props) => {
       .style("font-weight", "600")
       .style("fill", "#ffffff")
       .text(`총 재배 면적 : ${(totalValue / 10000).toFixed(1).toLocaleString()}ha`);
-  }, [chartData, selectedVariety, size]);
+  }, [pieData, size]);
 
   return (
     <div className="flex h-full w-full flex-col text-white">
-      <p className="text-xl font-semibold">
-        {selectedVariety === "YN-26"
-          ? "유사실생"
-          : selectedVariety === "감평"
-            ? "레드향"
-            : selectedVariety === "세토카"
-              ? "천혜향"
-              : selectedVariety === "부지화"
-                ? "한라봉"
-                : (selectedVariety ?? "")}{" "}
-        지역별 재배면적 (원 그래프)
-      </p>
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-xl font-semibold">
+          {selectedVariety === "YN-26"
+            ? "유사실생"
+            : selectedVariety === "감평"
+              ? "레드향"
+              : selectedVariety === "세토카"
+                ? "천혜향"
+                : selectedVariety === "부지화"
+                  ? "한라봉"
+                  : (selectedVariety ?? "")}{" "}
+          지역별 재배면적 (원 그래프)
+        </p>
+        <Button type="primary" onClick={handleDownloadCsv}>
+          CSV 다운로드
+        </Button>
+      </div>
       <div className="relative h-full w-full" ref={containerRef}>
         <svg ref={svgRef} />
         <div
