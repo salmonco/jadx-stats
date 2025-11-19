@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DEFAULT_ALL_OPTION, DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
 import { REGION_LEVEL_OPTIONS } from "~/features/visualization/utils/regionLevelOptions";
 
 const useRegionFilter = (regionFilterSetting: RegionFilterOptions) => {
   const [selectedRegion, setSelectedRegion] = useState<RegionFilterOptions>(regionFilterSetting || DEFAULT_REGION_SETTING);
+
+  useEffect(() => {
+    setSelectedRegion(regionFilterSetting || DEFAULT_REGION_SETTING);
+  }, [regionFilterSetting]);
 
   const filterFeatures = (feature: any) => {
     const props = feature.properties;
