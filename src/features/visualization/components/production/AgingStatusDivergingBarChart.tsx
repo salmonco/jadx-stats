@@ -66,89 +66,150 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
   }, [windowWidth]);
 
   useEffect(() => {
-    if (!chartData?.length) return;
-
-    const regionTotals = chartData
-      .map((d) => ({
-        region: d.region,
-        label: d.label,
-        value: d[category],
-      }))
-      .filter((d) => typeof d.value === "number" && !isNaN(d.value))
-      .sort((a, b) => (category === "count" ? b.value - a.value : 0));
-
-    const margin = {
-      top: 0,
-      right: firstMap.getSelectedRegionLevel() === "ri" ? 30 : 40,
-      bottom: 30,
-      left: firstMap.getSelectedRegionLevel() === "ri" ? 80 : 55,
-    };
-    const barHeight = regionTotals.length > 12 ? 32 : 48;
-    const height = regionTotals.length > 11 ? regionTotals.length * barHeight + margin.top + margin.bottom : size.height;
-    const barInset = regionTotals.length === 1 ? 110 : regionTotals.length === 2 ? 40 : regionTotals.length === 4 ? 15 : 7;
-
-    const maxAbs = d3.max(regionTotals, (d) => Math.abs(d.value)) || 1;
-    const xMin = category === "avg_age" ? 50 : 0;
-    const xDomain = category === "avg_age" ? [xMin, maxAbs * 1.035] : [xMin, maxAbs * 1.08];
-
-    const barColor = category === "avg_age" ? "#F59E0B" : "#EA580C";
-
-    const chart = Plot.plot({
-      width: size.width,
-      height,
-      marginTop: margin.top,
-      marginRight: margin.right,
-      marginBottom: margin.bottom,
-      marginLeft: regionTotals.length > 12 ? margin.left : 55,
-      x: {
-        grid: true,
-        label: "",
-        domain: xDomain,
-        labelArrow: false,
-        tickFormat: (d) => (category === "avg_age" ? `${d.toFixed(0)}` : `${d.toLocaleString()}`),
-      },
-      y: {
-        label: null,
-        domain: regionTotals.map((d) => d.region),
-      },
-      marks: [
-        Plot.axisY({
-          tickSize: 0,
-          tickPadding: 20,
-          tickFormat: (region) => {
-            const found = regionTotals.find((d) => d.region === region);
-            return found?.label ?? region;
-          },
-        }),
-        Plot.barX(regionTotals, {
-          x: "value",
-          x1: xMin,
-          y: "region",
-          fill: barColor,
-          insetTop: barInset,
-          insetBottom: barInset,
-        }),
-        Plot.text(regionTotals, {
-          x: "value",
-          y: "region",
-          text: (d) => (category === "avg_age" ? `${d.value.toFixed(2)}세` : `${d.value.toLocaleString()}명`),
-          dx: 5,
-          dy: 1,
-          textAnchor: "start",
-          fill: "#e9e9e9",
-          fontSize: "14px",
-        }),
-        Plot.ruleX([xMin], { stroke: "#e9e9e9", opacity: 0.5 }),
-      ],
-      style: {
-        fontSize: "15px",
-        color: "#e9e9e9",
-      },
-    });
-
-    if (containerRef.current) {
+    if (!chartData?.length || !containerRef.current) {
       containerRef.current.innerHTML = "";
-      containerRef.current.appendChild(chart);
+      return;
+    }
+
+    if (category === "count") {
+      // 트리맵 차트
+      const root = d3.hierarchy({ children: chartData }).sum((d: any) => d.count);
+
+      const treemapLayout = d3.treemap().size([size.width, size.height]).padding(1);
+
+      treemapLayout(root);
+
+      const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+      const svg = d3
+        .create("svg")
+        .attr("width", size.width)
+        .attr("height", size.height)
+        .attr("viewBox", `0 0 ${size.width} ${size.height}`)
+        .style("font", "10px sans-serif")
+        .style("overflow", "visible");
+
+      const leaf = svg
+        .selectAll("g")
+        .data(root.leaves())
+        .join("g")
+        .attr("transform", (d: d3.HierarchyRectangularNode<any>) => `translate(${d.x0},${d.y0})`);
+
+      leaf
+        .append("rect")
+        .attr("fill", (d: d3.HierarchyRectangularNode<any>) => colorScale(d.data.label))
+        .attr("width", (d: d3.HierarchyRectangularNode<any>) => d.x1 - d.x0)
+        .attr("height", (d: d3.HierarchyRectangularNode<any>) => d.y1 - d.y0);
+
+      svg
+        .selectAll(".treemap-label-region")
+        .data(root.leaves())
+        .join("text")
+        .attr("class", "treemap-label-region")
+        .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
+        .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 - 5)
+        .attr("text-anchor", "middle")
+        .text((d: any) => d.data.label)
+        .attr("fill", "white")
+        .style("font-size", "12px");
+
+      svg
+        .selectAll(".treemap-label-count")
+        .data(root.leaves())
+        .join("text")
+        .attr("class", "treemap-label-count")
+        .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
+        .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 + 10)
+        .attr("text-anchor", "middle")
+        .text((d: any) => `${d.data.count.toLocaleString()}개`)
+        .attr("fill", "white")
+        .style("font-size", "12px");
+
+      containerRef.current.innerHTML = "";
+      containerRef.current.appendChild(svg.node()!);
+    } else {
+      const regionTotals = chartData
+        .map((d) => ({
+          region: d.region,
+          label: d.label,
+          value: d[category],
+        }))
+        .filter((d) => typeof d.value === "number" && !isNaN(d.value))
+        .sort((a, b) => b.value - a.value);
+
+      const margin = {
+        top: 0,
+        right: firstMap.getSelectedRegionLevel() === "ri" ? 30 : 40,
+        bottom: 30,
+        left: firstMap.getSelectedRegionLevel() === "ri" ? 80 : 55,
+      };
+      const barHeight = regionTotals.length > 12 ? 32 : 48;
+      const height = regionTotals.length > 11 ? regionTotals.length * barHeight + margin.top + margin.bottom : size.height;
+      const barInset = regionTotals.length === 1 ? 110 : regionTotals.length === 2 ? 40 : regionTotals.length === 4 ? 15 : 7;
+
+      const maxAbs = d3.max(regionTotals, (d) => Math.abs(d.value)) || 1;
+      const xMin = category === "avg_age" ? 50 : 0;
+      const xDomain = category === "avg_age" ? [xMin, maxAbs * 1.035] : [xMin, maxAbs * 1.08];
+
+      const barColor = category === "avg_age" ? "#F59E0B" : "#EA580C";
+
+      const chart = Plot.plot({
+        width: size.width,
+        height,
+        marginTop: margin.top,
+        marginRight: margin.right,
+        marginBottom: margin.bottom,
+        marginLeft: regionTotals.length > 12 ? margin.left : 55,
+        x: {
+          grid: true,
+          label: "",
+          domain: xDomain,
+          labelArrow: false,
+          tickFormat: (d) => (category === "avg_age" ? `${d.toFixed(0)}` : `${d.toLocaleString()}`),
+        },
+        y: {
+          label: null,
+          domain: regionTotals.map((d) => d.region),
+        },
+        marks: [
+          Plot.axisY({
+            tickSize: 0,
+            tickPadding: 20,
+            tickFormat: (region) => {
+              const found = regionTotals.find((d) => d.region === region);
+              return found?.label ?? region;
+            },
+          }),
+          Plot.barX(regionTotals, {
+            x: "value",
+            x1: xMin,
+            y: "region",
+            fill: barColor,
+            insetTop: barInset,
+            insetBottom: barInset,
+          }),
+          Plot.text(regionTotals, {
+            x: "value",
+            y: "region",
+            text: (d) => (category === "avg_age" ? `${d.value.toFixed(2)}세` : `${d.value.toLocaleString()}명`),
+            dx: 5,
+            dy: 1,
+            textAnchor: "start",
+            fill: "#e9e9e9",
+            fontSize: "14px",
+          }),
+          Plot.ruleX([xMin], { stroke: "#e9e9e9", opacity: 0.5 }),
+        ],
+        style: {
+          fontSize: "15px",
+          color: "#e9e9e9",
+        },
+      });
+
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+        containerRef.current.appendChild(chart);
+      }
     }
 
     return () => {
