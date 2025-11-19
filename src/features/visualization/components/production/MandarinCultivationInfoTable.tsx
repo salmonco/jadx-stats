@@ -20,9 +20,9 @@ interface Props {
 }
 
 const MandarinCultivationInfoTable = ({ chartData }: Props) => {
-  const processedData = useMemo(() => {
+  const { flattenedData, uniqueCropGroups, uniqueRegions } = useMemo(() => {
     if (!chartData || Object.keys(chartData).length === 0) {
-      return { columns: [], dataSource: [] };
+      return { flattenedData: [], uniqueCropGroups: [], uniqueRegions: [] };
     }
 
     const flattenedData: { region: string; prdct_nm: string; total_area: number }[] = [];
@@ -42,6 +42,13 @@ const MandarinCultivationInfoTable = ({ chartData }: Props) => {
     uniqueCropGroups.sort();
     uniqueRegions.sort();
 
+    return { flattenedData, uniqueCropGroups, uniqueRegions };
+  }, [chartData]);
+
+  const processedData = useMemo(() => {
+    const maxRegions = 14;
+    const limitedUniqueRegions = uniqueRegions.slice(0, maxRegions);
+
     const columns: ColumnsType<TransposedRow> = [
       {
         title: "품목 / 지역",
@@ -58,7 +65,7 @@ const MandarinCultivationInfoTable = ({ chartData }: Props) => {
         width: "15%",
         render: (value: number) => value.toFixed(2),
       },
-      ...uniqueRegions.map((region) => ({
+      ...limitedUniqueRegions.map((region) => ({
         title: region,
         dataIndex: region,
         key: region,
@@ -72,31 +79,70 @@ const MandarinCultivationInfoTable = ({ chartData }: Props) => {
         key: cropGroup,
         totalArea: 0,
       };
-      let cropGroupTotalArea = 0;
+      let cropGroupTotalAreaInHa = 0;
 
-      for (const region of uniqueRegions) {
+      for (const region of limitedUniqueRegions) {
         const dataPoint = flattenedData.find((d) => d.prdct_nm === cropGroup && d.region === region);
-        const area = dataPoint?.total_area ?? 0;
-        row[region] = area;
-        cropGroupTotalArea += area;
+        const areaInHa = (dataPoint?.total_area ?? 0) / 10000;
+        row[region] = areaInHa;
+        cropGroupTotalAreaInHa += areaInHa;
       }
-      row.totalArea = cropGroupTotalArea;
+      row.totalArea = cropGroupTotalAreaInHa;
       return row;
     });
 
     return { columns, dataSource };
-  }, [chartData]);
+  }, [flattenedData, uniqueCropGroups, uniqueRegions]);
+
+  const csvData = useMemo(() => {
+    const columns: ColumnsType<TransposedRow> = [
+      {
+        title: "품목 / 지역",
+        dataIndex: "key",
+        key: "key",
+      },
+      {
+        title: "총 면적(ha)",
+        dataIndex: "totalArea",
+        key: "totalArea",
+      },
+      ...uniqueRegions.map((region) => ({
+        title: region,
+        dataIndex: region,
+        key: region,
+      })),
+    ];
+
+    const dataSource: TransposedRow[] = uniqueCropGroups.map((cropGroup) => {
+      const row: TransposedRow = {
+        key: cropGroup,
+        totalArea: 0,
+      };
+      let cropGroupTotalAreaInHa = 0;
+
+      for (const region of uniqueRegions) {
+        const dataPoint = flattenedData.find((d) => d.prdct_nm === cropGroup && d.region === region);
+        const areaInHa = (dataPoint?.total_area ?? 0) / 10000;
+        row[region] = areaInHa;
+        cropGroupTotalAreaInHa += areaInHa;
+      }
+      row.totalArea = cropGroupTotalAreaInHa;
+      return row;
+    });
+
+    return { columns, dataSource };
+  }, [flattenedData, uniqueCropGroups, uniqueRegions]);
 
   const handleDownloadCsv = () => {
-    if (!processedData.dataSource.length) return;
+    if (!csvData.dataSource.length) return;
 
-    const headers = processedData.columns.map((col) => col.title).join(",");
+    const headers = csvData.columns.map((col) => col.title).join(",");
     const csvContent =
       headers +
       "\n" +
-      processedData.dataSource
+      csvData.dataSource
         .map((row) =>
-          processedData.columns
+          csvData.columns
             .map((col) => {
               const column = col as ColumnType<TransposedRow>;
               const value = row[column.dataIndex as string];
