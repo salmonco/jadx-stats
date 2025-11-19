@@ -79,15 +79,20 @@ const MandarinCultivationInfoTable = ({ chartData }: Props) => {
         key: cropGroup,
         totalArea: 0,
       };
-      let cropGroupTotalAreaInHa = 0;
+
+      let totalAreaForAllRegions = 0;
+      for (const region of uniqueRegions) {
+        const dataPoint = flattenedData.find((d) => d.prdct_nm === cropGroup && d.region === region);
+        totalAreaForAllRegions += dataPoint?.total_area ?? 0;
+      }
+      row.totalArea = totalAreaForAllRegions / 10000;
 
       for (const region of limitedUniqueRegions) {
         const dataPoint = flattenedData.find((d) => d.prdct_nm === cropGroup && d.region === region);
         const areaInHa = (dataPoint?.total_area ?? 0) / 10000;
         row[region] = areaInHa;
-        cropGroupTotalAreaInHa += areaInHa;
       }
-      row.totalArea = cropGroupTotalAreaInHa;
+
       return row;
     });
 
