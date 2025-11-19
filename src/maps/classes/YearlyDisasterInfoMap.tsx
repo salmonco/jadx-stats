@@ -22,6 +22,29 @@ class YearlyDisasterInfoMap extends CommonBackgroundMap {
     this.setSelectedDisaster = this.setSelectedDisaster.bind(this);
   }
 
+  getShareableState() {
+    const state = super.getShareableState();
+    return {
+      ...state,
+      selectedTargetYear: this.selectedTargetYear,
+      selectedDisasterCategory: this.selectedDisasterCategory,
+      selectedDisaster: this.selectedDisaster,
+    };
+  }
+
+  applySharedState(state: Record<string, any>) {
+    super.applySharedState(state);
+    if (state.selectedTargetYear) {
+      this.setSelectedTargetYear(state.selectedTargetYear);
+    }
+    if (state.selectedDisasterCategory) {
+      this.setSelectedDisasterCategory(state.selectedDisasterCategory);
+    }
+    if (state.selectedDisaster) {
+      this.setSelectedDisaster(state.selectedDisaster);
+    }
+  }
+
   getFilterText() {
     const filterParts = super.getFilterText();
 

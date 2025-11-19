@@ -27,6 +27,33 @@ class MandarinTreeAgeDistributionMap extends CommonBackgroundMap {
     this.setSelectedCropDetailGroup = this.setSelectedCropDetailGroup.bind(this);
   }
 
+  getShareableState() {
+    const state = super.getShareableState();
+    return {
+      ...state,
+      selectedTargetYear: this.selectedTargetYear,
+      selectedCropPummok: this.selectedCropPummok,
+      selectedCropGroup: this.selectedCropGroup,
+      selectedCropDetailGroup: this.selectedCropDetailGroup,
+    };
+  }
+
+  applySharedState(state: Record<string, any>) {
+    super.applySharedState(state);
+    if (state.selectedTargetYear) {
+      this.setSelectedTargetYear(state.selectedTargetYear);
+    }
+    if (state.selectedCropPummok) {
+      this.setSelectedCropPummok(state.selectedCropPummok);
+    }
+    if (state.selectedCropGroup) {
+      this.setSelectedCropGroup(state.selectedCropGroup);
+    }
+    if (state.selectedCropDetailGroup) {
+      this.setSelectedCropDetailGroup(state.selectedCropDetailGroup);
+    }
+  }
+
   getFilterText() {
     const filterParts = super.getFilterText();
 

@@ -22,6 +22,12 @@ const CropFilter = <M extends CommonBackgroundMap & CropMapProps>({ cropList, ma
   const [selectedCropGroup, setSelectedCropGroup] = useState<string>(map.selectedCropGroup);
   const [selectedCropDetailGroup, setSelectedCropDetailGroup] = useState<string>(map.selectedCropDetailGroup);
 
+  useEffect(() => {
+    setSelectedCropPummok(map.selectedCropPummok);
+    setSelectedCropGroup(map.selectedCropGroup);
+    setSelectedCropDetailGroup(map.selectedCropDetailGroup);
+  }, [map.selectedCropPummok, map.selectedCropGroup, map.selectedCropDetailGroup]);
+
   const pummokOptions = useMemo(() => {
     if (!cropList) {
       return [];
