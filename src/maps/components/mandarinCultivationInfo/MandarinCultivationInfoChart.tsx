@@ -24,7 +24,12 @@ const MandarinCultivationInfoChart = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <MandarinCultivationInfoTable chartData={chartData} />
+      <MandarinCultivationInfoTable
+        chartData={chartData}
+        selectedCropPummok={map.selectedCropPummok}
+        selectedCropGroup={map.selectedCropGroup}
+        selectedCropDetailGroup={map.selectedCropDetailGroup}
+      />
       <ChartContainer cols={2} minHeight={500}>
         <MandarinCultivationBarChart chartData={chartData} selectedVariety={map.selectedCropDetailGroup} />
         <MandarinCultivationPieChart chartData={chartData} selectedVariety={map.selectedCropDetailGroup} />

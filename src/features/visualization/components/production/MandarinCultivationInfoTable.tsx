@@ -17,9 +17,12 @@ interface TransposedRow {
 
 interface Props {
   chartData: MandarinCultivationChartData | null;
+  selectedCropPummok: string;
+  selectedCropGroup: string;
+  selectedCropDetailGroup: string;
 }
 
-const MandarinCultivationInfoTable = ({ chartData }: Props) => {
+const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedCropGroup, selectedCropDetailGroup }: Props) => {
   const { flattenedData, uniqueCropGroups, uniqueRegions } = useMemo(() => {
     if (!chartData || Object.keys(chartData).length === 0) {
       return { flattenedData: [], uniqueCropGroups: [], uniqueRegions: [] };
@@ -51,7 +54,7 @@ const MandarinCultivationInfoTable = ({ chartData }: Props) => {
 
     const columns: ColumnsType<TransposedRow> = [
       {
-        title: "품목 / 지역",
+        title: "품종 / 지역",
         dataIndex: "key",
         key: "key",
         align: "center" as const,
@@ -161,7 +164,7 @@ const MandarinCultivationInfoTable = ({ chartData }: Props) => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `품종_지역_데이터.csv`);
+    link.setAttribute("download", `품종_지역_데이터_${selectedCropPummok}_${selectedCropGroup}_${selectedCropDetailGroup}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
