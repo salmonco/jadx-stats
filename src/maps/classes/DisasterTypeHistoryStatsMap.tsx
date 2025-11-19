@@ -64,10 +64,10 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
       this.setSelectedTargetYear(state.selectedTargetYear);
     }
     if (state.selectedStartDate) {
-      this.setSelectedStartDate(state.selectedStartDate);
+      this.setSelectedStartDate(dayjs(state.selectedStartDate));
     }
     if (state.selectedEndDate) {
-      this.setSelectedEndDate(state.selectedEndDate);
+      this.setSelectedEndDate(dayjs(state.selectedEndDate));
     }
     if (state.selectedDisaster) {
       this.setSelectedDisaster(state.selectedDisaster);
