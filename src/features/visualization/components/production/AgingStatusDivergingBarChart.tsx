@@ -1,4 +1,5 @@
 import * as Plot from "@observablehq/plot";
+import { Button } from "antd";
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
@@ -157,9 +158,57 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
     };
   }, [chartData, category, size]);
 
+  const handleDownloadCsv = () => {
+    const headers = ["지역"];
+    const dataKeys: (keyof AgingChartData)[] = ["region"];
+
+    if (category === "avg_age") {
+      headers.push("평균 연령");
+      dataKeys.push("avg_age");
+    } else if (category === "count") {
+      headers.push("총 경영체 수");
+      dataKeys.push("count");
+    }
+
+    const sortedChartData = [...chartData].sort((a, b) => {
+      const valA = a[category] ?? 0;
+      const valB = b[category] ?? 0;
+      return valB - valA;
+    });
+
+    const csvContent =
+      headers.join(",") +
+      "\n" +
+      sortedChartData
+        .map((d) =>
+          dataKeys
+            .map((key) => {
+              const value = d[key];
+              return typeof value === "string" ? `"${value.replace(/"/g, '""')}"` : value;
+            })
+            .join(",")
+        )
+        .join("\n");
+
+    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `경영체_연령_분포_차트_데이터_${category}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="h-full w-full">
-      <p className="mb-[8px] text-xl font-semibold">{title}</p>
+      <div className="mb-[8px] flex items-center justify-between">
+        <p className="text-xl font-semibold">{title}</p>
+        <Button type="primary" onClick={handleDownloadCsv}>
+          CSV 다운로드
+        </Button>
+      </div>
       <div ref={containerRef} style={{ height: `${size.height}px` }} className="custom-dark-scroll min-w-full overflow-y-auto" />
     </div>
   );
