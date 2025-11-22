@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { cloneElement, useCallback, useEffect, useState } from "react";
 
 import OSMTileLayer from "~/maps/layers/OSMTileLayer";
 import TracestrackTileLayer from "~/maps/layers/TracestrackTileLayer";
@@ -16,6 +16,7 @@ import MiniMap from "~/maps/components/MiniMap";
 
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
+import FloatingContainer, { FloatingContainerProps } from "~/features/visualization/components/common/FloatingContainer";
 import LayerHeader from "~/maps/components/LayerHeader";
 import LayerSwitcher from "~/maps/components/LayerSwitcher";
 import MapTypeSwitcher from "~/maps/components/ListManagedMapTypeSwitcher";
@@ -37,6 +38,7 @@ interface BackgroundMapProps {
   map: ExtendedOLMap;
   children?: React.ReactNode;
   onClickFullScreen: (mapId: string) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
 const MapLoadingOverlay = () => (
@@ -45,7 +47,7 @@ const MapLoadingOverlay = () => (
   </div>
 );
 
-const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMap, mapId, children, onClickFullScreen }: BackgroundMapProps) => {
+const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMap, mapId, children, onClickFullScreen, getPopupContainer }: BackgroundMapProps) => {
   const mapList = useMapList();
   const map = mapList.getMapById(mapId);
 
@@ -123,7 +125,9 @@ const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMa
           {contextHolder}
         </>
       )}
-      {children}
+      {children && (children as React.ReactElement<FloatingContainerProps>).type === FloatingContainer
+        ? cloneElement(children as React.ReactElement<FloatingContainerProps>, { getPopupContainer })
+        : children}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import BackgroundMapWrapper from "~/maps/components/BackgroundMapWrapper";
 import useMapFullScreen from "~/maps/hooks/useMapFullscreen";
@@ -41,11 +41,17 @@ const ListManagedVisualizationContainer = () => {
 
   const chart = mapList.renderChartByMapId(fullscreenMapId);
 
+  const getPopupContainer = useMemo(() => {
+    return (triggerNode: HTMLElement) => {
+      return mapContainerRef.current || document.body;
+    };
+  }, [mapContainerRef.current]);
+
   if (fullscreenMap) {
     return (
-      <div ref={mapContainerRef} className="h-full w-full overflow-y-auto bg-[#37445E] p-5">
+      <div ref={mapContainerRef} className="z-50 h-full w-full overflow-y-auto bg-[#37445E] p-5">
         <div className="flex h-full flex-col gap-5">
-          <BackgroundMapWrapper maps={[fullscreenMap as CommonBackgroundMap]} onClickFullScreen={onClickFullScreen} />
+          <BackgroundMapWrapper maps={[fullscreenMap as CommonBackgroundMap]} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />
           {chart && (
             <div id="main-chart-container" className={`${fullscreenMapId ? "pb-5" : ""}`}>
               {chart}
@@ -59,7 +65,7 @@ const ListManagedVisualizationContainer = () => {
   return (
     <div className="flex flex-col gap-5 bg-[#37445E] px-5 py-4">
       {/* 지도 */}
-      <BackgroundMapWrapper maps={mapList.getMaps() as CommonBackgroundMap[]} onClickFullScreen={onClickFullScreen} />
+      <BackgroundMapWrapper maps={mapList.getMaps() as CommonBackgroundMap[]} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />
       {/* 차트 */}
       <div id="main-chart-container">{mapList.renderFirstChart()}</div>
     </div>

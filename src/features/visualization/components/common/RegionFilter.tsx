@@ -12,6 +12,7 @@ interface Props<M> {
   setSelectedRegion: (value: RegionFilterOptions | ((prev: RegionFilterOptions) => RegionFilterOptions)) => void;
   map: M;
   showExcludeDong?: boolean;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
 const processMultiSelect = (currentValues: string[]) => {
@@ -25,7 +26,7 @@ const processMultiSelect = (currentValues: string[]) => {
   return currentValues;
 };
 
-const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion, setSelectedRegion, map, showExcludeDong = false }: Props<M>) => {
+const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion, setSelectedRegion, map, showExcludeDong = false, getPopupContainer }: Props<M>) => {
   const currentOptions = useMemo(() => {
     if (!features) {
       return [];
@@ -122,10 +123,24 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm font-bold">지역선택</p>
-      <Select title={REGION_LEVEL_LABEL} options={regionLevelOptions} value={selectedRegion.구분} onChange={handleLevelChange} size="large" />
+      <Select
+        title={REGION_LEVEL_LABEL}
+        options={regionLevelOptions}
+        value={selectedRegion.구분}
+        onChange={handleLevelChange}
+        size="large"
+        getPopupContainer={getPopupContainer}
+      />
 
       {selectedRegion.구분 !== REGION_LEVEL_OPTIONS.제주도 && (
-        <Select options={toOptions(currentOptions)} value={currentValue} onChange={handleValueChange} mode={isMulti ? "multiple" : undefined} size="large" />
+        <Select
+          options={toOptions(currentOptions)}
+          value={currentValue}
+          onChange={handleValueChange}
+          mode={isMulti ? "multiple" : undefined}
+          size="large"
+          getPopupContainer={getPopupContainer}
+        />
       )}
 
       {showExcludeDong && (

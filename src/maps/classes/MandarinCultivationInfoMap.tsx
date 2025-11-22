@@ -54,8 +54,8 @@ class MandarinCultivationInfoMap extends CommonBackgroundMap {
     return filterParts;
   }
 
-  renderMap(onClickFullScreen: (mapId: string) => void) {
-    return <MandarinCultivationInfoMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} />;
+  renderMap(onClickFullScreen: (mapId: string) => void, getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
+    return <MandarinCultivationInfoMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
   renderChart() {

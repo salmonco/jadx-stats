@@ -22,9 +22,10 @@ import visualizationApi from "~/services/apis/visualizationApi";
 interface Props {
   mapId: string;
   onClickFullScreen: (mapId: string) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen }: Props) => {
+const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen, getPopupContainer }: Props) => {
   const mapList = useMapList<DisasterTypeHistoryStatsMap>();
   const map = mapList.getMapById(mapId);
 
@@ -104,7 +105,14 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen }: Props)
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap} onClickFullScreen={onClickFullScreen}>
+    <ListManagedBackgroundMap
+      layerManager={layerManager}
+      ready={ready}
+      mapId={mapId}
+      map={olMap}
+      onClickFullScreen={onClickFullScreen}
+      getPopupContainer={getPopupContainer}
+    >
       <FloatingContainer
         filter={
           <>
@@ -117,9 +125,10 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen }: Props)
                 map.setSelectedStartDate(startDate);
                 map.setSelectedEndDate(endDate);
               }}
+              getPopupContainer={getPopupContainer}
             />
             {/* 지역 선택 */}
-            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
+            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} getPopupContainer={getPopupContainer} />
             {/* 재해 구분 */}
             <DisasterFilter
               options={disasterOptionsMap}
@@ -129,15 +138,17 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen }: Props)
               selectedSecond={""} // 세부 항목 선택 기능은 미적용
               onSecondSelect={() => {}} // 세부 항목 선택 기능은 미적용
               hasSecondDepth={hasSecondDepth}
+              getPopupContainer={getPopupContainer}
             />
             {/* 품목, 세부 품목 */}
-            <CropFilter cropList={cropList} map={map} />
+            <CropFilter cropList={cropList} map={map} getPopupContainer={getPopupContainer} />
             {/* 재배 방식 */}
             <CultivationTypeFilter
               title="재배 방식"
               options={CULTIVATION_TYPE_OPTIONS}
               selectedValue={map.selectedCultivationType}
               onSelectionChange={map.setSelectedCultivationType}
+              getPopupContainer={getPopupContainer}
             />
           </>
         }

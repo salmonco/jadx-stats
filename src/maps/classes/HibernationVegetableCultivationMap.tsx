@@ -47,8 +47,8 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
     return filterParts;
   }
 
-  renderMap(onClickFullScreen: (mapId: string) => void) {
-    return <HibernationVegetableCultivationMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} />;
+  renderMap(onClickFullScreen: (mapId: string) => void, getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
+    return <HibernationVegetableCultivationMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
   renderChart() {
