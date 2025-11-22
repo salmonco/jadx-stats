@@ -14,9 +14,10 @@ interface ColoredCropFilterProps {
   selectedOptions: string[];
   onSelectionChange: (selected: string[]) => void;
   isMulti?: boolean;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const ColoredCropFilter: React.FC<ColoredCropFilterProps> = ({ title, options, selectedOptions, onSelectionChange, isMulti = false }) => {
+const ColoredCropFilter: React.FC<ColoredCropFilterProps> = ({ title, options, selectedOptions, onSelectionChange, isMulti = false, getPopupContainer }) => {
   const handleChange = (selected: string[]) => {
     if (selected.includes(DEFAULT_ALL_OPTION)) {
       if (selected[selected.length - 1] === DEFAULT_ALL_OPTION || selected.length === 1) {
@@ -59,6 +60,7 @@ const ColoredCropFilter: React.FC<ColoredCropFilterProps> = ({ title, options, s
         onChange={handleChange}
         options={allOptions}
         size="large"
+        getPopupContainer={getPopupContainer}
       />
     </div>
   );

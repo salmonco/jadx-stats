@@ -17,9 +17,10 @@ import visualizationApi from "~/services/apis/visualizationApi";
 interface Props {
   mapId: string;
   onClickFullScreen: (mapId: string) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const MandarinCultivationInfoMapContent = ({ mapId, onClickFullScreen }: Props) => {
+const MandarinCultivationInfoMapContent = ({ mapId, onClickFullScreen, getPopupContainer }: Props) => {
   const mapList = useMapList<MandarinCultivationInfoMap>();
   const map = mapList.getMapById(mapId);
 
@@ -72,12 +73,19 @@ const MandarinCultivationInfoMapContent = ({ mapId, onClickFullScreen }: Props) 
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap} onClickFullScreen={onClickFullScreen}>
+    <ListManagedBackgroundMap
+      layerManager={layerManager}
+      ready={ready}
+      mapId={mapId}
+      map={olMap}
+      onClickFullScreen={onClickFullScreen}
+      getPopupContainer={getPopupContainer}
+    >
       <FloatingContainer
         filter={
           <>
-            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
-            <CropFilter cropList={cropList} map={map} />
+            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} getPopupContainer={getPopupContainer} />
+            <CropFilter cropList={cropList} map={map} getPopupContainer={getPopupContainer} />
           </>
         }
         visualizationSetting={

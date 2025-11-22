@@ -1,13 +1,14 @@
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface Props {
   width?: number;
   isFixed?: boolean;
   children: React.ReactNode;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const FilterContainer = ({ children, isFixed = false }: Props) => {
+const FilterContainer = ({ children, isFixed = false, getPopupContainer }: Props) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
@@ -18,7 +19,16 @@ const FilterContainer = ({ children, isFixed = false }: Props) => {
           <ChevronDown className={`h-5 w-5 transform text-white transition-transform duration-200 ${isExpanded ? "rotate-180" : "rotate-0"}`} />
         </button>
       </div>
-      {isExpanded && <div className="scrollbar-hide flex max-h-[320px] flex-col gap-3 overflow-y-auto px-4 py-3">{children}</div>}
+      {isExpanded && (
+        <div className="scrollbar-hide flex max-h-[320px] flex-col gap-3 overflow-y-auto px-4 py-3">
+          {React.Children.map(children, (child) => {
+            if (React.isValidElement(child) && child.type !== React.Fragment) {
+              return React.cloneElement(child, { getPopupContainer } as { getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement });
+            }
+            return child;
+          })}
+        </div>
+      )}
     </div>
   );
 };

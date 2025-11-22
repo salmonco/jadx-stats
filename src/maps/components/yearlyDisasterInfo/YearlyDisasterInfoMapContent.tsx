@@ -20,9 +20,10 @@ import visualizationApi from "~/services/apis/visualizationApi";
 interface Props {
   mapId: string;
   onClickFullScreen: (mapId: string) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const YearlyDisasterInfoMapContent = ({ mapId, onClickFullScreen }: Props) => {
+const YearlyDisasterInfoMapContent = ({ mapId, onClickFullScreen, getPopupContainer }: Props) => {
   const mapList = useMapList<YearlyDisasterInfoMap>();
   const map = mapList.getMapById(mapId);
 
@@ -88,17 +89,30 @@ const YearlyDisasterInfoMapContent = ({ mapId, onClickFullScreen }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap} onClickFullScreen={onClickFullScreen}>
+    <ListManagedBackgroundMap
+      layerManager={layerManager}
+      ready={ready}
+      mapId={mapId}
+      map={olMap}
+      onClickFullScreen={onClickFullScreen}
+      getPopupContainer={getPopupContainer}
+    >
       <FloatingContainer
         filter={
           <>
-            <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
-            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
+            <YearFilter
+              targetYear={TARGET_YEAR}
+              selectedTargetYear={map.selectedTargetYear}
+              setSelectedTargetYear={map.setSelectedTargetYear}
+              getPopupContainer={getPopupContainer}
+            />
+            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} getPopupContainer={getPopupContainer} />
             <DisasterCategoryFilter
               title="항목"
               options={DISASTER_CATEGORY_OPTIONS}
               selectedValue={map.selectedDisasterCategory}
               onSelectionChange={map.setSelectedDisasterCategory}
+              getPopupContainer={getPopupContainer}
             />
             <DisasterFilter
               options={disasterOptionsMap}
@@ -108,6 +122,7 @@ const YearlyDisasterInfoMapContent = ({ mapId, onClickFullScreen }: Props) => {
               selectedSecond={""} // 세부 항목 선택 기능은 미적용
               onSecondSelect={() => {}} // 세부 항목 선택 기능은 미적용
               hasSecondDepth={hasSecondDepth}
+              getPopupContainer={getPopupContainer}
             />
           </>
         }

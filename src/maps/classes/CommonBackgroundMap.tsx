@@ -89,7 +89,7 @@ class CommonBackgroundMap {
   }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
-  renderMap(_onClickFullScreen?: (mapId: string) => void) {
+  renderMap(_onClickFullScreen?: (mapId: string) => void, _getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
     return <></>;
   }
 
