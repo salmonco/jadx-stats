@@ -2,7 +2,7 @@ import { Coordinate } from "ol/coordinate";
 import OLMap from "ol/Map";
 import { v4 as uuidv4 } from "uuid";
 import { getKeyByValue } from "~/features/visualization/utils/getKeyByValue";
-import { DEFAULT_ALL_OPTION, DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
+import { DEFAULT_ALL_OPTION, DEFAULT_EXCLUDE_DONG, DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
 import { REGION_LEVEL_OPTIONS, RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { BackgroundMapType, DEFAULT_BACKGROUND_MAP_TYPE } from "~/maps/constants/backgroundMapType";
 import { MapOptions } from "~/maps/constants/mapOptions";
@@ -11,7 +11,7 @@ import { DEFAULT_VISUALIZATION_SETTING, LegendColor, VisualizationSetting, Visua
 class CommonBackgroundMap {
   #mapId = uuidv4();
   #mapOptions: MapOptions;
-  #excludeDong = true;
+  #excludeDong = DEFAULT_EXCLUDE_DONG;
   #title: string;
   #tooltip: React.ReactNode | null;
   #olMap: OLMap | null = null;
@@ -69,6 +69,7 @@ class CommonBackgroundMap {
     this.getShareableState = this.getShareableState.bind(this);
     this.applySharedState = this.applySharedState.bind(this);
     this.getFilterText = this.getFilterText.bind(this);
+    this.setExcludeDong = this.setExcludeDong.bind(this);
   }
 
   destroy() {
@@ -88,13 +89,13 @@ class CommonBackgroundMap {
   }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
-  renderMap() {
+  renderMap(_onClickFullScreen?: (mapId: string) => void, _getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
     return <></>;
   }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
   renderChart() {
-    return <></>;
+    return null;
   }
 
   setMapView(center: Coordinate, zoom: number) {
@@ -284,6 +285,11 @@ class CommonBackgroundMap {
 
   setOlMap(olMap: OLMap) {
     this.#olMap = olMap;
+  }
+
+  setExcludeDong(excludeDong: boolean) {
+    this.#excludeDong = excludeDong;
+    this.notifyListeners();
   }
 }
 

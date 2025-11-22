@@ -64,12 +64,12 @@ class MandarinTreeAgeDistributionMap extends CommonBackgroundMap {
     return filterParts;
   }
 
-  renderMap() {
-    return <MandarinTreeAgeDistributionMapContent mapId={this.mapId} />;
+  renderMap(onClickFullScreen: (mapId: string) => void, getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
+    return <MandarinTreeAgeDistributionMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
   renderChart() {
-    return <MandarinTreeAgeDistributionChart />;
+    return <MandarinTreeAgeDistributionChart map={this} />;
   }
 
   getSnapshot() {

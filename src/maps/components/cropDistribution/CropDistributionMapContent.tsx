@@ -19,9 +19,11 @@ import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
+  onClickFullScreen: (mapId: string) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const CropDistributionMapContent = ({ mapId }: Props) => {
+const CropDistributionMapContent = ({ mapId, onClickFullScreen, getPopupContainer }: Props) => {
   const mapList = useMapList<CropDistributionMap>();
   const map = mapList.getMapById(mapId);
 
@@ -112,7 +114,14 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+    <ListManagedBackgroundMap
+      layerManager={layerManager}
+      ready={ready}
+      mapId={mapId}
+      map={olMap}
+      onClickFullScreen={onClickFullScreen}
+      getPopupContainer={getPopupContainer}
+    >
       {menuPosition && menuChildren && <FloatingMenu position={menuPosition} onClose={closeMenu} menuChildren={menuChildren as any} />}
       <FloatingContainer
         /**
@@ -121,9 +130,22 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
          */
         filter={
           <>
-            <RegionFilter features={areaData} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
-            <CropLevelFilter title="작물 정보" options={cropInfoOptions} selectedValue={map.selectedCropLevel} onSelectionChange={map.setSelectedCropLevel} />
-            <ColoredCropFilter title="작물 선택" options={cropItems} selectedOptions={map.selectedCrops} onSelectionChange={map.setSelectedCrops} isMulti />
+            <RegionFilter features={areaData} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} getPopupContainer={getPopupContainer} />
+            <CropLevelFilter
+              title="작물 정보"
+              options={cropInfoOptions}
+              selectedValue={map.selectedCropLevel}
+              onSelectionChange={map.setSelectedCropLevel}
+              getPopupContainer={getPopupContainer}
+            />
+            <ColoredCropFilter
+              title="작물 선택"
+              options={cropItems}
+              selectedOptions={map.selectedCrops}
+              onSelectionChange={map.setSelectedCrops}
+              isMulti
+              getPopupContainer={getPopupContainer}
+            />
           </>
         }
       />

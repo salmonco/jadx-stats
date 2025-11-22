@@ -14,7 +14,13 @@ import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import visualizationApi from "~/services/apis/visualizationApi";
 
-const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
+interface Props {
+  mapId: string;
+  onClickFullScreen: (mapId: string) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
+}
+
+const MandarinTreeAgeDistributionMapContent = ({ mapId, onClickFullScreen, getPopupContainer }: Props) => {
   const mapList = useMapList<MandarinTreeAgeDistributionMap>();
   const map = mapList.getMapById(mapId);
 
@@ -84,12 +90,19 @@ const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+    <ListManagedBackgroundMap
+      layerManager={layerManager}
+      ready={ready}
+      mapId={mapId}
+      map={olMap}
+      onClickFullScreen={onClickFullScreen}
+      getPopupContainer={getPopupContainer}
+    >
       <FloatingContainer
         filter={
           <>
-            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
-            <CropFilter cropList={cropList} map={map} />
+            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} getPopupContainer={getPopupContainer} />
+            <CropFilter cropList={cropList} map={map} getPopupContainer={getPopupContainer} />
           </>
         }
         visualizationSetting={

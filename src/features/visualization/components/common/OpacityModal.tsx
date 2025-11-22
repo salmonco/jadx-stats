@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 
 interface Props {
   isOpen: boolean;
@@ -25,7 +24,7 @@ const OpacityModal = ({ isOpen, onClose, opacity, onApply }: Props) => {
     onClose();
   };
 
-  return createPortal(
+  return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-80 rounded-lg bg-white p-6 shadow-xl">
         <h3 className="mb-4 text-lg font-semibold text-gray-800">투명도 설정</h3>
@@ -59,8 +58,7 @@ const OpacityModal = ({ isOpen, onClose, opacity, onApply }: Props) => {
           </button>
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 };
 

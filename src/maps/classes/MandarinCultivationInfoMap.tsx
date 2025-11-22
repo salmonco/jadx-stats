@@ -54,12 +54,12 @@ class MandarinCultivationInfoMap extends CommonBackgroundMap {
     return filterParts;
   }
 
-  renderMap() {
-    return <MandarinCultivationInfoMapContent mapId={this.mapId} />;
+  renderMap(onClickFullScreen: (mapId: string) => void, getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
+    return <MandarinCultivationInfoMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
   renderChart() {
-    return <MandarinCultivationInfoChart />;
+    return <MandarinCultivationInfoChart map={this} />;
   }
 
   getSnapshot() {

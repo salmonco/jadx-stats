@@ -55,8 +55,8 @@ class YearlyDisasterInfoMap extends CommonBackgroundMap {
     return filterParts;
   }
 
-  renderMap() {
-    return <YearlyDisasterInfoMapContent mapId={this.mapId} />;
+  renderMap(onClickFullScreen: (mapId: string) => void, getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
+    return <YearlyDisasterInfoMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
   renderChart() {

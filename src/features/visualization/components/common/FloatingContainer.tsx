@@ -4,7 +4,7 @@ import DataVisualizationButton from "./DataVisualizationButton";
 import FilterContainer from "./FilterContainer";
 import VisualizationSettingContainer from "./VisualizationSettingContainer";
 
-interface Props {
+export interface FloatingContainerProps {
   filter?: React.ReactNode;
   visualizationSetting?: React.ReactNode;
   visualType?: VisualType;
@@ -14,6 +14,7 @@ interface Props {
   setLabelOptions?: (isShowValue: boolean, isShowRegion: boolean) => void;
   resetVisualizationSetting?: () => void;
   setOpacity?: (opacity: number) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
 const FloatingContainer = ({
@@ -26,7 +27,8 @@ const FloatingContainer = ({
   opacity,
   visualType,
   setVisualType,
-}: Props) => {
+  getPopupContainer,
+}: FloatingContainerProps) => {
   const [isVisualizationOpen, setIsVisualizationOpen] = useState(true);
 
   return (
@@ -34,7 +36,9 @@ const FloatingContainer = ({
       {/* 필터 컨테이너 영역 */}
       {filter && (
         <div className="absolute left-4 top-16 w-[220px]">
-          <FilterContainer isFixed={!!visualizationSetting}>{filter}</FilterContainer>
+          <FilterContainer isFixed={!!visualizationSetting} getPopupContainer={getPopupContainer}>
+            {filter}
+          </FilterContainer>
         </div>
       )}
 
