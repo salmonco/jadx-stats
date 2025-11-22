@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GisRouteImport } from './routes/gis'
@@ -77,6 +79,19 @@ import { Route as BscLayoutCifruRtlHinatCifruRouteImport } from './routes/bsc/_l
 import { Route as BscLayoutCifruRtlCifruhybRouteImport } from './routes/bsc/_layout/cifru-rtl/cifruhyb'
 import { Route as BscLayoutCifruRtlBscStatsRouteImport } from './routes/bsc/_layout/cifru-rtl/bsc-stats'
 
+const SpcRouteImport = createFileRoute('/spc')()
+const BscRouteImport = createFileRoute('/bsc')()
+
+const SpcRoute = SpcRouteImport.update({
+  id: '/spc',
+  path: '/spc',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BscRoute = BscRouteImport.update({
+  id: '/bsc',
+  path: '/bsc',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -587,7 +602,9 @@ export interface FileRoutesById {
   '/403': typeof R403Route
   '/gis': typeof GisRoute
   '/login': typeof LoginRoute
+  '/bsc': typeof BscRouteWithChildren
   '/bsc/_layout': typeof BscLayoutRouteWithChildren
+  '/spc': typeof SpcRouteWithChildren
   '/spc/_layout': typeof SpcLayoutRouteWithChildren
   '/jeju-agri/': typeof JejuAgriIndexRoute
   '/bsc/_layout/cifru-rtl/bsc-stats': typeof BscLayoutCifruRtlBscStatsRoute
@@ -796,7 +813,9 @@ export interface FileRouteTypes {
     | '/403'
     | '/gis'
     | '/login'
+    | '/bsc'
     | '/bsc/_layout'
+    | '/spc'
     | '/spc/_layout'
     | '/jeju-agri/'
     | '/bsc/_layout/cifru-rtl/bsc-stats'
@@ -866,12 +885,28 @@ export interface RootRouteChildren {
   R403Route: typeof R403Route
   GisRoute: typeof GisRoute
   LoginRoute: typeof LoginRoute
+  BscRoute: typeof BscRouteWithChildren
+  SpcRoute: typeof SpcRouteWithChildren
   JejuAgriIndexRoute: typeof JejuAgriIndexRoute
   JejuAgriDetailIdIndexRoute: typeof JejuAgriDetailIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/spc': {
+      id: '/spc'
+      path: '/spc'
+      fullPath: '/spc'
+      preLoaderRoute: typeof SpcRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bsc': {
+      id: '/bsc'
+      path: '/bsc'
+      fullPath: '/bsc'
+      preLoaderRoute: typeof BscRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -909,14 +944,14 @@ declare module '@tanstack/react-router' {
     }
     '/spc/_layout': {
       id: '/spc/_layout'
-      path: ''
+      path: '/spc'
       fullPath: '/spc'
       preLoaderRoute: typeof SpcLayoutRouteImport
       parentRoute: typeof SpcRoute
     }
     '/bsc/_layout': {
       id: '/bsc/_layout'
-      path: ''
+      path: '/bsc'
       fullPath: '/bsc'
       preLoaderRoute: typeof BscLayoutRouteImport
       parentRoute: typeof BscRoute
@@ -1344,11 +1379,174 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface BscLayoutRouteChildren {
+  BscLayoutCifruRtlBscStatsRoute: typeof BscLayoutCifruRtlBscStatsRoute
+  BscLayoutCifruRtlCifruhybRoute: typeof BscLayoutCifruRtlCifruhybRoute
+  BscLayoutCifruRtlHinatCifruRoute: typeof BscLayoutCifruRtlHinatCifruRoute
+  BscLayoutCifruRtlHouseCifruRoute: typeof BscLayoutCifruRtlHouseCifruRoute
+  BscLayoutCifruRtlOpfCifruRoute: typeof BscLayoutCifruRtlOpfCifruRoute
+  BscLayoutCifruRtlPrdstsVrtyRoute: typeof BscLayoutCifruRtlPrdstsVrtyRoute
+  BscLayoutCltvarYieldAdlfrtRoute: typeof BscLayoutCltvarYieldAdlfrtRoute
+  BscLayoutCltvarYieldAdlfrtImtfrtRoute: typeof BscLayoutCltvarYieldAdlfrtImtfrtRoute
+  BscLayoutCltvarYieldCnvgtRoute: typeof BscLayoutCltvarYieldCnvgtRoute
+  BscLayoutCltvarYieldFrtvgtRoute: typeof BscLayoutCltvarYieldFrtvgtRoute
+  BscLayoutCltvarYieldIndcrpRoute: typeof BscLayoutCltvarYieldIndcrpRoute
+  BscLayoutCltvarYieldLfyvgtRoute: typeof BscLayoutCltvarYieldLfyvgtRoute
+  BscLayoutCltvarYieldMiscgrnRoute: typeof BscLayoutCltvarYieldMiscgrnRoute
+  BscLayoutCltvarYieldMldgrnRoute: typeof BscLayoutCltvarYieldMldgrnRoute
+  BscLayoutCltvarYieldPlsRoute: typeof BscLayoutCltvarYieldPlsRoute
+  BscLayoutCltvarYieldRtcrpRoute: typeof BscLayoutCltvarYieldRtcrpRoute
+  BscLayoutCltvarYieldRtvgtRoute: typeof BscLayoutCltvarYieldRtvgtRoute
+  BscLayoutCltvarYieldWhtbrlMldgrnRoute: typeof BscLayoutCltvarYieldWhtbrlMldgrnRoute
+  BscLayoutCltvarYieldWhtbrlRghgrnRoute: typeof BscLayoutCltvarYieldWhtbrlRghgrnRoute
+  BscLayoutEcnmAstRoute: typeof BscLayoutEcnmAstRoute
+  BscLayoutEcnmCrastRoute: typeof BscLayoutEcnmCrastRoute
+  BscLayoutEcnmEarnRoute: typeof BscLayoutEcnmEarnRoute
+  BscLayoutEcnmGrsincmRoute: typeof BscLayoutEcnmGrsincmRoute
+  BscLayoutEcnmKeyIdctRoute: typeof BscLayoutEcnmKeyIdctRoute
+  BscLayoutEcnmLbltRoute: typeof BscLayoutEcnmLbltRoute
+  BscLayoutEcnmLbrinpRoute: typeof BscLayoutEcnmLbrinpRoute
+  BscLayoutEcnmMngmtCostRoute: typeof BscLayoutEcnmMngmtCostRoute
+  BscLayoutEcnmPrdtvIdctRoute: typeof BscLayoutEcnmPrdtvIdctRoute
+  BscLayoutFrmhsAgePpltnRoute: typeof BscLayoutFrmhsAgePpltnRoute
+  BscLayoutFrmhsAgeRtfrmRoute: typeof BscLayoutFrmhsAgeRtfrmRoute
+  BscLayoutFrmhsAgeRtrrlRoute: typeof BscLayoutFrmhsAgeRtrrlRoute
+  BscLayoutFrmhsFrmlndSclRoute: typeof BscLayoutFrmhsFrmlndSclRoute
+  BscLayoutFrmhsPpltnRoute: typeof BscLayoutFrmhsPpltnRoute
+  BscLayoutFrmlndAreaRoute: typeof BscLayoutFrmlndAreaRoute
+  BscLayoutFrmlndUtztnRoute: typeof BscLayoutFrmlndUtztnRoute
+  BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute: typeof BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute
+  BscLayoutPrdctnMtrlFrmcnHldRoute: typeof BscLayoutPrdctnMtrlFrmcnHldRoute
+}
+
+const BscLayoutRouteChildren: BscLayoutRouteChildren = {
+  BscLayoutCifruRtlBscStatsRoute: BscLayoutCifruRtlBscStatsRoute,
+  BscLayoutCifruRtlCifruhybRoute: BscLayoutCifruRtlCifruhybRoute,
+  BscLayoutCifruRtlHinatCifruRoute: BscLayoutCifruRtlHinatCifruRoute,
+  BscLayoutCifruRtlHouseCifruRoute: BscLayoutCifruRtlHouseCifruRoute,
+  BscLayoutCifruRtlOpfCifruRoute: BscLayoutCifruRtlOpfCifruRoute,
+  BscLayoutCifruRtlPrdstsVrtyRoute: BscLayoutCifruRtlPrdstsVrtyRoute,
+  BscLayoutCltvarYieldAdlfrtRoute: BscLayoutCltvarYieldAdlfrtRoute,
+  BscLayoutCltvarYieldAdlfrtImtfrtRoute: BscLayoutCltvarYieldAdlfrtImtfrtRoute,
+  BscLayoutCltvarYieldCnvgtRoute: BscLayoutCltvarYieldCnvgtRoute,
+  BscLayoutCltvarYieldFrtvgtRoute: BscLayoutCltvarYieldFrtvgtRoute,
+  BscLayoutCltvarYieldIndcrpRoute: BscLayoutCltvarYieldIndcrpRoute,
+  BscLayoutCltvarYieldLfyvgtRoute: BscLayoutCltvarYieldLfyvgtRoute,
+  BscLayoutCltvarYieldMiscgrnRoute: BscLayoutCltvarYieldMiscgrnRoute,
+  BscLayoutCltvarYieldMldgrnRoute: BscLayoutCltvarYieldMldgrnRoute,
+  BscLayoutCltvarYieldPlsRoute: BscLayoutCltvarYieldPlsRoute,
+  BscLayoutCltvarYieldRtcrpRoute: BscLayoutCltvarYieldRtcrpRoute,
+  BscLayoutCltvarYieldRtvgtRoute: BscLayoutCltvarYieldRtvgtRoute,
+  BscLayoutCltvarYieldWhtbrlMldgrnRoute: BscLayoutCltvarYieldWhtbrlMldgrnRoute,
+  BscLayoutCltvarYieldWhtbrlRghgrnRoute: BscLayoutCltvarYieldWhtbrlRghgrnRoute,
+  BscLayoutEcnmAstRoute: BscLayoutEcnmAstRoute,
+  BscLayoutEcnmCrastRoute: BscLayoutEcnmCrastRoute,
+  BscLayoutEcnmEarnRoute: BscLayoutEcnmEarnRoute,
+  BscLayoutEcnmGrsincmRoute: BscLayoutEcnmGrsincmRoute,
+  BscLayoutEcnmKeyIdctRoute: BscLayoutEcnmKeyIdctRoute,
+  BscLayoutEcnmLbltRoute: BscLayoutEcnmLbltRoute,
+  BscLayoutEcnmLbrinpRoute: BscLayoutEcnmLbrinpRoute,
+  BscLayoutEcnmMngmtCostRoute: BscLayoutEcnmMngmtCostRoute,
+  BscLayoutEcnmPrdtvIdctRoute: BscLayoutEcnmPrdtvIdctRoute,
+  BscLayoutFrmhsAgePpltnRoute: BscLayoutFrmhsAgePpltnRoute,
+  BscLayoutFrmhsAgeRtfrmRoute: BscLayoutFrmhsAgeRtfrmRoute,
+  BscLayoutFrmhsAgeRtrrlRoute: BscLayoutFrmhsAgeRtrrlRoute,
+  BscLayoutFrmhsFrmlndSclRoute: BscLayoutFrmhsFrmlndSclRoute,
+  BscLayoutFrmhsPpltnRoute: BscLayoutFrmhsPpltnRoute,
+  BscLayoutFrmlndAreaRoute: BscLayoutFrmlndAreaRoute,
+  BscLayoutFrmlndUtztnRoute: BscLayoutFrmlndUtztnRoute,
+  BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute:
+    BscLayoutPrdctnMtrlAgrchmFrtlzrNtslRoute,
+  BscLayoutPrdctnMtrlFrmcnHldRoute: BscLayoutPrdctnMtrlFrmcnHldRoute,
+}
+
+const BscLayoutRouteWithChildren = BscLayoutRoute._addFileChildren(
+  BscLayoutRouteChildren,
+)
+
+interface BscRouteChildren {
+  BscLayoutRoute: typeof BscLayoutRouteWithChildren
+}
+
+const BscRouteChildren: BscRouteChildren = {
+  BscLayoutRoute: BscLayoutRouteWithChildren,
+}
+
+const BscRouteWithChildren = BscRoute._addFileChildren(BscRouteChildren)
+
+interface SpcLayoutRouteChildren {
+  SpcLayoutAgrcltEnvAgrcltDstdmgRoute: typeof SpcLayoutAgrcltEnvAgrcltDstdmgRoute
+  SpcLayoutAgrcltEnvDstdmgTypeStatsRoute: typeof SpcLayoutAgrcltEnvDstdmgTypeStatsRoute
+  SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute: typeof SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute
+  SpcLayoutAgrcltEnvGwtWtrqltyChagRoute: typeof SpcLayoutAgrcltEnvGwtWtrqltyChagRoute
+  SpcLayoutAgrcltEnvItemDamCsRoute: typeof SpcLayoutAgrcltEnvItemDamCsRoute
+  SpcLayoutAgrcltEnvWethrRoute: typeof SpcLayoutAgrcltEnvWethrRoute
+  SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute: typeof SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute
+  SpcLayoutObsrvnCifruTrageDistRoute: typeof SpcLayoutObsrvnCifruTrageDistRoute
+  SpcLayoutObsrvnFlntRoute: typeof SpcLayoutObsrvnFlntRoute
+  SpcLayoutObsrvnObsrvnInfoCmpRoute: typeof SpcLayoutObsrvnObsrvnInfoCmpRoute
+  SpcLayoutObsrvnQltyRoute: typeof SpcLayoutObsrvnQltyRoute
+  SpcLayoutProdAgingRoute: typeof SpcLayoutProdAgingRoute
+  SpcLayoutProdCltvarChagRoute: typeof SpcLayoutProdCltvarChagRoute
+  SpcLayoutProdCropCltvtnMapRoute: typeof SpcLayoutProdCropCltvtnMapRoute
+  SpcLayoutProdRgnCifruCltvtnRoute: typeof SpcLayoutProdRgnCifruCltvtnRoute
+  SpcLayoutProdRgnCltvtnHarvRoute: typeof SpcLayoutProdRgnCltvtnHarvRoute
+  SpcLayoutRtlCropTradeRoute: typeof SpcLayoutRtlCropTradeRoute
+  SpcLayoutRtlExpRoute: typeof SpcLayoutRtlExpRoute
+  SpcLayoutRtlGarakPrcRoute: typeof SpcLayoutRtlGarakPrcRoute
+  SpcLayoutRtlPrcDsbrdRoute: typeof SpcLayoutRtlPrcDsbrdRoute
+  SpcLayoutRtlPrcPredcRoute: typeof SpcLayoutRtlPrcPredcRoute
+  SpcLayoutRtlWhlslMrktShareRoute: typeof SpcLayoutRtlWhlslMrktShareRoute
+}
+
+const SpcLayoutRouteChildren: SpcLayoutRouteChildren = {
+  SpcLayoutAgrcltEnvAgrcltDstdmgRoute: SpcLayoutAgrcltEnvAgrcltDstdmgRoute,
+  SpcLayoutAgrcltEnvDstdmgTypeStatsRoute:
+    SpcLayoutAgrcltEnvDstdmgTypeStatsRoute,
+  SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute: SpcLayoutAgrcltEnvGwtAnlsDsbrdRoute,
+  SpcLayoutAgrcltEnvGwtWtrqltyChagRoute: SpcLayoutAgrcltEnvGwtWtrqltyChagRoute,
+  SpcLayoutAgrcltEnvItemDamCsRoute: SpcLayoutAgrcltEnvItemDamCsRoute,
+  SpcLayoutAgrcltEnvWethrRoute: SpcLayoutAgrcltEnvWethrRoute,
+  SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute:
+    SpcLayoutAgrcltEnvYrlyAgrcltDstdmgRoute,
+  SpcLayoutObsrvnCifruTrageDistRoute: SpcLayoutObsrvnCifruTrageDistRoute,
+  SpcLayoutObsrvnFlntRoute: SpcLayoutObsrvnFlntRoute,
+  SpcLayoutObsrvnObsrvnInfoCmpRoute: SpcLayoutObsrvnObsrvnInfoCmpRoute,
+  SpcLayoutObsrvnQltyRoute: SpcLayoutObsrvnQltyRoute,
+  SpcLayoutProdAgingRoute: SpcLayoutProdAgingRoute,
+  SpcLayoutProdCltvarChagRoute: SpcLayoutProdCltvarChagRoute,
+  SpcLayoutProdCropCltvtnMapRoute: SpcLayoutProdCropCltvtnMapRoute,
+  SpcLayoutProdRgnCifruCltvtnRoute: SpcLayoutProdRgnCifruCltvtnRoute,
+  SpcLayoutProdRgnCltvtnHarvRoute: SpcLayoutProdRgnCltvtnHarvRoute,
+  SpcLayoutRtlCropTradeRoute: SpcLayoutRtlCropTradeRoute,
+  SpcLayoutRtlExpRoute: SpcLayoutRtlExpRoute,
+  SpcLayoutRtlGarakPrcRoute: SpcLayoutRtlGarakPrcRoute,
+  SpcLayoutRtlPrcDsbrdRoute: SpcLayoutRtlPrcDsbrdRoute,
+  SpcLayoutRtlPrcPredcRoute: SpcLayoutRtlPrcPredcRoute,
+  SpcLayoutRtlWhlslMrktShareRoute: SpcLayoutRtlWhlslMrktShareRoute,
+}
+
+const SpcLayoutRouteWithChildren = SpcLayoutRoute._addFileChildren(
+  SpcLayoutRouteChildren,
+)
+
+interface SpcRouteChildren {
+  SpcLayoutRoute: typeof SpcLayoutRouteWithChildren
+}
+
+const SpcRouteChildren: SpcRouteChildren = {
+  SpcLayoutRoute: SpcLayoutRouteWithChildren,
+}
+
+const SpcRouteWithChildren = SpcRoute._addFileChildren(SpcRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   R403Route: R403Route,
   GisRoute: GisRoute,
   LoginRoute: LoginRoute,
+  BscRoute: BscRouteWithChildren,
+  SpcRoute: SpcRouteWithChildren,
   JejuAgriIndexRoute: JejuAgriIndexRoute,
   JejuAgriDetailIdIndexRoute: JejuAgriDetailIdIndexRoute,
 }
