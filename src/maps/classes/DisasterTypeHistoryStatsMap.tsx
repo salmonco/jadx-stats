@@ -99,8 +99,8 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
     return filterParts;
   }
 
-  renderMap() {
-    return <DisasterTypeHistoryStatsMapContent mapId={this.mapId} />;
+  renderMap(onClickFullScreen: (mapId: string) => void) {
+    return <DisasterTypeHistoryStatsMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} />;
   }
 
   renderChart() {

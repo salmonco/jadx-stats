@@ -4,19 +4,19 @@ import ChartContainer from "~/features/visualization/components/common/ChartCont
 import CultivationChangeDivergingBarChart from "~/features/visualization/components/production/CultivationChangeDivergingBarChart";
 import { HibernationFeatureCollection } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
 import HibernationVegetableCultivationMap from "~/maps/classes/HibernationVegetableCultivationMap";
-import { useMapList } from "~/maps/hooks/useMapList";
 import processedData from "~/maps/utils/hibernationVegetableCultivation/processedData";
 import visualizationApi from "~/services/apis/visualizationApi";
 
-const HibernationVegetableCultivationChart = () => {
-  const mapList = useMapList<HibernationVegetableCultivationMap>();
-  const firstMap = mapList.getFirstMap();
+interface Props {
+  map: HibernationVegetableCultivationMap;
+}
 
+const HibernationVegetableCultivationChart = ({ map }: Props) => {
   const [chartData, setChartData] = useState<any>(null);
 
   const { data: features } = useQuery<HibernationFeatureCollection>({
-    queryKey: ["hibernationVegetableCultivationFeatures", firstMap.selectedTargetYear, firstMap.getSelectedRegionLevel()],
-    queryFn: () => visualizationApi.getHinatVgtblCltvarDclrFile(firstMap.selectedTargetYear, firstMap.selectedTargetYear - 1, firstMap.getSelectedRegionLevel()),
+    queryKey: ["hibernationVegetableCultivationFeatures", map.selectedTargetYear, map.getSelectedRegionLevel()],
+    queryFn: () => visualizationApi.getHinatVgtblCltvarDclrFile(map.selectedTargetYear, map.selectedTargetYear - 1, map.getSelectedRegionLevel()),
     // TODO: 지도와 차트 간 ready 상태 공유
     // enabled: !!ready,
   });
@@ -30,9 +30,9 @@ const HibernationVegetableCultivationChart = () => {
 
   return (
     <ChartContainer cols={3} minHeight={500}>
-      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={firstMap.selectedCrop} year={firstMap.selectedTargetYear} viewType={"absolute"} />
-      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={firstMap.selectedCrop} year={firstMap.selectedTargetYear} viewType={"rate"} />
-      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={firstMap.selectedCrop} year={firstMap.selectedTargetYear} viewType={"area"} />
+      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"absolute"} />
+      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"rate"} />
+      <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"area"} />
     </ChartContainer>
   );
 };

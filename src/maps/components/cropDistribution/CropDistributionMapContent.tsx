@@ -19,9 +19,10 @@ import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
+  onClickFullScreen: (mapId: string) => void;
 }
 
-const CropDistributionMapContent = ({ mapId }: Props) => {
+const CropDistributionMapContent = ({ mapId, onClickFullScreen }: Props) => {
   const mapList = useMapList<CropDistributionMap>();
   const map = mapList.getMapById(mapId);
 
@@ -112,7 +113,7 @@ const CropDistributionMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap} onClickFullScreen={onClickFullScreen}>
       {menuPosition && menuChildren && <FloatingMenu position={menuPosition} onClose={closeMenu} menuChildren={menuChildren as any} />}
       <FloatingContainer
         /**

@@ -4,7 +4,6 @@ import ChartContainer from "~/features/visualization/components/common/ChartCont
 import AgingStatusDivergingBarChart from "~/features/visualization/components/production/AgingStatusDivergingBarChart";
 import AgingStatusTable from "~/features/visualization/components/production/AgingStatusTable";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
-import { useMapList } from "~/maps/hooks/useMapList";
 import transformToChartData from "~/maps/utils/agingStatus/transformToChartData";
 import visualizationApi from "~/services/apis/visualizationApi";
 
@@ -15,14 +14,15 @@ export interface AgingChartData {
   count: number;
 }
 
-const AgingStatusChart = () => {
-  const mapList = useMapList<AgingStatusMap>();
-  const firstMap = mapList.getFirstMap();
+interface Props {
+  map: AgingStatusMap;
+}
 
+const AgingStatusChart = ({ map }: Props) => {
   const { data: features } = useQuery({
-    queryKey: ["agingStatus", firstMap.getSelectedRegionLevel(), firstMap.excludeDong],
-    queryFn: () => visualizationApi.getAgingStatus(firstMap.getSelectedRegionLevel(), firstMap.excludeDong),
-    enabled: !!firstMap.getSelectedRegionLevel(),
+    queryKey: ["agingStatus", map.getSelectedRegionLevel(), map.excludeDong],
+    queryFn: () => visualizationApi.getAgingStatus(map.getSelectedRegionLevel(), map.excludeDong),
+    enabled: !!map.getSelectedRegionLevel(),
     retry: false,
   });
 

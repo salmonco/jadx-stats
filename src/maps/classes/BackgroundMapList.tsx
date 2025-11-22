@@ -1,5 +1,4 @@
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
-import BackgroundMapWrapper from "~/maps/components/BackgroundMapWrapper";
 import ChartRenderer from "~/maps/components/common/ChartRenderer";
 import { DEFAULT_LIST_MANAGED_MAP_OPTIONS, MapOptions } from "~/maps/constants/mapOptions";
 
@@ -104,16 +103,24 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
     }
   }
 
-  renderMaps() {
-    return <BackgroundMapWrapper maps={this.#maps} />;
+  getMaps() {
+    return this.#maps;
   }
 
   renderFirstChart() {
     if (this.#maps.length === 0) {
       return null;
     }
+    const map = this.getFirstMap();
+    return <ChartRenderer key={map.mapId} map={map} />;
+  }
 
-    return <ChartRenderer map={this.getFirstMap()} />;
+  renderChartByMapId(mapId: string) {
+    const map = this.getMapById(mapId);
+    if (!map) {
+      return null;
+    }
+    return <ChartRenderer key={map.mapId} map={map} />;
   }
 
   /**

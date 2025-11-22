@@ -46,8 +46,8 @@ class CropDistributionMap extends CommonBackgroundMap {
     return filterParts;
   }
 
-  renderMap() {
-    return <CropDistributionMapContent mapId={this.mapId} />;
+  renderMap(onClickFullScreen: (mapId: string) => void) {
+    return <CropDistributionMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} />;
   }
 
   renderChart() {

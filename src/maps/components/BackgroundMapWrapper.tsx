@@ -6,9 +6,10 @@ import { useMapList } from "~/maps/hooks/useMapList";
 
 interface BackgroundMapWrapperProps {
   maps: CommonBackgroundMap[];
+  onClickFullScreen: (mapId: string) => void;
 }
 
-const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
+const BackgroundMapWrapper = ({ maps, onClickFullScreen }: BackgroundMapWrapperProps) => {
   const mapList = useMapList();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -21,7 +22,7 @@ const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
         <>
           {maps.map((map) => (
             <div key={map.mapId} className="flex-1">
-              <MapRenderer map={map} />
+              <MapRenderer map={map} onClickFullScreen={onClickFullScreen} />
             </div>
           ))}
           {maps.length === 2 && (
@@ -48,7 +49,7 @@ const BackgroundMapWrapper = ({ maps }: BackgroundMapWrapperProps) => {
                 onDrag={mapList.updateMapPosition}
                 containerRef={containerRef}
               >
-                <MapRenderer map={map} />
+                <MapRenderer map={map} onClickFullScreen={onClickFullScreen} />
               </DraggableMapWindow>
             );
           })}
