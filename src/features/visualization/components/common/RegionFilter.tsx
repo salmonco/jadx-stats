@@ -1,6 +1,6 @@
-import { Select } from "antd";
+import { Checkbox, Select } from "antd";
 import { useCallback, useEffect, useMemo } from "react";
-import { DEFAULT_ALL_OPTION, REGION_LEVEL_LABEL, RegionFilterOptions, withAllOption } from "~/features/visualization/utils/regionFilterOptions";
+import { DEFAULT_ALL_OPTION, DEFAULT_EXCLUDE_DONG, REGION_LEVEL_LABEL, RegionFilterOptions, withAllOption } from "~/features/visualization/utils/regionFilterOptions";
 import { REGION_LEVEL_OPTIONS, RegionLevelOptions, regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { toOptions } from "~/features/visualization/utils/toOptions";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
@@ -35,6 +35,7 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
 
   useEffect(() => {
     map.setRegionFilterSetting(selectedRegion);
+    map.setExcludeDong(selectedRegion.excludeDong ?? DEFAULT_EXCLUDE_DONG);
   }, [selectedRegion, map]);
 
   const currentValue = (() => {
@@ -107,6 +108,16 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
     [setSelectedRegion]
   );
 
+  const handleExcludeDongChange = useCallback(
+    (checked: boolean) => {
+      setSelectedRegion((prev) => ({
+        ...prev,
+        excludeDong: checked,
+      }));
+    },
+    [setSelectedRegion]
+  );
+
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm font-bold">지역선택</p>
@@ -115,6 +126,10 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
       {selectedRegion.구분 !== REGION_LEVEL_OPTIONS.제주도 && (
         <Select options={toOptions(currentOptions)} value={currentValue} onChange={handleValueChange} mode={isMulti ? "multiple" : undefined} size="large" />
       )}
+
+      <Checkbox checked={selectedRegion.excludeDong ?? DEFAULT_EXCLUDE_DONG} onChange={(e) => handleExcludeDongChange(e.target.checked)}>
+        동지역 제외
+      </Checkbox>
     </div>
   );
 };
