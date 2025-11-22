@@ -57,7 +57,7 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
   return (
     <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
       <FloatingContainer
-        filter={<RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />}
+        filter={<RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} showExcludeDong />}
         visualizationSetting={
           <AgingStatusLegend
             features={features}
