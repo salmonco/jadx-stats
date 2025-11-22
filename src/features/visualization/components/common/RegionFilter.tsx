@@ -11,6 +11,7 @@ interface Props<M> {
   selectedRegion: RegionFilterOptions;
   setSelectedRegion: (value: RegionFilterOptions | ((prev: RegionFilterOptions) => RegionFilterOptions)) => void;
   map: M;
+  showExcludeDong?: boolean;
 }
 
 const processMultiSelect = (currentValues: string[]) => {
@@ -24,7 +25,7 @@ const processMultiSelect = (currentValues: string[]) => {
   return currentValues;
 };
 
-const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion, setSelectedRegion, map }: Props<M>) => {
+const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion, setSelectedRegion, map, showExcludeDong = false }: Props<M>) => {
   const currentOptions = useMemo(() => {
     if (!features) {
       return [];
@@ -127,9 +128,11 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
         <Select options={toOptions(currentOptions)} value={currentValue} onChange={handleValueChange} mode={isMulti ? "multiple" : undefined} size="large" />
       )}
 
-      <Checkbox checked={selectedRegion.excludeDong ?? DEFAULT_EXCLUDE_DONG} onChange={(e) => handleExcludeDongChange(e.target.checked)}>
-        동지역 제외
-      </Checkbox>
+      {showExcludeDong && (
+        <Checkbox checked={selectedRegion.excludeDong ?? DEFAULT_EXCLUDE_DONG} onChange={(e) => handleExcludeDongChange(e.target.checked)}>
+          동지역 제외
+        </Checkbox>
+      )}
     </div>
   );
 };
