@@ -1,7 +1,8 @@
+import { getKeyByValue } from "~/features/visualization/utils/getKeyByValue";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import HibernationVegetableCultivationChart from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationChart";
 import HibernationVegetableCultivationMapContent from "~/maps/components/hibernationVegetableCultivation/HibernationVegetableCultivationMapContent";
-import { CropType, DEFAULT_CROP, DEFAULT_TARGET_YEAR } from "~/maps/constants/hibernationVegetableCultivation";
+import { CROP_TYPE, CropType, DEFAULT_CROP, DEFAULT_TARGET_YEAR } from "~/maps/constants/hibernationVegetableCultivation";
 import { MapOptions } from "~/maps/constants/mapOptions";
 
 class HibernationVegetableCultivationMap extends CommonBackgroundMap {
@@ -37,12 +38,21 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
     }
   }
 
-  renderMap() {
-    return <HibernationVegetableCultivationMapContent mapId={this.mapId} />;
+  getFilterText() {
+    const filterParts = super.getFilterText();
+
+    filterParts.push(`${this.#selectedTargetYear}년`);
+    filterParts.push(`${getKeyByValue(CROP_TYPE, this.#selectedCrop)}`);
+
+    return filterParts;
+  }
+
+  renderMap(onClickFullScreen: (mapId: string) => void, getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
+    return <HibernationVegetableCultivationMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
   renderChart() {
-    return <HibernationVegetableCultivationChart />;
+    return <HibernationVegetableCultivationChart map={this} />;
   }
 
   /**

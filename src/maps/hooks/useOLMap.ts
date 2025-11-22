@@ -40,6 +40,9 @@ const useOLMap = (mapId: string, { center, zoom, extent, ...mapOptions }: UseOLM
         view: new View({
           center: memoizedCenter,
           zoom,
+          /**
+           * 지도 범위 제한
+           */
           extent: memoizedExtent,
           /**
            * OpenLayers의 기본 최대/최소 줌 레벨 설정

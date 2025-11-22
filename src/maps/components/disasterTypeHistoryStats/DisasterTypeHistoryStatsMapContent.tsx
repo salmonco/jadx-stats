@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import dayjs, { Dayjs } from "dayjs";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import CropFilter from "~/features/visualization/components/common/CropFilter";
 import CultivationTypeFilter from "~/features/visualization/components/common/CultivationTypeFilter";
 import DateRangeFilter from "~/features/visualization/components/common/DateRangeFilter";
@@ -22,21 +21,15 @@ import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
+  onClickFullScreen: (mapId: string) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
+const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen, getPopupContainer }: Props) => {
   const mapList = useMapList<DisasterTypeHistoryStatsMap>();
   const map = mapList.getMapById(mapId);
 
   const { layerManager, ready, map: olMap } = useSetupOL(mapId, 10.5, "jeju");
-
-  const [startDate, setStartDate] = useState<Dayjs | null>(dayjs().subtract(1, "years"));
-  const [endDate, setEndDate] = useState<Dayjs | null>(dayjs());
-
-  const handleDateRangeChange = (dates: [Dayjs | null, Dayjs | null]) => {
-    setStartDate(dates[0]);
-    setEndDate(dates[1]);
-  };
 
   const { selectedRegion, setSelectedRegion, filterFeatures } = useRegionFilter(map.regionFilterSetting);
 
@@ -53,7 +46,11 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
     retry: 1,
   });
 
-  // TODO: 신규 api 추가
+  /**
+   * @todo DISASTER_TYPE_HISTORY_MOCK_DATA 목데이터를 실제 API 요청으로 대체해야 합니다.
+   * - 1. 요청 쿼리 파라미터: startDate, endDate, 지역 구분(level), 재해 구분(disaster_name), 품종(pummok), 세부품종(variety)
+   * - 2. 응답 properties: 지역명(vrbs_nm), 총 피해 면적, 피해 농가수, 노지 재배 피해 면적, 시설 재배 피해 면적
+   */
   //  const { data: features } = useQuery({
   //   queryKey: ["mandarinCultivationInfoFeatures", map.getSelectedRegionLevel(), map.selectedCropGroup, map.selectedCropDetailGroup],
   //   queryFn: () =>
@@ -75,7 +72,7 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
     : null;
 
   const createDisasterTypeHistoryStatsLayer = async (features: DisasterTypeHistoryStatsFeatureCollection, visualizationSetting: VisualizationSetting) => {
-    return DisasterTypeHistoryStatsLayer.createLayer(features, visualizationSetting, map.selectedCultivationType);
+    return DisasterTypeHistoryStatsLayer.createLayer(features, visualizationSetting, map.mapType, map.selectedCultivationType);
   };
 
   useVisualizationLayer({
@@ -108,14 +105,30 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+    <ListManagedBackgroundMap
+      layerManager={layerManager}
+      ready={ready}
+      mapId={mapId}
+      map={olMap}
+      onClickFullScreen={onClickFullScreen}
+      getPopupContainer={getPopupContainer}
+    >
       <FloatingContainer
         filter={
           <>
             {/* 기간 설정 */}
-            <DateRangeFilter title="기간 설정" startDate={startDate} endDate={endDate} onDateRangeChange={handleDateRangeChange} />
+            <DateRangeFilter
+              title="기간 설정"
+              startDate={map.selectedStartDate}
+              endDate={map.selectedEndDate}
+              onDateRangeChange={([startDate, endDate]) => {
+                map.setSelectedStartDate(startDate);
+                map.setSelectedEndDate(endDate);
+              }}
+              getPopupContainer={getPopupContainer}
+            />
             {/* 지역 선택 */}
-            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
+            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} getPopupContainer={getPopupContainer} />
             {/* 재해 구분 */}
             <DisasterFilter
               options={disasterOptionsMap}
@@ -125,15 +138,17 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
               selectedSecond={""} // 세부 항목 선택 기능은 미적용
               onSecondSelect={() => {}} // 세부 항목 선택 기능은 미적용
               hasSecondDepth={hasSecondDepth}
+              getPopupContainer={getPopupContainer}
             />
             {/* 품목, 세부 품목 */}
-            <CropFilter cropList={cropList} map={map} />
+            <CropFilter cropList={cropList} map={map} getPopupContainer={getPopupContainer} />
             {/* 재배 방식 */}
             <CultivationTypeFilter
               title="재배 방식"
               options={CULTIVATION_TYPE_OPTIONS}
               selectedValue={map.selectedCultivationType}
               onSelectionChange={map.setSelectedCultivationType}
+              getPopupContainer={getPopupContainer}
             />
           </>
         }

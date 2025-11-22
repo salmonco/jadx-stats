@@ -16,9 +16,11 @@ import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
+  onClickFullScreen: (mapId: string) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
+const HibernationVegetableCultivationMapContent = ({ mapId, onClickFullScreen, getPopupContainer }: Props) => {
   const mapList = useMapList<HibernationVegetableCultivationMap>();
   const map = mapList.getMapById(mapId);
 
@@ -29,7 +31,8 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
   const { data: features } = useQuery({
     queryKey: ["hibernationVegetableCultivationFeatures", map.selectedTargetYear, selectedRegion.구분],
     queryFn: () => visualizationApi.getHinatVgtblCltvarDclrFile(map.selectedTargetYear, map.selectedTargetYear - 1, selectedRegion.구분),
-    enabled: !!ready,
+    // TODO: 지도와 차트 간 ready 상태 공유
+    // enabled: !!ready,
   });
 
   const filteredFeatures = features
@@ -40,7 +43,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
     : null;
 
   const createHibernationLayer = async (features: any, visualizationSetting: any) => {
-    return HibernationVegetableCultivationLayer.createLayer(features, visualizationSetting, map.selectedCrop);
+    return HibernationVegetableCultivationLayer.createLayer(features, visualizationSetting, map.mapType, map.selectedCrop);
   };
 
   useVisualizationLayer({
@@ -60,13 +63,31 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+    <ListManagedBackgroundMap
+      layerManager={layerManager}
+      ready={ready}
+      mapId={mapId}
+      map={olMap}
+      onClickFullScreen={onClickFullScreen}
+      getPopupContainer={getPopupContainer}
+    >
       <FloatingContainer
         filter={
           <>
-            <YearFilter targetYear={TARGET_YEAR} selectedTargetYear={map.selectedTargetYear} setSelectedTargetYear={map.setSelectedTargetYear} />
-            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} />
-            <VegetableFilter title="작물 종류" options={CROP_LEGEND_ITEMS} selectedValues={map.selectedCrop} onSelectionChange={map.setSelectedCrop} />
+            <YearFilter
+              targetYear={TARGET_YEAR}
+              selectedTargetYear={map.selectedTargetYear}
+              setSelectedTargetYear={map.setSelectedTargetYear}
+              getPopupContainer={getPopupContainer}
+            />
+            <RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} getPopupContainer={getPopupContainer} />
+            <VegetableFilter
+              title="작물 종류"
+              options={CROP_LEGEND_ITEMS}
+              selectedValues={map.selectedCrop}
+              onSelectionChange={map.setSelectedCrop}
+              getPopupContainer={getPopupContainer}
+            />
           </>
         }
         visualizationSetting={

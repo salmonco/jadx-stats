@@ -1,12 +1,13 @@
+import { getKeyByValue } from "~/features/visualization/utils/getKeyByValue";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import CropDistributionChart from "~/maps/components/cropDistribution/CropDistributionChart";
 import CropDistributionMapContent from "~/maps/components/cropDistribution/CropDistributionMapContent";
-import { CropLevel, DEFAULT_CROP_LEVEL } from "~/maps/constants/cropDistribution";
+import { CROP_LEVEL, CropLevel, DEFAULT_CROP_LEVEL } from "~/maps/constants/cropDistribution";
 import { MapOptions } from "~/maps/constants/mapOptions";
 class CropDistributionMap extends CommonBackgroundMap {
   #selectedCropLevel: CropLevel = DEFAULT_CROP_LEVEL;
 
-  #selectedCrop = null;
+  #selectedCrops: string[] = [];
 
   constructor(mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) {
     super(mapOptions, title, tooltip);
@@ -14,11 +15,39 @@ class CropDistributionMap extends CommonBackgroundMap {
     // useSyncExternalStore에 전달될 때 인스턴스를 가리키도록 this 바인딩
     this.getSnapshot = this.getSnapshot.bind(this);
     this.setSelectedCropLevel = this.setSelectedCropLevel.bind(this);
-    this.setSelectedCrop = this.setSelectedCrop.bind(this);
+    this.setSelectedCrops = this.setSelectedCrops.bind(this);
   }
 
-  renderMap() {
-    return <CropDistributionMapContent mapId={this.mapId} />;
+  getShareableState() {
+    const state = super.getShareableState();
+    return {
+      ...state,
+      selectedCropLevel: this.selectedCropLevel,
+      selectedCrops: this.selectedCrops,
+    };
+  }
+
+  applySharedState(state: Record<string, any>) {
+    super.applySharedState(state);
+    if (state.selectedCropLevel) {
+      this.setSelectedCropLevel(state.selectedCropLevel);
+    }
+    if (state.selectedCrops) {
+      this.setSelectedCrops(state.selectedCrops);
+    }
+  }
+
+  getFilterText() {
+    const filterParts = super.getFilterText();
+
+    filterParts.push(`${getKeyByValue(CROP_LEVEL, this.#selectedCropLevel)}`);
+    filterParts.push(`${this.#selectedCrops.length > 0 ? this.#selectedCrops.join(", ") : "전체"}`);
+
+    return filterParts;
+  }
+
+  renderMap(onClickFullScreen: (mapId: string) => void, getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
+    return <CropDistributionMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
   renderChart() {
@@ -26,7 +55,7 @@ class CropDistributionMap extends CommonBackgroundMap {
   }
 
   getSnapshot() {
-    return `${super.getSnapshot()}-${this.#selectedCropLevel}-${this.#selectedCrop}`;
+    return `${super.getSnapshot()}-${this.#selectedCropLevel}-${this.#selectedCrops.join(",")}`;
   }
 
   get selectedCropLevel() {
@@ -38,12 +67,12 @@ class CropDistributionMap extends CommonBackgroundMap {
     this.notifyListeners();
   }
 
-  get selectedCrop() {
-    return this.#selectedCrop;
+  get selectedCrops() {
+    return this.#selectedCrops;
   }
 
-  setSelectedCrop(crop: string | null) {
-    this.#selectedCrop = crop;
+  setSelectedCrops(crops: string[]) {
+    this.#selectedCrops = crops;
     this.notifyListeners();
   }
 }

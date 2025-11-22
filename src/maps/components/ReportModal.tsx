@@ -1,10 +1,7 @@
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { FileText, Printer, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { getKeyByValue } from "~/features/visualization/utils/getKeyByValue";
-import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
-import { REGION_LEVEL_OPTIONS } from "~/features/visualization/utils/regionLevelOptions";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import { ExtendedOLMap } from "../hooks/useOLMap";
 
@@ -25,6 +22,7 @@ const PAGE_HEIGHT = 297;
 const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Props<M>) => {
   const [mapImage, setMapImage] = useState<string | null>(null);
   const [legendImage, setLegendImage] = useState<string | null>(null);
+  const [chartImage, setChartImage] = useState<string | null>(null);
   const reportContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,6 +38,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       return;
     }
 
+    // Capture map
     const mapViewport = olMap.getViewport();
 
     if (mapViewport) {
@@ -55,7 +54,9 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       console.error("Map viewport element not found.");
     }
 
-    const legendElement = document.querySelector(".legend-container");
+    // Capture legend
+    const parentElement = olMap.getTargetElement().parentElement;
+    const legendElement = parentElement ? parentElement.querySelector(".legend-container") : null;
 
     if (legendElement) {
       try {
@@ -70,36 +71,30 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     } else {
       console.error("Legend element not found.");
     }
+
+    // Capture chart
+    const chartElement = document.getElementById("main-chart-container");
+    if (chartElement.hasChildNodes()) {
+      try {
+        const canvas = await html2canvas(chartElement, {
+          useCORS: true,
+        });
+        setChartImage(canvas.toDataURL());
+      } catch (error) {
+        console.error("Error capturing chart:", error);
+      }
+    } else {
+      console.error("Chart element not found.");
+    }
   };
 
-  const filterText = (() => {
-    const filterParts: string[] = [];
-    const regionSetting = map.regionFilterSetting;
-
-    const selectedRegionLevel = getKeyByValue(REGION_LEVEL_OPTIONS, regionSetting.구분);
-    if (selectedRegionLevel) {
-      filterParts.push(selectedRegionLevel);
+  const filterText = useMemo(() => {
+    const parts = map.getFilterText();
+    if (parts.length > 0) {
+      return parts.join(" + ");
     }
-
-    if (regionSetting.행정시 && regionSetting.행정시 !== DEFAULT_ALL_OPTION) {
-      filterParts.push(regionSetting.행정시);
-    }
-    if (regionSetting.권역 && regionSetting.권역.length > 0) {
-      filterParts.push(regionSetting.권역.join(", "));
-    }
-    if (regionSetting.읍면 && regionSetting.읍면.length > 0) {
-      filterParts.push(regionSetting.읍면.join(", "));
-    }
-    if (regionSetting.리동 && regionSetting.리동.length > 0) {
-      filterParts.push(regionSetting.리동.join(", "));
-    }
-
-    if (filterParts.length > 0) {
-      return filterParts.join(" + ");
-    }
-
     return "적용된 필터가 없습니다.";
-  })();
+  }, [map]);
 
   const handlePrint = () => {
     window.print();
@@ -185,6 +180,12 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
               {legendImage && <img className="absolute bottom-0 left-2 max-h-[200px] max-w-[200px]" src={legendImage} alt="Legend Capture" />}
             </div>
           </div>
+          {chartImage && (
+            <div className="mb-4 rounded-md border p-4">
+              <h3 className="mb-2 text-lg font-bold">지역별 그래프</h3>
+              <img src={chartImage} alt="Chart Capture" className="w-full" />
+            </div>
+          )}
         </div>
       </div>
     </div>

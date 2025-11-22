@@ -1,3 +1,4 @@
+import { BackgroundMapType } from "~/maps/constants/backgroundMapType";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import { formatAreaHa } from "~/utils/format";
 import { BaseFeature, BaseFeatureCollection, BaseVisualizationLayer } from "./BaseVisualizationLayer";
@@ -21,8 +22,14 @@ type HibernationFeature = BaseFeature<HibernationProperties>;
 export class HibernationVegetableCultivationLayer extends BaseVisualizationLayer<HibernationProperties> {
   private selectedCrop: string;
 
-  constructor(featureCollection: HibernationFeatureCollection, verboseName: string | null, visualizationSetting: VisualizationSetting, selectedCrop: string) {
-    super(featureCollection, verboseName, visualizationSetting);
+  constructor(
+    featureCollection: HibernationFeatureCollection,
+    verboseName: string | null,
+    visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
+    selectedCrop: string
+  ) {
+    super(featureCollection, verboseName, visualizationSetting, mapType);
     this.selectedCrop = selectedCrop;
   }
 
@@ -82,10 +89,11 @@ export class HibernationVegetableCultivationLayer extends BaseVisualizationLayer
   public static async createLayer(
     featureCollection: HibernationFeatureCollection,
     visualizationSetting: VisualizationSetting,
+    mapType: BackgroundMapType,
     selectedCrop: string
   ): Promise<HibernationVegetableCultivationLayer> {
     try {
-      const layer = new HibernationVegetableCultivationLayer(featureCollection, "월동채소 재배현황", visualizationSetting, selectedCrop);
+      const layer = new HibernationVegetableCultivationLayer(featureCollection, "월동채소 재배현황", visualizationSetting, mapType, selectedCrop);
       return layer;
     } catch (error) {
       throw new Error("Failed to create HibernationVegetableCultivationLayer: " + error.message);

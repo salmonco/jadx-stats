@@ -1,15 +1,18 @@
-import { Select } from "antd";
+import { Checkbox, Select } from "antd";
 import { useCallback, useEffect, useMemo } from "react";
-import { DEFAULT_ALL_OPTION, REGION_LEVEL_LABEL, RegionFilterOptions, withAllOption } from "~/features/visualization/utils/regionFilterOptions";
+import { DEFAULT_ALL_OPTION, DEFAULT_EXCLUDE_DONG, REGION_LEVEL_LABEL, RegionFilterOptions, withAllOption } from "~/features/visualization/utils/regionFilterOptions";
 import { REGION_LEVEL_OPTIONS, RegionLevelOptions, regionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { toOptions } from "~/features/visualization/utils/toOptions";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
+import { AEWOL_CENTER_COORD, DEFAULT_ZOOM_LEVEL, DEFAULT_ZOOM_LEVEL_FOR_AEWOL, jejuCenterCoord } from "~/maps/constants/gisConstants";
 
 interface Props<M> {
   features: any;
   selectedRegion: RegionFilterOptions;
   setSelectedRegion: (value: RegionFilterOptions | ((prev: RegionFilterOptions) => RegionFilterOptions)) => void;
   map: M;
+  showExcludeDong?: boolean;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
 const processMultiSelect = (currentValues: string[]) => {
@@ -23,7 +26,7 @@ const processMultiSelect = (currentValues: string[]) => {
   return currentValues;
 };
 
-const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion, setSelectedRegion, map }: Props<M>) => {
+const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion, setSelectedRegion, map, showExcludeDong = false, getPopupContainer }: Props<M>) => {
   const currentOptions = useMemo(() => {
     if (!features) {
       return [];
@@ -34,7 +37,8 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
 
   useEffect(() => {
     map.setRegionFilterSetting(selectedRegion);
-  }, [selectedRegion]);
+    map.setExcludeDong(selectedRegion.excludeDong ?? DEFAULT_EXCLUDE_DONG);
+  }, [selectedRegion, map]);
 
   const currentValue = (() => {
     switch (selectedRegion.구분) {
@@ -55,15 +59,24 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
 
   const handleLevelChange = useCallback(
     (newLevel: RegionLevelOptions) => {
-      setSelectedRegion(() => ({
-        구분: newLevel,
-        행정시: null,
-        권역: [],
-        읍면: [],
-        리동: [],
-      }));
+      setSelectedRegion((prev) => {
+        if (newLevel === REGION_LEVEL_OPTIONS.리동) {
+          // 애월 지역으로 줌인
+          map.setMapView(AEWOL_CENTER_COORD, DEFAULT_ZOOM_LEVEL_FOR_AEWOL);
+        } else if (prev.구분 === REGION_LEVEL_OPTIONS.리동) {
+          // 제주 전체 지역으로 줌아웃
+          map.setMapView(jejuCenterCoord, DEFAULT_ZOOM_LEVEL);
+        }
+        return {
+          구분: newLevel,
+          행정시: null,
+          권역: [],
+          읍면: [],
+          리동: [],
+        };
+      });
     },
-    [setSelectedRegion]
+    [setSelectedRegion, map, selectedRegion]
   );
 
   const handleValueChange = useCallback(
@@ -97,13 +110,43 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
     [setSelectedRegion]
   );
 
+  const handleExcludeDongChange = useCallback(
+    (checked: boolean) => {
+      setSelectedRegion((prev) => ({
+        ...prev,
+        excludeDong: checked,
+      }));
+    },
+    [setSelectedRegion]
+  );
+
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[18px] font-semibold">지역선택</p>
-      <Select title={REGION_LEVEL_LABEL} options={regionLevelOptions} value={selectedRegion.구분} onChange={handleLevelChange} size="large" />
+      <p className="text-sm font-bold">지역선택</p>
+      <Select
+        title={REGION_LEVEL_LABEL}
+        options={regionLevelOptions}
+        value={selectedRegion.구분}
+        onChange={handleLevelChange}
+        size="large"
+        getPopupContainer={getPopupContainer}
+      />
 
       {selectedRegion.구분 !== REGION_LEVEL_OPTIONS.제주도 && (
-        <Select options={toOptions(currentOptions)} value={currentValue} onChange={handleValueChange} mode={isMulti ? "multiple" : undefined} size="large" />
+        <Select
+          options={toOptions(currentOptions)}
+          value={currentValue}
+          onChange={handleValueChange}
+          mode={isMulti ? "multiple" : undefined}
+          size="large"
+          getPopupContainer={getPopupContainer}
+        />
+      )}
+
+      {showExcludeDong && (
+        <Checkbox checked={selectedRegion.excludeDong ?? DEFAULT_EXCLUDE_DONG} onChange={(e) => handleExcludeDongChange(e.target.checked)}>
+          동지역 제외
+        </Checkbox>
       )}
     </div>
   );

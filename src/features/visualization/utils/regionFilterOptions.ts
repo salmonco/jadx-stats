@@ -2,6 +2,7 @@ import { DEFAULT_REGION_LEVEL, RegionLevelOptions } from "~/features/visualizati
 
 export const REGION_LEVEL_LABEL = "구분";
 export const DEFAULT_ALL_OPTION = "전체";
+export const DEFAULT_EXCLUDE_DONG = false;
 
 export type RegionFilterOptions = {
   구분: RegionLevelOptions;
@@ -9,6 +10,7 @@ export type RegionFilterOptions = {
   권역?: string[];
   읍면?: string[];
   리동?: string[];
+  excludeDong?: boolean;
 };
 
 export const DEFAULT_REGION_SETTING: RegionFilterOptions = {
@@ -17,6 +19,7 @@ export const DEFAULT_REGION_SETTING: RegionFilterOptions = {
   권역: [],
   읍면: [],
   리동: [],
+  excludeDong: DEFAULT_EXCLUDE_DONG,
 };
 
 export const withAllOption = (options: readonly string[]) => [DEFAULT_ALL_OPTION, ...options];

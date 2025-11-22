@@ -15,12 +15,19 @@ interface CropMapProps {
 interface Props<M> {
   cropList: Record<string, Record<string, string[]>>;
   map: M;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const CropFilter = <M extends CommonBackgroundMap & CropMapProps>({ cropList, map }: Props<M>) => {
+const CropFilter = <M extends CommonBackgroundMap & CropMapProps>({ cropList, map, getPopupContainer }: Props<M>) => {
   const [selectedCropPummok, setSelectedCropPummok] = useState<string>(map.selectedCropPummok);
   const [selectedCropGroup, setSelectedCropGroup] = useState<string>(map.selectedCropGroup);
   const [selectedCropDetailGroup, setSelectedCropDetailGroup] = useState<string>(map.selectedCropDetailGroup);
+
+  useEffect(() => {
+    setSelectedCropPummok(map.selectedCropPummok);
+    setSelectedCropGroup(map.selectedCropGroup);
+    setSelectedCropDetailGroup(map.selectedCropDetailGroup);
+  }, [map.selectedCropPummok, map.selectedCropGroup, map.selectedCropDetailGroup]);
 
   const pummokOptions = useMemo(() => {
     if (!cropList) {
@@ -66,14 +73,32 @@ const CropFilter = <M extends CommonBackgroundMap & CropMapProps>({ cropList, ma
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[18px] font-semibold">품목</p>
-      <Select options={pummokOptions.map((p) => ({ label: p, value: p }))} value={selectedCropPummok} onChange={handlePummokChange} size="large" />
+      <p className="text-sm font-bold">품목</p>
+      <Select
+        options={pummokOptions.map((p) => ({ label: p, value: p }))}
+        value={selectedCropPummok}
+        onChange={handlePummokChange}
+        size="large"
+        getPopupContainer={getPopupContainer}
+      />
 
-      <p className="text-[18px] font-semibold">품종</p>
-      <Select options={groupOptions.map((v) => ({ label: v, value: v }))} value={selectedCropGroup} onChange={handleGroupChange} size="large" />
+      <p className="text-sm font-bold">품종</p>
+      <Select
+        options={groupOptions.map((v) => ({ label: v, value: v }))}
+        value={selectedCropGroup}
+        onChange={handleGroupChange}
+        size="large"
+        getPopupContainer={getPopupContainer}
+      />
 
-      <p className="text-[18px] font-semibold">세부 품종</p>
-      <Select options={detailGroupOptions.map((d) => ({ label: d, value: d }))} value={selectedCropDetailGroup} onChange={handleDetailGroupChange} size="large" />
+      <p className="text-sm font-bold">세부 품종</p>
+      <Select
+        options={detailGroupOptions.map((d) => ({ label: d, value: d }))}
+        value={selectedCropDetailGroup}
+        onChange={handleDetailGroupChange}
+        size="large"
+        getPopupContainer={getPopupContainer}
+      />
     </div>
   );
 };

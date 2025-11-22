@@ -11,12 +11,13 @@ interface VegetableFilterProps {
   options: VegetableFilterOption[];
   selectedValues: CropType;
   onSelectionChange: (selected: CropType) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const VegetableFilter = ({ title, options, selectedValues, onSelectionChange }: VegetableFilterProps) => {
+const VegetableFilter = ({ title, options, selectedValues, onSelectionChange, getPopupContainer }: VegetableFilterProps) => {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[18px] font-semibold">{title}</p>
+      <p className="text-sm font-bold">{title}</p>
       <Select
         className="w-full"
         allowClear
@@ -28,6 +29,7 @@ const VegetableFilter = ({ title, options, selectedValues, onSelectionChange }: 
           label: opt.label,
         }))}
         size="large"
+        getPopupContainer={getPopupContainer}
       />
     </div>
   );

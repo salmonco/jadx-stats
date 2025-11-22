@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { cloneElement, useCallback, useEffect, useState } from "react";
 
 import OSMTileLayer from "~/maps/layers/OSMTileLayer";
 import TracestrackTileLayer from "~/maps/layers/TracestrackTileLayer";
@@ -16,11 +16,11 @@ import MiniMap from "~/maps/components/MiniMap";
 
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
+import FloatingContainer, { FloatingContainerProps } from "~/features/visualization/components/common/FloatingContainer";
 import LayerHeader from "~/maps/components/LayerHeader";
 import LayerSwitcher from "~/maps/components/LayerSwitcher";
 import MapTypeSwitcher from "~/maps/components/ListManagedMapTypeSwitcher";
 import { DEFAULT_MAP_OPTIONS } from "~/maps/constants/mapOptions";
-import useMapFullScreen from "~/maps/hooks/useMapFullscreen";
 import { ExtendedOLMap } from "~/maps/hooks/useOLMap";
 import "~/maps/styles/map.css";
 import { cn } from "~/utils/common";
@@ -37,6 +37,8 @@ interface BackgroundMapProps {
   mapId: string;
   map: ExtendedOLMap;
   children?: React.ReactNode;
+  onClickFullScreen: (mapId: string) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
 const MapLoadingOverlay = () => (
@@ -45,7 +47,7 @@ const MapLoadingOverlay = () => (
   </div>
 );
 
-const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMap, mapId, children }: BackgroundMapProps) => {
+const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMap, mapId, children, onClickFullScreen, getPopupContainer }: BackgroundMapProps) => {
   const mapList = useMapList();
   const map = mapList.getMapById(mapId);
 
@@ -62,7 +64,6 @@ const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMa
   // 툴 토글
   const { toggleTool } = useMapTools(layerManager, null, setSelectedFeature, setHighlightEnabled);
   const { toggleExport, contextHolder, isCreatingLayer } = useLayerExport({ layerManager, map: olMap, setLayersTrigger });
-  const { mapContainerRef, onClickFullScreen } = useMapFullScreen();
 
   // 레이어 컨트롤 드로어 토글
   const toggleDrawer = useCallback(() => {
@@ -80,6 +81,12 @@ const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMa
     };
   }, [ready, map?.mapType, layerManager]);
 
+  useEffect(() => {
+    if (olMap) {
+      map.setOlMap(olMap);
+    }
+  }, [olMap, map]);
+
   if (!map) {
     return null;
   }
@@ -87,12 +94,9 @@ const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMa
   const mergedMapOptions = { ...DEFAULT_MAP_OPTIONS, ...map.mapOptions };
 
   return (
-    <div
-      className={cn("relative h-full w-full border border-[#43516D]", mergedMapOptions?.roundCorners && "overflow-clip rounded-lg", mergedMapOptions?.className)}
-      ref={mapContainerRef}
-    >
+    <div className={cn("relative h-full w-full border border-[#43516D]", mergedMapOptions?.roundCorners && "overflow-clip rounded-lg", mergedMapOptions?.className)}>
       <div className="h-full w-full" id={mapId} />
-      <LayerHeader map={map} olMap={olMap} onClickFullScreen={onClickFullScreen} />
+      <LayerHeader map={map} olMap={olMap} onClickFullScreen={() => onClickFullScreen(mapId)} />
       {ready && (
         <>
           {mergedMapOptions?.miniMap && <MiniMap mainMap={olMap} />}
@@ -121,7 +125,9 @@ const ListManagedBackgroundMap = ({ layerManager, eventManager, ready, map: olMa
           {contextHolder}
         </>
       )}
-      {children}
+      {children && (children as React.ReactElement<FloatingContainerProps>).type === FloatingContainer
+        ? cloneElement(children as React.ReactElement<FloatingContainerProps>, { getPopupContainer })
+        : children}
     </div>
   );
 };

@@ -1,6 +1,9 @@
+import { Coordinate } from "ol/coordinate";
+import OLMap from "ol/Map";
 import { v4 as uuidv4 } from "uuid";
-import { DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
-import { RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
+import { getKeyByValue } from "~/features/visualization/utils/getKeyByValue";
+import { DEFAULT_ALL_OPTION, DEFAULT_EXCLUDE_DONG, DEFAULT_REGION_SETTING, RegionFilterOptions } from "~/features/visualization/utils/regionFilterOptions";
+import { REGION_LEVEL_OPTIONS, RegionLevelOptions } from "~/features/visualization/utils/regionLevelOptions";
 import { BackgroundMapType, DEFAULT_BACKGROUND_MAP_TYPE } from "~/maps/constants/backgroundMapType";
 import { MapOptions } from "~/maps/constants/mapOptions";
 import { DEFAULT_VISUALIZATION_SETTING, LegendColor, VisualizationSetting, VisualType } from "~/maps/constants/visualizationSetting";
@@ -8,9 +11,10 @@ import { DEFAULT_VISUALIZATION_SETTING, LegendColor, VisualizationSetting, Visua
 class CommonBackgroundMap {
   #mapId = uuidv4();
   #mapOptions: MapOptions;
-  #excludeDong = true;
+  #excludeDong = DEFAULT_EXCLUDE_DONG;
   #title: string;
   #tooltip: React.ReactNode | null;
+  #olMap: OLMap | null = null;
 
   /**
    * 지역 필터 설정
@@ -61,6 +65,11 @@ class CommonBackgroundMap {
     this.setLegendColor = this.setLegendColor.bind(this);
     this.setLegendPivotPoints = this.setLegendPivotPoints.bind(this);
     this.setVisualType = this.setVisualType.bind(this);
+    this.setOlMap = this.setOlMap.bind(this);
+    this.getShareableState = this.getShareableState.bind(this);
+    this.applySharedState = this.applySharedState.bind(this);
+    this.getFilterText = this.getFilterText.bind(this);
+    this.setExcludeDong = this.setExcludeDong.bind(this);
   }
 
   destroy() {
@@ -80,13 +89,45 @@ class CommonBackgroundMap {
   }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
-  renderMap() {
+  renderMap(_onClickFullScreen?: (mapId: string) => void, _getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
     return <></>;
   }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
   renderChart() {
-    return <></>;
+    return null;
+  }
+
+  setMapView(center: Coordinate, zoom: number) {
+    if (this.#olMap) {
+      this.#olMap.getView().setCenter(center);
+      this.#olMap.getView().setZoom(zoom);
+    }
+  }
+
+  getFilterText() {
+    const filterParts: string[] = [];
+    const regionSetting = this.regionFilterSetting;
+
+    const selectedRegionLevel = getKeyByValue(REGION_LEVEL_OPTIONS, regionSetting.구분);
+    if (selectedRegionLevel) {
+      filterParts.push(selectedRegionLevel); // 지역 구분
+    }
+
+    if (regionSetting.행정시 && regionSetting.행정시 !== DEFAULT_ALL_OPTION) {
+      filterParts.push(regionSetting.행정시);
+    }
+    if (regionSetting.권역 && regionSetting.권역.length > 0) {
+      filterParts.push(regionSetting.권역.join(", "));
+    }
+    if (regionSetting.읍면 && regionSetting.읍면.length > 0) {
+      filterParts.push(regionSetting.읍면.join(", "));
+    }
+    if (regionSetting.리동 && regionSetting.리동.length > 0) {
+      filterParts.push(regionSetting.리동.join(", "));
+    }
+
+    return filterParts;
   }
 
   /**
@@ -158,7 +199,7 @@ class CommonBackgroundMap {
    */
   getShareableState(): Record<string, any> {
     return {
-      mapType: this.mapType,
+      mapType: this.#mapType,
       regionFilterSetting: this.#regionFilterSetting,
       visualizationSetting: this.#visualizationSetting,
     };
@@ -240,6 +281,15 @@ class CommonBackgroundMap {
 
   get tooltip() {
     return this.#tooltip;
+  }
+
+  setOlMap(olMap: OLMap) {
+    this.#olMap = olMap;
+  }
+
+  setExcludeDong(excludeDong: boolean) {
+    this.#excludeDong = excludeDong;
+    this.notifyListeners();
   }
 }
 

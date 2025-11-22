@@ -50,7 +50,7 @@ const InsightsSection = () => {
 
         <div className="z-50 flex w-full gap-6">
           {data.map((item) => (
-            <InsightCards item={item} />
+            <InsightCards key={item.title} item={item} />
           ))}
         </div>
       </div>

@@ -21,12 +21,45 @@ class MandarinCultivationInfoMap extends CommonBackgroundMap {
     this.setSelectedCropDetailGroup = this.setSelectedCropDetailGroup.bind(this);
   }
 
-  renderMap() {
-    return <MandarinCultivationInfoMapContent mapId={this.mapId} />;
+  getShareableState() {
+    const state = super.getShareableState();
+    return {
+      ...state,
+      selectedCropPummok: this.selectedCropPummok,
+      selectedCropGroup: this.selectedCropGroup,
+      selectedCropDetailGroup: this.selectedCropDetailGroup,
+    };
+  }
+
+  applySharedState(state: Record<string, any>) {
+    super.applySharedState(state);
+    if (state.selectedCropPummok) {
+      this.setSelectedCropPummok(state.selectedCropPummok);
+    }
+    if (state.selectedCropGroup) {
+      this.setSelectedCropGroup(state.selectedCropGroup);
+    }
+    if (state.selectedCropDetailGroup) {
+      this.setSelectedCropDetailGroup(state.selectedCropDetailGroup);
+    }
+  }
+
+  getFilterText() {
+    const filterParts = super.getFilterText();
+
+    filterParts.push(this.#selectedCropPummok);
+    filterParts.push(this.#selectedCropGroup);
+    filterParts.push(this.#selectedCropDetailGroup);
+
+    return filterParts;
+  }
+
+  renderMap(onClickFullScreen: (mapId: string) => void, getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement) {
+    return <MandarinCultivationInfoMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
   renderChart() {
-    return <MandarinCultivationInfoChart />;
+    return <MandarinCultivationInfoChart map={this} />;
   }
 
   getSnapshot() {

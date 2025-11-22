@@ -11,13 +11,22 @@ interface CultivationTypeFilterProps {
   options: CultivationTypeFilterOption[];
   selectedValue: CultivationType;
   onSelectionChange: (selected: CultivationType) => void;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
 }
 
-const CultivationTypeFilter = ({ title, options, selectedValue, onSelectionChange }: CultivationTypeFilterProps) => {
+const CultivationTypeFilter = ({ title, options, selectedValue, onSelectionChange, getPopupContainer }: CultivationTypeFilterProps) => {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-[18px] font-semibold">{title}</p>
-      <Select className="w-full" placeholder="재배 방식을 선택하세요" value={selectedValue} onChange={onSelectionChange} options={options} size="large" />
+      <p className="text-sm font-bold">{title}</p>
+      <Select
+        className="w-full"
+        placeholder="재배 방식을 선택하세요"
+        value={selectedValue}
+        onChange={onSelectionChange}
+        options={options}
+        size="large"
+        getPopupContainer={getPopupContainer}
+      />
     </div>
   );
 };
