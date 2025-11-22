@@ -13,9 +13,10 @@ import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
+  onClickFullScreen: (mapId: string) => void;
 }
 
-const AgingStatusMapContent = ({ mapId }: Props) => {
+const AgingStatusMapContent = ({ mapId, onClickFullScreen }: Props) => {
   const mapList = useMapList<AgingStatusMap>();
   const map = mapList.getMapById(mapId);
 
@@ -55,7 +56,7 @@ const AgingStatusMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap} onClickFullScreen={onClickFullScreen}>
       <FloatingContainer
         filter={<RegionFilter features={features} selectedRegion={selectedRegion} setSelectedRegion={setSelectedRegion} map={map} showExcludeDong />}
         visualizationSetting={

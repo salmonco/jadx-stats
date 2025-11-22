@@ -14,7 +14,12 @@ import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
 import visualizationApi from "~/services/apis/visualizationApi";
 
-const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
+interface Props {
+  mapId: string;
+  onClickFullScreen: (mapId: string) => void;
+}
+
+const MandarinTreeAgeDistributionMapContent = ({ mapId, onClickFullScreen }: Props) => {
   const mapList = useMapList<MandarinTreeAgeDistributionMap>();
   const map = mapList.getMapById(mapId);
 
@@ -84,7 +89,7 @@ const MandarinTreeAgeDistributionMapContent = ({ mapId }) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap} onClickFullScreen={onClickFullScreen}>
       <FloatingContainer
         filter={
           <>

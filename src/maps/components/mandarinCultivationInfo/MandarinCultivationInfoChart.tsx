@@ -5,13 +5,13 @@ import MandarinCultivationInfoTable from "~/features/visualization/components/pr
 import MandarinCultivationPieChart from "~/features/visualization/components/production/MandarinCultivationPieChart";
 import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
 import MandarinCultivationInfoMap from "~/maps/classes/MandarinCultivationInfoMap";
-import { useMapList } from "~/maps/hooks/useMapList";
 import visualizationApi from "~/services/apis/visualizationApi";
 
-const MandarinCultivationInfoChart = () => {
-  const mapList = useMapList<MandarinCultivationInfoMap>();
-  const map = mapList.getFirstMap();
+interface Props {
+  map: MandarinCultivationInfoMap;
+}
 
+const MandarinCultivationInfoChart = ({ map }: Props) => {
   const { data: chartData } = useQuery({
     queryKey: ["mandarinCultivationInfoChart", map.getSelectedRegionLevel(), map.selectedCropPummok, map.selectedCropDetailGroup],
     queryFn: () =>

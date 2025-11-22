@@ -21,9 +21,10 @@ import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
+  onClickFullScreen: (mapId: string) => void;
 }
 
-const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
+const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen }: Props) => {
   const mapList = useMapList<DisasterTypeHistoryStatsMap>();
   const map = mapList.getMapById(mapId);
 
@@ -103,7 +104,7 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap} onClickFullScreen={onClickFullScreen}>
       <FloatingContainer
         filter={
           <>

@@ -16,9 +16,10 @@ import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
+  onClickFullScreen: (mapId: string) => void;
 }
 
-const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
+const HibernationVegetableCultivationMapContent = ({ mapId, onClickFullScreen }: Props) => {
   const mapList = useMapList<HibernationVegetableCultivationMap>();
   const map = mapList.getMapById(mapId);
 
@@ -60,7 +61,7 @@ const HibernationVegetableCultivationMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap} onClickFullScreen={onClickFullScreen}>
       <FloatingContainer
         filter={
           <>

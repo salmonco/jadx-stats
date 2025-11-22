@@ -6,13 +6,13 @@ import TreeAgeSimulationChart from "~/features/visualization/components/observat
 import { MandarinTreeAgeDistributionFeatureCollection } from "~/features/visualization/layers/MandarinTreeAgeDistributionLayer";
 import { DEFAULT_ALL_OPTION } from "~/features/visualization/utils/regionFilterOptions";
 import MandarinTreeAgeDistributionMap from "~/maps/classes/MandarinTreeAgeDistributionMap";
-import { useMapList } from "~/maps/hooks/useMapList";
 import visualizationApi from "~/services/apis/visualizationApi";
 
-const MandarinTreeAgeDistributionChart = () => {
-  const mapList = useMapList<MandarinTreeAgeDistributionMap>();
-  const map = mapList.getFirstMap();
+interface Props {
+  map: MandarinTreeAgeDistributionMap;
+}
 
+const MandarinTreeAgeDistributionChart = ({ map }: Props) => {
   const { data: features } = useQuery<MandarinTreeAgeDistributionFeatureCollection>({
     queryKey: [
       "treeAgeDistributionFeatures",

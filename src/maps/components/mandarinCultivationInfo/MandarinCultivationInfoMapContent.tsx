@@ -16,9 +16,10 @@ import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   mapId: string;
+  onClickFullScreen: (mapId: string) => void;
 }
 
-const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
+const MandarinCultivationInfoMapContent = ({ mapId, onClickFullScreen }: Props) => {
   const mapList = useMapList<MandarinCultivationInfoMap>();
   const map = mapList.getMapById(mapId);
 
@@ -71,7 +72,7 @@ const MandarinCultivationInfoMapContent = ({ mapId }: Props) => {
   }
 
   return (
-    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap}>
+    <ListManagedBackgroundMap layerManager={layerManager} ready={ready} mapId={mapId} map={olMap} onClickFullScreen={onClickFullScreen}>
       <FloatingContainer
         filter={
           <>

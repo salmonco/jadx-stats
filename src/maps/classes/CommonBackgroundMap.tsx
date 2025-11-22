@@ -89,13 +89,13 @@ class CommonBackgroundMap {
   }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
-  renderMap() {
+  renderMap(_onClickFullScreen?: (mapId: string) => void) {
     return <></>;
   }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
   renderChart() {
-    return <></>;
+    return null;
   }
 
   setMapView(center: Coordinate, zoom: number) {
