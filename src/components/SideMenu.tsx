@@ -9,6 +9,7 @@ import { ADMIN_AUTH, PRIV_AUTH } from "~/utils/common";
 
 interface Props {
   menuItems: MenuItem[];
+  sectionKey: string; // "spc", "bsc" 등 최상위 섹션 키
 }
 
 const filterMenuByAuth = (items: MenuItem[], auth: string | null): MenuItem[] => {
@@ -65,29 +66,33 @@ const filterMenuByAuth = (items: MenuItem[], auth: string | null): MenuItem[] =>
   return prune(items);
 };
 
-const SideMenu = ({ menuItems }: Props) => {
+const SideMenu = ({ menuItems, sectionKey }: Props) => {
   const location = useLocation();
   const pathSegments = location.pathname.split("/").filter(Boolean);
-  const fullKey = pathSegments.slice(2).join("/");
-  const openKeys = pathSegments.slice(2, -1).map((_, i, arr) => arr.slice(0, i + 1).join("/"));
-  const currentKey = pathSegments[1];
+
+  // /stats/spc/prod/aging -> ["stats", "spc", "prod", "aging"]
+  // sectionKey 이후의 경로를 fullKey로 사용
+  const sectionIndex = pathSegments.indexOf(sectionKey);
+  const fullKey = sectionIndex >= 0 ? pathSegments.slice(sectionIndex + 1).join("/") : "";
+
+  // 부모 메뉴들을 자동으로 열기 위한 openKeys 계산
+  const openKeys = sectionIndex >= 0 ? pathSegments.slice(sectionIndex + 1, -1).map((_, i, arr) => arr.slice(0, i + 1).join("/")) : [];
+
   const [collapsed, setCollapsed] = useState(false);
 
   const { auth } = useAuth();
 
-  // URL에 따라 메뉴 타이틀 결정
+  // 메뉴 타이틀 결정
   const getMenuTitle = () => {
-    const secondSegment = pathSegments[1];
-    if (secondSegment === "spc") return "특화통계";
-    if (secondSegment === "bsc") return "일반통계";
+    if (sectionKey === "spc") return "특화통계";
+    if (sectionKey === "bsc") return "일반통계";
     return "통계"; // 기본값
   };
 
-  // URL에 따라 아이콘 결정
+  // 아이콘 결정
   const getMenuIcon = () => {
-    const secondSegment = pathSegments[1];
-    if (secondSegment === "spc") return <Map strokeWidth={2} size={20} />;
-    if (secondSegment === "bsc") return <ChartLine strokeWidth={2} size={20} />;
+    if (sectionKey === "spc") return <Map strokeWidth={2} size={20} />;
+    if (sectionKey === "bsc") return <ChartLine strokeWidth={2} size={20} />;
     return <Map strokeWidth={2} size={22} />;
   };
 
@@ -107,7 +112,7 @@ const SideMenu = ({ menuItems }: Props) => {
 
       return (
         <Menu.Item key={fullKey} className="side-menu-item">
-          <Link to={`/${currentKey}/${fullKey}`}>{item.label}</Link>
+          <Link to={`/${sectionKey}/${fullKey}`}>{item.label}</Link>
         </Menu.Item>
       );
     });
