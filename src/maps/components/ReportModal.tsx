@@ -168,7 +168,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       const mapContentImage = mapContent ? await captureAsImage(mapContent as HTMLElement) : "";
       const mapSectionHtml = mapContentImage
         ? `
-        <div style="margin-bottom: 16px; padding: 16px;">
+        <div style="margin-bottom: 16px; padding: 16px; page-break-inside: avoid;">
           ${createTitleHtml(mapIconSvg, "지도 시각화 화면")}
           <img src="${mapContentImage}" style="width: 100%; height: auto; display: block; border-radius: 8px;" />
         </div>
@@ -189,21 +189,27 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
           if (chartWrapper) {
             const individualCharts = Array.from(chartWrapper.children);
 
-            // 타이틀 HTML
-            chartSectionsHtml += `
-              <div style="margin-bottom: 16px; padding: 16px 16px 0 16px;">
-                ${createTitleHtml(icon, title)}
-              </div>
-            `;
-
             // 개별 차트들
-            for (const chart of individualCharts) {
+            for (let j = 0; j < individualCharts.length; j++) {
+              const chart = individualCharts[j];
               const chartImage = await captureAsImage(chart as HTMLElement);
-              chartSectionsHtml += `
-                <div style="padding: 0 16px 16px 16px;">
-                  <img src="${chartImage}" style="width: 100%; height: auto; display: block;" />
-                </div>
-              `;
+
+              if (j === 0) {
+                // 첫 번째 차트는 타이틀과 함께
+                chartSectionsHtml += `
+                  <div style="margin-bottom: 16px; padding: 16px; page-break-inside: avoid;">
+                    ${createTitleHtml(icon, title)}
+                    <img src="${chartImage}" style="width: 100%; height: auto; display: block;" />
+                  </div>
+                `;
+              } else {
+                // 나머지 차트들은 개별
+                chartSectionsHtml += `
+                  <div style="padding: 0 16px 16px 16px; page-break-inside: avoid;">
+                    <img src="${chartImage}" style="width: 100%; height: auto; display: block;" />
+                  </div>
+                `;
+              }
             }
           }
         } else {
@@ -216,7 +222,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
           document.body.removeChild(tempDiv);
 
           chartSectionsHtml += `
-            <div style="margin-bottom: 16px; padding: 16px;">
+            <div style="margin-bottom: 16px; padding: 16px; page-break-inside: avoid;">
               ${createTitleHtml(icon, title)}
               <img src="${contentImage}" style="width: 100%; height: auto; display: block;" />
             </div>
