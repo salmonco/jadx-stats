@@ -33,22 +33,24 @@ const AgingStatusChart = ({ map, isReportMode }: Props) => {
   if (isReportMode) {
     return (
       <>
-        <div className="mb-4 w-full p-4">
+        <div className="report-section w-full p-4">
           <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
             <Table size={24} />
             <span>데이터 표</span>
           </h3>
-          <AgingStatusTable chartData={chartData} isReportMode={true} />
+          <AgingStatusTable chartData={chartData} isReportMode />
         </div>
-        <div className="mb-4 w-full p-4">
-          <div className="mb-4">
+        <div className="w-full p-4">
+          <div className="report-section flex flex-col gap-2">
             <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
               <BarChart3 size={24} />
               <span>데이터 그래프</span>
             </h3>
-            <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} isReportMode={true} />
+            <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} isReportMode />
           </div>
-          <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} isReportMode={true} />
+          <div className="report-section">
+            <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} isReportMode />
+          </div>
         </div>
       </>
     );
@@ -56,10 +58,10 @@ const AgingStatusChart = ({ map, isReportMode }: Props) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <AgingStatusTable chartData={chartData} isReportMode={isReportMode} />
+      <AgingStatusTable chartData={chartData} />
       <ChartContainer cols={2} minHeight={500}>
-        <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} isReportMode={isReportMode} />
-        <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} isReportMode={isReportMode} />
+        <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} />
+        <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} />
       </ChartContainer>
     </div>
   );

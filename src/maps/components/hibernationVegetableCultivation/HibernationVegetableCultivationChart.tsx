@@ -32,24 +32,20 @@ const HibernationVegetableCultivationChart = ({ map, isReportMode }: Props) => {
 
   if (isReportMode) {
     return (
-      <div className="mb-4 w-full p-4">
-        <div className="mb-4">
+      <div className="w-full p-4">
+        <div className="report-section flex flex-col gap-2">
           <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
             <BarChart3 size={24} />
             <span>데이터 그래프</span>
           </h3>
-          <CultivationChangeDivergingBarChart
-            chartData={chartData}
-            selectedCrop={map.selectedCrop}
-            year={map.selectedTargetYear}
-            viewType={"absolute"}
-            isReportMode={true}
-          />
+          <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"absolute"} isReportMode />
         </div>
-        <div className="mb-4">
-          <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"rate"} isReportMode={true} />
+        <div className="report-section">
+          <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"rate"} isReportMode />
         </div>
-        <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"area"} isReportMode={true} />
+        <div className="report-section">
+          <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"area"} isReportMode />
+        </div>
       </div>
     );
   }

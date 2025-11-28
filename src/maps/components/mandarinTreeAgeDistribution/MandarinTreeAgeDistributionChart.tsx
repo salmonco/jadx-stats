@@ -54,8 +54,8 @@ const MandarinTreeAgeDistributionChart = ({ map, isReportMode }: Props) => {
 
   if (isReportMode) {
     return (
-      <div className="mb-4 w-full p-4">
-        <div className="mb-4">
+      <div className="w-full p-4">
+        <div className="report-section flex flex-col gap-2">
           <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
             <BarChart3 size={24} />
             <span>데이터 그래프</span>
@@ -64,10 +64,12 @@ const MandarinTreeAgeDistributionChart = ({ map, isReportMode }: Props) => {
             selectedTargetYear={map.selectedTargetYear}
             selectedPummok={map.selectedCropGroup}
             selectedVariety={map.selectedCropDetailGroup}
-            isReportMode={true}
+            isReportMode
           />
         </div>
-        <SimulatorResult chartData={chartData} isReportMode={true} />
+        <div className="report-section">
+          <SimulatorResult chartData={chartData} isReportMode />
+        </div>
       </div>
     );
   }

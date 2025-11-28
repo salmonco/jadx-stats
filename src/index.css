@@ -383,6 +383,11 @@ body,
   display: none;
 }
 
+.report-section {
+  margin-bottom: 1rem;
+  page-break-inside: avoid;
+}
+
 @media print {
   .print-only {
     display: flex !important;

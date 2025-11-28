@@ -190,6 +190,8 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose, pageT
             </button>
           </div>
         </div>
+
+        {/* PDF 및 인쇄용 콘텐츠 */}
         <div className="printable mt-4 h-[calc(100%-80px)] overflow-y-auto overflow-x-hidden" ref={reportContentRef}>
           <div className="report-header-hidden mb-4 flex items-start justify-between border-b pb-4" ref={reportHeaderRef}>
             <img src={logo} alt="제주농업통계시스템" className="h-10" />
