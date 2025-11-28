@@ -81,7 +81,7 @@ const AgingStatusTransposedTable = ({ chartData, isReportMode }: Props) => {
   ];
 
   const reportDataSource: ReportRow[] = chartData.map((d) => ({
-    key: d.region,
+    key: d.label,
     region: d.label,
     avg_age: d.avg_age?.toFixed(2) ?? "-",
     count: d.count?.toLocaleString() ?? "-",
