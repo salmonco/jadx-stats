@@ -19,7 +19,7 @@ const AgingStatusTransposedTable = ({ chartData }: Props) => {
 
   const columns: ColumnsType<TransposedRow> = [
     {
-      title: "지표",
+      title: "지표 / 지역",
       dataIndex: "key",
       key: "key",
       align: "center" as const,
@@ -54,7 +54,7 @@ const AgingStatusTransposedTable = ({ chartData }: Props) => {
     const fullLabels = chartData.map((d) => d.label);
     const fullColumns: ColumnsType<TransposedRow> = [
       {
-        title: "지표",
+        title: "지표 / 지역",
         dataIndex: "key",
         key: "key",
       },
