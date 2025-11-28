@@ -2,7 +2,7 @@ import { Button } from "antd";
 import * as d3 from "d3";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getColor } from "~/maps/constants/mandarinCultivationInfo";
-import downloadCsv from "~/utils/downloadCsv";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface Props {
   chartData: any;
@@ -47,14 +47,14 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety }: Props) => {
 
     const sortedData = [...pieData].sort((a, b) => b.total_area - a.total_area);
 
-    const columns = [
+    const columns: CsvColumn[] = [
       { title: "지역", dataIndex: "region" },
       { title: "총 재배 면적(ha)", dataIndex: "total_area_ha" },
     ];
 
     const data = sortedData.map((d) => ({
       region: d.region,
-      total_area_ha: (d.total_area / 10_000).toFixed(2),
+      total_area_ha: d.total_area / 10_000,
     }));
 
     downloadCsv(columns, data, "지역별_재배면적_원형.csv");

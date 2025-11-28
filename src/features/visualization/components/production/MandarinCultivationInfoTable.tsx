@@ -1,7 +1,7 @@
 import { Button, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useMemo } from "react";
-import downloadCsv from "~/utils/downloadCsv";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface MandarinCultivationChartData {
   [region: string]: {
@@ -104,26 +104,23 @@ const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedC
   }, [flattenedData, uniqueCropGroups, uniqueRegions]);
 
   const csvData = useMemo(() => {
-    const columns: ColumnsType<TransposedRow> = [
+    const columns: CsvColumn[] = [
       {
         title: "품목 / 지역",
         dataIndex: "key",
-        key: "key",
       },
       {
         title: "총 면적(ha)",
         dataIndex: "totalArea",
-        key: "totalArea",
       },
       ...uniqueRegions.map((region) => ({
         title: region,
         dataIndex: region,
-        key: region,
       })),
     ];
 
     const dataSource: TransposedRow[] = uniqueCropGroups.map((cropGroup) => {
-      const row: TransposedRow = {
+      const row = {
         key: cropGroup,
         totalArea: 0,
       };
@@ -131,7 +128,7 @@ const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedC
 
       for (const region of uniqueRegions) {
         const dataPoint = flattenedData.find((d) => d.prdct_nm === cropGroup && d.region === region);
-        const areaInHa = (dataPoint?.total_area ?? 0) / 10000;
+        const areaInHa = (dataPoint?.total_area ?? 0) / 10_000;
         row[region] = areaInHa;
         cropGroupTotalAreaInHa += areaInHa;
       }

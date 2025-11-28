@@ -1,7 +1,7 @@
 import { Button, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { AgingChartData } from "~/maps/components/agingStatus/AgingStatusChart";
-import downloadCsv from "~/utils/downloadCsv";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface TransposedRow {
   key: string;
@@ -52,34 +52,32 @@ const AgingStatusTransposedTable = ({ chartData }: Props) => {
   }
 
   const handleDownloadCsv = () => {
-    const fullLabels = chartData.map((d) => d.label);
-    const fullColumns: ColumnsType<TransposedRow> = [
+    const labels = chartData.map((d) => d.label);
+    const columns: CsvColumn[] = [
       {
         title: "지표 / 지역",
         dataIndex: "key",
-        key: "key",
       },
-      ...fullLabels.map((label) => ({
+      ...labels.map((label) => ({
         title: label,
         dataIndex: label,
-        key: label,
       })),
     ];
 
-    const fullAvgAgeRow: TransposedRow = {
+    const avgAgeRow = {
       key: "평균 연령",
     };
-    const fullCountRow: TransposedRow = {
+    const countRow = {
       key: "총 경영체 수",
     };
 
     for (const d of chartData) {
-      fullAvgAgeRow[d.label] = d.avg_age?.toFixed(2) ?? "-";
-      fullCountRow[d.label] = d.count?.toLocaleString() ?? "-";
+      avgAgeRow[d.label] = d.avg_age?.toFixed(2) ?? "-";
+      countRow[d.label] = d.count?.toLocaleString() ?? "-";
     }
 
-    const dataRows = [fullAvgAgeRow, fullCountRow];
-    downloadCsv(fullColumns, dataRows, "경영체_연령_분포_현황.csv");
+    const dataRows = [avgAgeRow, countRow];
+    downloadCsv(columns, dataRows, "경영체_연령_분포_현황.csv");
   };
 
   return (

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import { AgingChartData } from "~/maps/components/agingStatus/AgingStatusChart";
 import { useMapList } from "~/maps/hooks/useMapList";
-import downloadCsv from "~/utils/downloadCsv";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface Props {
   title: string;
@@ -221,7 +221,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
   }, [chartData, category, size]);
 
   const handleDownloadCsv = () => {
-    const columns: { title: string; dataIndex: string }[] = [{ title: "지역", dataIndex: "region" }];
+    const columns: CsvColumn[] = [{ title: "지역", dataIndex: "region" }];
 
     if (category === "avg_age") {
       columns.push({ title: "평균 연령", dataIndex: "avg_age" });

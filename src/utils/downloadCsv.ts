@@ -1,22 +1,27 @@
-import type { ColumnType, ColumnsType } from "antd/es/table";
+export type CsvColumn = {
+  title: string;
+  dataIndex: string;
+};
 
-const downloadCsv = (columns: ColumnsType<any>, data: any[], filename: string) => {
-  const header = columns.map((col: any) => col.title).join(",");
+const downloadCsv = (columns: CsvColumn[], data: unknown[], filename: string) => {
+  const header = columns.map((col) => col.title).join(",");
   const csvContent =
     header +
     "\n" +
     data
       .map((row) =>
         columns
-          .map((col: any) => {
-            const column = col as ColumnType<any>;
-            const value = row[column.dataIndex as string];
+          .map((col) => {
+            const column = col;
+            const value = row[column.dataIndex];
             if (typeof value === "string") {
               return `"${value.replace(/"/g, '""')}"`;
+            } else if (typeof value === "number") {
+              return value.toFixed(2);
             }
             return value;
           })
-          .join(","),
+          .join(",")
       )
       .join("\n");
 
