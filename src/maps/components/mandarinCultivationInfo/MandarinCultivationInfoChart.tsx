@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { BarChart3, Table } from "lucide-react";
 import ChartContainer from "~/features/visualization/components/common/ChartContainer";
 import MandarinCultivationBarChart from "~/features/visualization/components/production/MandarinCultivationBarChart";
 import MandarinCultivationInfoTable from "~/features/visualization/components/production/MandarinCultivationInfoTable"; // Import the new table component
@@ -9,9 +10,10 @@ import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   map: MandarinCultivationInfoMap;
+  isReportMode?: boolean;
 }
 
-const MandarinCultivationInfoChart = ({ map }: Props) => {
+const MandarinCultivationInfoChart = ({ map, isReportMode }: Props) => {
   const { data: chartData } = useQuery({
     queryKey: ["mandarinCultivationInfoChart", map.getSelectedRegionLevel(), map.selectedCropPummok, map.selectedCropDetailGroup],
     queryFn: () =>
@@ -21,6 +23,38 @@ const MandarinCultivationInfoChart = ({ map }: Props) => {
         map.selectedCropDetailGroup === DEFAULT_ALL_OPTION ? null : map.selectedCropDetailGroup
       ),
   });
+
+  if (isReportMode) {
+    return (
+      <>
+        <div className="w-full p-4">
+          <h3 className="report-section flex items-center gap-2 text-lg font-bold">
+            <Table size={24} />
+            <span>데이터 표</span>
+          </h3>
+          <MandarinCultivationInfoTable
+            chartData={chartData}
+            selectedCropPummok={map.selectedCropPummok}
+            selectedCropGroup={map.selectedCropGroup}
+            selectedCropDetailGroup={map.selectedCropDetailGroup}
+            isReportMode
+          />
+        </div>
+        <div className="w-full p-4">
+          <div className="report-section flex flex-col gap-2">
+            <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+              <BarChart3 size={24} />
+              <span>데이터 그래프</span>
+            </h3>
+            <MandarinCultivationBarChart chartData={chartData} selectedVariety={map.selectedCropDetailGroup} isReportMode />
+          </div>
+          <div className="report-section">
+            <MandarinCultivationPieChart chartData={chartData} selectedVariety={map.selectedCropDetailGroup} isReportMode />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">

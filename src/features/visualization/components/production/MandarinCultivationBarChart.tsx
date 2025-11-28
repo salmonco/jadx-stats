@@ -2,13 +2,15 @@ import * as Plot from "@observablehq/plot";
 import { Button } from "antd"; // Import Button
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getColor } from "~/maps/constants/mandarinCultivationInfo";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface Props {
   chartData: any;
   selectedVariety: string;
+  isReportMode?: boolean;
 }
 
-const MandarinCultivationBarChart = ({ chartData, selectedVariety }: Props) => {
+const MandarinCultivationBarChart = ({ chartData, selectedVariety, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [size, setSize] = useState({ width: 800, height: 420 });
@@ -73,22 +75,25 @@ const MandarinCultivationBarChart = ({ chartData, selectedVariety }: Props) => {
   const handleDownloadCsv = () => {
     if (!regionTotals.length) return;
 
-    const headers = ["지역", "총 재배 면적(ha)"];
-    const csvContent = headers.join(",") + "\n" + regionTotals.map((d) => `${d.region},${(d.total_area / 10000).toFixed(2)}`).join("\n");
+    const columns: CsvColumn[] = [
+      { title: "지역", dataIndex: "region" },
+      { title: "총 재배 면적(ha)", dataIndex: "total_area_ha" },
+    ];
 
-    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `지역별_재배면적.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const data = regionTotals.map((d) => ({
+      region: d.region,
+      total_area_ha: d.total_area / 10_000,
+    }));
+
+    downloadCsv(columns, data, "지역별_재배면적.csv");
   };
 
   useEffect(() => {
-    if (!regionTotals.length) return;
+    if (!regionTotals.length || !containerRef.current) return;
+
+    const actualWidth = isReportMode && containerRef.current.parentElement 
+      ? containerRef.current.parentElement.clientWidth 
+      : size.width;
 
     const margin = { top: 10, right: 100, bottom: 0, left: 70 };
     const barHeight = regionTotals.length > 12 ? 32 : 48;
@@ -99,7 +104,7 @@ const MandarinCultivationBarChart = ({ chartData, selectedVariety }: Props) => {
     regionTotals.forEach((d, i) => colorMap.set(d.region, getColor(i)));
 
     const chart = Plot.plot({
-      width: size.width,
+      width: actualWidth,
       height: height,
       marginTop: margin.top,
       marginRight: margin.right,
@@ -134,14 +139,15 @@ const MandarinCultivationBarChart = ({ chartData, selectedVariety }: Props) => {
           dx: 6, // 바 옆으로 약간 떨어지게
           dy: 2, // 수직 정렬 미세 조정
           textAnchor: "start",
-          fill: "#ffffff",
+          fill: isReportMode ? "black" : "#ffffff",
           fontWeight: "500",
         }),
         Plot.ruleX([0]),
       ],
       style: {
         fontSize: "14px",
-        color: "#ffffff",
+        color: isReportMode ? "black" : "#ffffff",
+        background: isReportMode ? "transparent" : undefined,
       },
     });
 
@@ -155,7 +161,7 @@ const MandarinCultivationBarChart = ({ chartData, selectedVariety }: Props) => {
         containerRef.current.innerHTML = "";
       }
     };
-  }, [regionTotals, size]);
+  }, [regionTotals, size, isReportMode]);
 
   return (
     <div className="h-full w-full">
@@ -172,11 +178,13 @@ const MandarinCultivationBarChart = ({ chartData, selectedVariety }: Props) => {
                   : (selectedVariety ?? "")}{" "}
           지역별 재배면적 (막대 그래프)
         </p>
-        <Button type="primary" onClick={handleDownloadCsv}>
-          CSV 다운로드
-        </Button>
+        {!isReportMode && (
+          <Button type="primary" onClick={handleDownloadCsv}>
+            CSV 다운로드
+          </Button>
+        )}
       </div>
-      <div ref={containerRef} style={{ height: `${size.height}px` }} className="custom-dark-scroll min-w-full overflow-y-auto" />
+      <div ref={containerRef} style={isReportMode ? {} : { height: `${size.height}px` }} className={isReportMode ? "w-full min-w-full" : "custom-dark-scroll min-w-full overflow-y-auto"} />
     </div>
   );
 };

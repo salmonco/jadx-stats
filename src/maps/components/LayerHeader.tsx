@@ -55,7 +55,7 @@ const LayerHeader = <M extends CommonBackgroundMap>({ map, olMap, onClickFullScr
         </div>
       </div>
       {isShareModalOpen && <ShareModal url={shareUrl} onClose={onCloseShareModal} />}
-      {isReportModalOpen && <ReportModal map={map} olMap={olMap} onClose={onCloseReportModal} />}
+      {isReportModalOpen && <ReportModal map={map} olMap={olMap} onClose={onCloseReportModal} pageTitle={map.title} />}
     </>
   );
 };

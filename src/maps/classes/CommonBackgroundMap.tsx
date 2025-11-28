@@ -94,7 +94,7 @@ class CommonBackgroundMap {
   }
 
   /** NOTE: 상속받은 클래스에 의해 구현되어야 합니다. */
-  renderChart() {
+  renderChart(isReportMode: boolean = false): React.ReactNode {
     return null;
   }
 

@@ -7,9 +7,10 @@ interface Props {
   selectedCrop: string;
   year: number;
   viewType: string;
+  isReportMode?: boolean;
 }
 
-const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, viewType }: Props) => {
+const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, viewType, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [size, setSize] = useState({ width: 800, height: 420 });
@@ -61,7 +62,11 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
   }, [windowWidth]);
 
   useEffect(() => {
-    if (!chartData) return;
+    if (!chartData || !containerRef.current) return;
+
+    const actualWidth = isReportMode && containerRef.current.parentElement 
+      ? containerRef.current.parentElement.clientWidth 
+      : size.width;
 
     const regionTotals = Object.entries(chartData)
       .map(([region, products]) => {
@@ -104,7 +109,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
 
     const xDomain = viewType === "area" ? [0, maxAbs * 1.3] : [-maxAbs * 1.4, maxAbs * 1.3];
     const chart = Plot.plot({
-      width: size.width,
+      width: actualWidth,
       height: height,
       marginTop: margin.top,
       marginRight: margin.right,
@@ -153,7 +158,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
             dx: 4,
             textAnchor: "start",
             dy: 1,
-            fill: "#e9e9e9",
+            fill: isReportMode ? "black" : "#e9e9e9",
             fontSize: "13px",
             fontWeight: "400",
           }
@@ -171,7 +176,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
             dx: -4,
             textAnchor: "end",
             dy: 1,
-            fill: "#e9e9e9",
+            fill: isReportMode ? "black" : "#e9e9e9",
             fontSize: "13px",
             fontWeight: "400",
           }
@@ -180,7 +185,8 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
       ],
       style: {
         fontSize: "15px",
-        color: "#e9e9e9",
+        color: isReportMode ? "black" : "#e9e9e9",
+        background: isReportMode ? "transparent" : undefined,
       },
     });
 
@@ -194,7 +200,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
         containerRef.current.innerHTML = "";
       }
     };
-  }, [chartData, selectedCrop, size]);
+  }, [chartData, selectedCrop, size, isReportMode, containerRef]);
 
   return (
     <div className="h-full w-full">
@@ -205,7 +211,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
             ? `전년대비 ${selectedCrop} 재배면적 변화율`
             : `${year}년 ${selectedCrop} 재배면적`}
       </p>
-      <div ref={containerRef} style={{ height: `${size.height}px` }} className="custom-dark-scroll min-w-full overflow-y-auto" />
+      <div ref={containerRef} style={isReportMode ? {} : { height: `${size.height}px` }} className={isReportMode ? "w-full min-w-full" : "custom-dark-scroll min-w-full overflow-y-auto"} />
     </div>
   );
 };

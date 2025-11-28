@@ -1,6 +1,7 @@
 import { Button, Table } from "antd";
-import type { ColumnType, ColumnsType } from "antd/es/table";
+import type { ColumnsType } from "antd/es/table";
 import { useMemo } from "react";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface MandarinCultivationChartData {
   [region: string]: {
@@ -20,9 +21,10 @@ interface Props {
   selectedCropPummok: string;
   selectedCropGroup: string;
   selectedCropDetailGroup: string;
+  isReportMode?: boolean;
 }
 
-const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedCropGroup, selectedCropDetailGroup }: Props) => {
+const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedCropGroup, selectedCropDetailGroup, isReportMode }: Props) => {
   const { flattenedData, uniqueCropGroups, uniqueRegions } = useMemo(() => {
     if (!chartData || Object.keys(chartData).length === 0) {
       return { flattenedData: [], uniqueCropGroups: [], uniqueRegions: [] };
@@ -52,6 +54,55 @@ const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedC
     const maxRegions = 14;
     const limitedUniqueRegions = uniqueRegions.slice(0, maxRegions);
 
+    // isReportMode일 때: 행=지역, 열=품종
+    if (isReportMode) {
+      const columns: ColumnsType<any> = [
+        {
+          title: "지역 / 품종",
+          dataIndex: "key",
+          key: "key",
+          align: "center" as const,
+          width: "15%",
+        },
+        {
+          title: "총 면적(ha)",
+          dataIndex: "totalArea",
+          key: "totalArea",
+          align: "center" as const,
+          width: "15%",
+          render: (value: number) => value.toFixed(2),
+        },
+        ...uniqueCropGroups.map((cropGroup) => ({
+          title: cropGroup,
+          dataIndex: cropGroup,
+          key: cropGroup,
+          align: "center" as const,
+          render: (value: number) => (value !== undefined ? value.toFixed(2) : "-"),
+        })),
+      ];
+
+      const dataSource: any[] = limitedUniqueRegions.map((region) => {
+        const row: any = {
+          key: region,
+          totalArea: 0,
+        };
+
+        let totalAreaForRegion = 0;
+        for (const cropGroup of uniqueCropGroups) {
+          const dataPoint = flattenedData.find((d) => d.prdct_nm === cropGroup && d.region === region);
+          const areaInHa = (dataPoint?.total_area ?? 0) / 10000;
+          row[cropGroup] = areaInHa;
+          totalAreaForRegion += areaInHa;
+        }
+        row.totalArea = totalAreaForRegion;
+
+        return row;
+      });
+
+      return { columns, dataSource };
+    }
+
+    // 일반 모드: 행=품종, 열=지역
     const columns: ColumnsType<TransposedRow> = [
       {
         title: "품종 / 지역",
@@ -100,29 +151,26 @@ const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedC
     });
 
     return { columns, dataSource };
-  }, [flattenedData, uniqueCropGroups, uniqueRegions]);
+  }, [flattenedData, uniqueCropGroups, uniqueRegions, isReportMode]);
 
   const csvData = useMemo(() => {
-    const columns: ColumnsType<TransposedRow> = [
+    const columns: CsvColumn[] = [
       {
         title: "품목 / 지역",
         dataIndex: "key",
-        key: "key",
       },
       {
         title: "총 면적(ha)",
         dataIndex: "totalArea",
-        key: "totalArea",
       },
       ...uniqueRegions.map((region) => ({
         title: region,
         dataIndex: region,
-        key: region,
       })),
     ];
 
     const dataSource: TransposedRow[] = uniqueCropGroups.map((cropGroup) => {
-      const row: TransposedRow = {
+      const row = {
         key: cropGroup,
         totalArea: 0,
       };
@@ -130,7 +178,7 @@ const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedC
 
       for (const region of uniqueRegions) {
         const dataPoint = flattenedData.find((d) => d.prdct_nm === cropGroup && d.region === region);
-        const areaInHa = (dataPoint?.total_area ?? 0) / 10000;
+        const areaInHa = (dataPoint?.total_area ?? 0) / 10_000;
         row[region] = areaInHa;
         cropGroupTotalAreaInHa += areaInHa;
       }
@@ -143,41 +191,18 @@ const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedC
 
   const handleDownloadCsv = () => {
     if (!csvData.dataSource.length) return;
-
-    const headers = csvData.columns.map((col) => col.title).join(",");
-    const csvContent =
-      headers +
-      "\n" +
-      csvData.dataSource
-        .map((row) =>
-          csvData.columns
-            .map((col) => {
-              const column = col as ColumnType<TransposedRow>;
-              const value = row[column.dataIndex as string];
-              return typeof value === "string" ? `"${value.replace(/"/g, '""')}"` : value;
-            })
-            .join(",")
-        )
-        .join("\n");
-
-    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `품종_지역_데이터_${selectedCropPummok}_${selectedCropGroup}_${selectedCropDetailGroup}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    downloadCsv(csvData.columns, csvData.dataSource, `품종_지역_데이터_${selectedCropPummok}_${selectedCropGroup}_${selectedCropDetailGroup}.csv`);
   };
 
   return (
-    <div className="rounded-lg bg-[#43516D] p-5 pt-2">
-      <div className="mb-2 flex justify-end">
-        <Button type="primary" onClick={handleDownloadCsv}>
-          CSV 다운로드
-        </Button>
-      </div>
+    <div className={`rounded-lg p-5 pt-2 ${isReportMode ? "bg-transparent" : "bg-[#43516D]"}`}>
+      {!isReportMode && (
+        <div className="mb-2 flex justify-end">
+          <Button type="primary" onClick={handleDownloadCsv}>
+            CSV 다운로드
+          </Button>
+        </div>
+      )}
       <Table
         columns={processedData.columns}
         dataSource={processedData.dataSource}
@@ -185,7 +210,7 @@ const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedC
         pagination={false}
         bordered={false}
         scroll={{ x: true }}
-        className="custom-dark-table"
+        className={isReportMode ? "" : "custom-dark-table"}
       />
     </div>
   );

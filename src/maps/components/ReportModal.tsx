@@ -1,29 +1,34 @@
 import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
-import { FileText, Printer, X } from "lucide-react";
+import { FileText, Map, Printer, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import logo from "~/assets/logo.png";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
+import { formatDateTime } from "~/utils/formatDateTime";
 import { ExtendedOLMap } from "../hooks/useOLMap";
+import { generatePrintHtml } from "../utils/generatePrintHtml";
 
 interface Props<M> {
   map: M;
   olMap: ExtendedOLMap;
   onClose: () => void;
+  pageTitle: string;
 }
 
 const MAP_CAPTURE_DELAY = 200;
 const REPORT_SOURCE = "제주농업통계시스템";
+const REPORT_SOURCE_URL = "https://agri.jeju.go.kr/stats/";
 
 /** A4 width in mm */
 const PAGE_WIDTH = 210;
 /** A4 height in mm */
 const PAGE_HEIGHT = 297;
 
-const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Props<M>) => {
+const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose, pageTitle }: Props<M>) => {
   const [mapImage, setMapImage] = useState<string | null>(null);
   const [legendImage, setLegendImage] = useState<string | null>(null);
-  const [chartImage, setChartImage] = useState<string | null>(null);
   const reportContentRef = useRef<HTMLDivElement>(null);
+  const reportHeaderRef = useRef<HTMLDivElement>(null);
+  const currentDateTime = useMemo(() => formatDateTime(), []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -71,21 +76,6 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     } else {
       console.error("Legend element not found.");
     }
-
-    // Capture chart
-    const chartElement = document.getElementById("main-chart-container");
-    if (chartElement.hasChildNodes()) {
-      try {
-        const canvas = await html2canvas(chartElement, {
-          useCORS: true,
-        });
-        setChartImage(canvas.toDataURL());
-      } catch (error) {
-        console.error("Error capturing chart:", error);
-      }
-    } else {
-      console.error("Chart element not found.");
-    }
   };
 
   const filterText = useMemo(() => {
@@ -96,45 +86,87 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     return "적용된 필터가 없습니다.";
   }, [map]);
 
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleSavePdf = async () => {
-    if (!reportContentRef.current) {
+  const handlePrint = async () => {
+    if (!reportContentRef.current || !reportHeaderRef.current) {
       alert("보고서 내용을 찾을 수 없습니다.");
       return;
     }
 
     try {
-      const canvas = await html2canvas(reportContentRef.current, {
-        useCORS: true,
-        scale: 2, // Increase scale for better quality
-      });
-
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4"); // Portrait, millimeters, A4 size
-
-      const imgHeight = (canvas.height * PAGE_WIDTH) / canvas.width;
-      let heightLeft = imgHeight;
-
-      let position = 0;
-
-      pdf.addImage(imgData, "PNG", 0, position, PAGE_WIDTH, imgHeight);
-      heightLeft -= PAGE_HEIGHT;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, PAGE_WIDTH, imgHeight);
-        heightLeft -= PAGE_HEIGHT;
+      const printWindow = window.open("", "", `width=${window.innerWidth},height=${window.innerHeight}`);
+      if (!printWindow) {
+        alert("팝업이 차단되었습니다.");
+        return;
       }
 
-      pdf.save("보고서.pdf");
-      alert("PDF가 성공적으로 저장되었습니다.");
+      const html = generatePrintHtml({
+        reportHeaderRef: reportHeaderRef.current,
+        reportContentRef: reportContentRef.current,
+        pageTitle,
+      });
+
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 500);
+    } catch (error) {
+      console.error("Error printing:", error);
+      alert("인쇄 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleSavePdf = async () => {
+    if (!reportContentRef.current || !reportHeaderRef.current) {
+      alert("보고서 내용을 찾을 수 없습니다.");
+      return;
+    }
+
+    let iframe: HTMLIFrameElement | null = null;
+
+    try {
+      const html = generatePrintHtml({
+        reportHeaderRef: reportHeaderRef.current,
+        reportContentRef: reportContentRef.current,
+        pageTitle,
+      });
+
+      // iframe 생성
+      iframe = document.createElement("iframe");
+      iframe.style.position = "absolute";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "none";
+      iframe.style.visibility = "hidden";
+      document.body.appendChild(iframe);
+
+      const iframeDoc = iframe.contentWindow?.document;
+      if (!iframeDoc) {
+        throw new Error("iframe document not available");
+      }
+
+      iframeDoc.open();
+      iframeDoc.write(html);
+      iframeDoc.close();
+
+      setTimeout(() => {
+        iframe?.contentWindow?.print();
+      }, 500);
     } catch (error) {
       console.error("Error saving PDF:", error);
       alert("PDF 저장 중 오류가 발생했습니다.");
+    } finally {
+      // 인쇄 대화상자가 닫힌 후 iframe 제거
+      if (iframe) {
+        setTimeout(() => {
+          if (iframe && iframe.parentNode) {
+            document.body.removeChild(iframe);
+          }
+        }, 2000);
+      }
     }
   };
 
@@ -158,20 +190,51 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
             </button>
           </div>
         </div>
-        <div className="printable mt-4 h-[calc(100%-80px)] overflow-y-auto" ref={reportContentRef}>
-          <div className="mb-4 rounded-md border p-4">
-            <h3 className="mb-2 text-lg font-bold">검색조건</h3>
-            <p>{filterText}</p>
+
+        {/* PDF 및 인쇄용 콘텐츠 */}
+        <div className="printable mt-4 h-[calc(100%-80px)] overflow-y-auto overflow-x-hidden" ref={reportContentRef}>
+          <div className="report-header-hidden mb-4 flex items-start justify-between border-b pb-4" ref={reportHeaderRef}>
+            <img src={logo} alt="제주농업통계시스템" className="h-10" />
+            <div className="text-right text-sm">
+              <div className="font-bold">
+                {REPORT_SOURCE} ({REPORT_SOURCE_URL})
+              </div>
+              <div className="mt-1 text-gray-600">작성일자 : {currentDateTime}</div>
+            </div>
           </div>
-          <div className="mb-4 rounded-md border p-4">
-            <h3 className="mb-2 text-lg font-bold">출처</h3>
-            <p>{REPORT_SOURCE}</p>
+          <div className="report-section mb-4">
+            <div className="mb-4 flex items-center justify-center">
+              <h2 className="text-xl font-bold">{pageTitle}</h2>
+            </div>
           </div>
-          <div className="mb-4 rounded-md border p-4">
-            <h3 className="mb-2 text-lg font-bold">지도 시각화 화면</h3>
+          <div className="report-section mb-4">
+            <table className="w-full border-collapse border" style={{ tableLayout: "fixed" }}>
+              <tbody>
+                <tr style={{ height: "50px" }}>
+                  <td className="w-1/6 border bg-gray-200 px-3 text-center font-bold" style={{ verticalAlign: "middle", height: "50px", backgroundColor: "#e5e7eb" }}>
+                    검색조건
+                  </td>
+                  <td className="w-1/3 border px-3" style={{ verticalAlign: "middle", height: "50px" }}>
+                    {filterText}
+                  </td>
+                  <td className="w-1/6 border bg-gray-200 px-3 text-center font-bold" style={{ verticalAlign: "middle", height: "50px", backgroundColor: "#e5e7eb" }}>
+                    출처
+                  </td>
+                  <td className="w-1/3 border px-3" style={{ verticalAlign: "middle", height: "50px" }}>
+                    {REPORT_SOURCE}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="report-section mb-4 rounded-md p-4">
+            <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+              <Map size={24} />
+              <span>지도 시각화 화면</span>
+            </h3>
             <div style={{ position: "relative" }}>
               {mapImage ? (
-                <img src={mapImage} alt="Map Capture" className="w-full" />
+                <img src={mapImage} alt="Map Capture" className="w-full rounded-lg" />
               ) : (
                 <div className="no-print flex h-96 w-full items-center justify-center bg-gray-200">
                   <p>지도를 불러오는 중...</p>
@@ -180,12 +243,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
               {legendImage && <img className="absolute bottom-0 left-2 max-h-[200px] max-w-[200px]" src={legendImage} alt="Legend Capture" />}
             </div>
           </div>
-          {chartImage && (
-            <div className="mb-4 rounded-md border p-4">
-              <h3 className="mb-2 text-lg font-bold">지역별 그래프</h3>
-              <img src={chartImage} alt="Chart Capture" className="w-full" />
-            </div>
-          )}
+          <div className="chart-container w-full">{map.renderChart(true)}</div>
         </div>
       </div>
     </div>

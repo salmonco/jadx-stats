@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { BarChart3, Table } from "lucide-react";
 import { useMemo } from "react";
 import ChartContainer from "~/features/visualization/components/common/ChartContainer";
 import AgingStatusDivergingBarChart from "~/features/visualization/components/production/AgingStatusDivergingBarChart";
@@ -16,9 +17,10 @@ export interface AgingChartData {
 
 interface Props {
   map: AgingStatusMap;
+  isReportMode?: boolean;
 }
 
-const AgingStatusChart = ({ map }: Props) => {
+const AgingStatusChart = ({ map, isReportMode }: Props) => {
   const { data: features } = useQuery({
     queryKey: ["agingStatus", map.getSelectedRegionLevel(), map.excludeDong],
     queryFn: () => visualizationApi.getAgingStatus(map.getSelectedRegionLevel(), map.excludeDong),
@@ -27,6 +29,32 @@ const AgingStatusChart = ({ map }: Props) => {
   });
 
   const chartData: AgingChartData[] = useMemo(() => transformToChartData(features?.features ?? []), [features]);
+
+  if (isReportMode) {
+    return (
+      <>
+        <div className="report-section w-full p-4">
+          <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+            <Table size={24} />
+            <span>데이터 표</span>
+          </h3>
+          <AgingStatusTable chartData={chartData} isReportMode />
+        </div>
+        <div className="w-full p-4">
+          <div className="report-section flex flex-col gap-2">
+            <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+              <BarChart3 size={24} />
+              <span>데이터 그래프</span>
+            </h3>
+            <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} isReportMode />
+          </div>
+          <div className="report-section">
+            <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} isReportMode />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">

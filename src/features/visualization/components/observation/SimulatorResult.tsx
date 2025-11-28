@@ -5,13 +5,15 @@ import InfoTooltip from "~/components/InfoTooltip";
 
 interface Props {
   chartData: any;
+  isReportMode?: boolean;
 }
 
-const SimulatorResult = ({ chartData }: Props) => {
+const SimulatorResult = ({ chartData, isReportMode }: Props) => {
   const plotRef = useRef<HTMLDivElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
 
   const [chartDataLength, setChartDataLength] = useState<number>(0);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
   const getInset = (length: number) => {
     if (length === 20) return 3;
@@ -22,8 +24,25 @@ const SimulatorResult = ({ chartData }: Props) => {
   };
 
   useEffect(() => {
+    if (!plotRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      const { width, height } = entry.contentRect;
+      setContainerSize({ width, height });
+    });
+
+    observer.observe(plotRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     if (!chartData || !plotRef.current || !legendRef.current) return;
-    const { clientWidth, clientHeight } = plotRef.current;
+    
+    const width = isReportMode ? (containerSize.width || 750) : (containerSize.width || 800);
+    const height = isReportMode ? 400 : (containerSize.height || 400);
+    
+    if (width === 0 || height === 0) return;
 
     setChartDataLength(chartData?.length);
 
@@ -36,7 +55,7 @@ const SimulatorResult = ({ chartData }: Props) => {
       width: 110,
       style: {
         fontSize: "14px",
-        color: "#fff",
+        color: isReportMode ? "black" : "#fff",
         marginRight: "-25px",
       },
     });
@@ -47,13 +66,15 @@ const SimulatorResult = ({ chartData }: Props) => {
     const yMax = Math.ceil(maxValue / niceStep) * niceStep;
 
     const plot = Plot.plot({
-      width: clientWidth,
-      height: clientHeight,
+      width: width,
+      height: height,
       marginTop: 40,
       marginBottom: chartData.length === 20 ? 35 : 10,
       marginLeft: 60,
       style: {
         fontSize: "16px",
+        color: isReportMode ? "black" : undefined,
+        background: isReportMode ? "transparent" : undefined,
       },
       x: {
         label: "",
@@ -88,6 +109,14 @@ const SimulatorResult = ({ chartData }: Props) => {
           insetLeft: getInset(chartData.length),
           insetRight: getInset(chartData.length),
         }),
+        Plot.text(chartData, {
+          x: "region",
+          y: "value",
+          text: (d) => `${(d.value / 10000).toFixed(1)}`,
+          dy: -8,
+          fill: isReportMode ? "black" : "#ffffff",
+          fontSize: "12px",
+        }),
         Plot.ruleY([0]),
       ],
     });
@@ -98,16 +127,22 @@ const SimulatorResult = ({ chartData }: Props) => {
     plotRef.current.appendChild(plot);
     legendRef.current.appendChild(regionLegend);
     d3.select(plot).style("overflow", "visible");
-  }, [chartData]);
+  }, [chartData, isReportMode, containerSize]);
+
+  if (!chartData || chartData.length === 0) {
+    return null;
+  }
 
   return (
     <div className="relative flex h-full w-full flex-col items-start justify-center gap-3 pb-4">
       <div className="flex items-center gap-[10px]">
         <p className="text-xl font-semibold">지역별 경제수령 면적 {chartDataLength === 20 && "(상위 20개 지역)"}</p>
-        <InfoTooltip
-          title="지역별 경제수령 면적이란?"
-          content={`경제수령기(일반적으로 수령 15~25년)의 감귤나무가 지역별로 얼마나 재배되고 있는지를 나타내는 자료입니다.\n경제수령기의 나무는 생산성이 높고 과실 품질이 우수하기 때문에, 해당 지역의 생산 효율성과 경쟁력을 가늠하는 \n데 지표가 됩니다.`}
-        />
+        {!isReportMode && (
+          <InfoTooltip
+            title="지역별 경제수령 면적이란?"
+            content={`경제수령기(일반적으로 수령 15~25년)의 감귤나무가 지역별로 얼마나 재배되고 있는지를 나타내는 자료입니다.\n경제수령기의 나무는 생산성이 높고 과실 품질이 우수하기 때문에, 해당 지역의 생산 효율성과 경쟁력을 가늠하는 \n데 지표가 됩니다.`}
+          />
+        )}
       </div>
       <div className="absolute right-0 top-0" ref={legendRef} />
       <div className="h-full w-full" ref={plotRef} />
