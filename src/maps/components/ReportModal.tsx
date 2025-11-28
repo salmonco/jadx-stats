@@ -85,6 +85,47 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     return "적용된 필터가 없습니다.";
   }, [map]);
 
+  const captureAsImage = async (element: HTMLElement) => {
+    const canvas = await html2canvas(element, { useCORS: true, scale: 2 });
+    return canvas.toDataURL("image/png");
+  };
+
+  const createTableHtml = () => {
+    const cellStyle = "border: 1px solid #d1d5db; padding: 12px; vertical-align: middle; height: 50px;";
+    const headerCellStyle = `${cellStyle} background-color: #e5e7eb; text-align: center; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;`;
+
+    return `
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed;">
+        <tbody>
+          <tr style="height: 50px;">
+            <td style="width: 16.666667%; ${headerCellStyle}">검색조건</td>
+            <td style="width: 33.333333%; ${cellStyle}">${filterText}</td>
+            <td style="width: 16.666667%; ${headerCellStyle}">출처</td>
+            <td style="width: 33.333333%; ${cellStyle}">${REPORT_SOURCE}</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  };
+
+  const createPrintDocument = (headerImage: string, tableHtml: string, imagesHtml: string) => `
+    <html>
+      <head>
+        <title>보고서</title>
+        <style>
+          @page { size: A4; margin: 10mm; }
+          body { margin: 0; padding: 0; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        </style>
+      </head>
+      <body>
+        <img src="${headerImage}" style="width: 100%; height: auto; display: block; margin-bottom: 16px;" />
+        ${tableHtml}
+        ${imagesHtml}
+      </body>
+    </html>
+  `;
+
   const handlePrint = async () => {
     if (!reportContentRef.current || !reportHeaderRef.current) {
       alert("보고서 내용을 찾을 수 없습니다.");
@@ -95,50 +136,24 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       const reportSections = Array.from(reportContentRef.current.querySelectorAll(".report-section"));
       const chartContainer = reportContentRef.current.querySelector(".chart-container");
       const chartSections = chartContainer ? Array.from(chartContainer.children) : [];
-      const allSections = [reportHeaderRef.current, ...reportSections, ...chartSections];
-      const images: string[] = [];
+      const sectionsToCapture = [...reportSections.slice(1), ...chartSections];
 
-      for (const section of allSections) {
-        const canvas = await html2canvas(section as HTMLElement, {
-          useCORS: true,
-          scale: 2,
-        });
+      const headerImage = await captureAsImage(reportHeaderRef.current);
+      const tableHtml = createTableHtml();
 
-        images.push(canvas.toDataURL("image/png"));
-      }
+      const sectionImages = await Promise.all(sectionsToCapture.map((section) => captureAsImage(section as HTMLElement)));
+      const imagesHtml = sectionImages.map((img) => `<img src="${img}" style="width: 100%; height: auto; display: block; margin-bottom: 16px;" />`).join("");
 
       const printWindow = window.open("", "", `width=${window.innerWidth},height=${window.innerHeight}`);
-
       if (!printWindow) {
         alert("팝업이 차단되었습니다.");
         return;
       }
 
-      const imagesHtml = images
-        .map(
-          (img, index) =>
-            `<div style="page-break-inside: avoid; ${index > 0 ? "page-break-before: auto;" : ""}">
-          <img src="${img}" style="width: 100%; height: auto; display: block;" />
-        </div>`
-        )
-        .join("");
-
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>보고서</title>
-            <style>
-              @page { size: A4; margin: 10mm; }
-              body { margin: 0; padding: 0; }
-            </style>
-          </head>
-          <body>
-            ${imagesHtml}
-          </body>
-        </html>
-      `);
+      printWindow.document.write(createPrintDocument(headerImage, tableHtml, imagesHtml));
       printWindow.document.close();
       printWindow.focus();
+
       setTimeout(() => {
         printWindow.print();
         printWindow.close();
@@ -224,13 +239,21 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
             </div>
           </div>
           <div className="report-section mb-4">
-            <table className="w-full border-collapse border">
+            <table className="w-full border-collapse border" style={{ tableLayout: "fixed" }}>
               <tbody>
-                <tr>
-                  <td className="w-1/6 border bg-gray-200 p-3 text-center font-bold">검색조건</td>
-                  <td className="w-1/3 border p-3">{filterText}</td>
-                  <td className="w-1/6 border bg-gray-200 p-3 text-center font-bold">출처</td>
-                  <td className="w-1/3 border p-3">{REPORT_SOURCE}</td>
+                <tr style={{ height: "50px" }}>
+                  <td className="w-1/6 border bg-gray-200 px-3 text-center font-bold" style={{ verticalAlign: "middle", height: "50px", backgroundColor: "#e5e7eb" }}>
+                    검색조건
+                  </td>
+                  <td className="w-1/3 border px-3" style={{ verticalAlign: "middle", height: "50px" }}>
+                    {filterText}
+                  </td>
+                  <td className="w-1/6 border bg-gray-200 px-3 text-center font-bold" style={{ verticalAlign: "middle", height: "50px", backgroundColor: "#e5e7eb" }}>
+                    출처
+                  </td>
+                  <td className="w-1/3 border px-3" style={{ verticalAlign: "middle", height: "50px" }}>
+                    {REPORT_SOURCE}
+                  </td>
                 </tr>
               </tbody>
             </table>
