@@ -1,6 +1,6 @@
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import { FileText, Printer, X } from "lucide-react";
+import { FileText, Map, Printer, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import logo from "~/assets/logo.png";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
@@ -258,11 +258,14 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
               </tbody>
             </table>
           </div>
-          <div className="report-section mb-4 rounded-md border p-4">
-            <h3 className="mb-2 text-lg font-bold">지도 시각화 화면</h3>
+          <div className="report-section mb-4 rounded-md p-4">
+            <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+              <Map size={24} />
+              <span>지도 시각화 화면</span>
+            </h3>
             <div style={{ position: "relative" }}>
               {mapImage ? (
-                <img src={mapImage} alt="Map Capture" className="w-full" />
+                <img src={mapImage} alt="Map Capture" className="w-full rounded-lg" />
               ) : (
                 <div className="no-print flex h-96 w-full items-center justify-center bg-gray-200">
                   <p>지도를 불러오는 중...</p>

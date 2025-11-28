@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { BarChart3, Table } from "lucide-react";
 import { useMemo } from "react";
 import ChartContainer from "~/features/visualization/components/common/ChartContainer";
 import AgingStatusDivergingBarChart from "~/features/visualization/components/production/AgingStatusDivergingBarChart";
@@ -32,12 +33,18 @@ const AgingStatusChart = ({ map, isReportMode }: Props) => {
   if (isReportMode) {
     return (
       <>
-        <div className="mb-4 rounded-md border p-4">
-          <h3 className="mb-2 text-lg font-bold">데이터 표</h3>
+        <div className="mb-4 p-4">
+          <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+            <Table size={24} />
+            <span>데이터 표</span>
+          </h3>
           <AgingStatusTable chartData={chartData} isReportMode={true} />
         </div>
-        <div className="mb-4 rounded-md border p-4">
-          <h3 className="mb-2 text-lg font-bold">데이터 그래프</h3>
+        <div className="mb-4 p-4">
+          <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+            <BarChart3 size={24} />
+            <span>데이터 그래프</span>
+          </h3>
           <div className="flex flex-col gap-4">
             <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} isReportMode={true} />
             <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} isReportMode={true} />
