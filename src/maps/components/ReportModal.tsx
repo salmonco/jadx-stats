@@ -90,14 +90,24 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       return;
     }
 
+    const element = reportContentRef.current;
+    const originalOverflow = element.style.overflow;
+    const originalHeight = element.style.height;
+
     try {
-      const canvas = await html2canvas(reportContentRef.current, {
+      element.style.overflow = "visible";
+      element.style.height = "auto";
+
+      const canvas = await html2canvas(element, {
         useCORS: true,
-        scale: 2, // Increase scale for better quality
+        scale: 2,
       });
 
+      element.style.overflow = originalOverflow;
+      element.style.height = originalHeight;
+
       const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4"); // Portrait, millimeters, A4 size
+      const pdf = new jsPDF("p", "mm", "a4");
 
       const imgHeight = (canvas.height * PAGE_WIDTH) / canvas.width;
       let heightLeft = imgHeight;
@@ -117,6 +127,8 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       pdf.save("보고서.pdf");
       alert("PDF가 성공적으로 저장되었습니다.");
     } catch (error) {
+      element.style.overflow = originalOverflow;
+      element.style.height = originalHeight;
       console.error("Error saving PDF:", error);
       alert("PDF 저장 중 오류가 발생했습니다.");
     }
