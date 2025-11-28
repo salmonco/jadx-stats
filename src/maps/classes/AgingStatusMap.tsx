@@ -7,8 +7,8 @@ class AgingStatusMap extends CommonBackgroundMap {
     return <AgingStatusMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
-  renderChart() {
-    return <AgingStatusChart map={this} />;
+  renderChart(isReportMode?: boolean) {
+    return <AgingStatusChart map={this} isReportMode={isReportMode} />;
   }
 }
 

@@ -50,7 +50,7 @@ class CropDistributionMap extends CommonBackgroundMap {
     return <CropDistributionMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
-  renderChart() {
+  renderChart(isReportMode?: boolean) {
     return <CropDistributionChart />;
   }
 

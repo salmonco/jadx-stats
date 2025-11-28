@@ -103,7 +103,7 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
     return <DisasterTypeHistoryStatsMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
-  renderChart() {
+  renderChart(isReportMode?: boolean) {
     return <DisasterTypeHistoryStatsChart />;
   }
 

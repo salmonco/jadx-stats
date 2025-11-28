@@ -2,13 +2,15 @@ import { Button } from "antd";
 import * as d3 from "d3";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getColor } from "~/maps/constants/mandarinCultivationInfo";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface Props {
   chartData: any;
   selectedVariety: string;
+  isReportMode?: boolean;
 }
 
-const MandarinCultivationPieChart = ({ chartData, selectedVariety }: Props) => {
+const MandarinCultivationPieChart = ({ chartData, selectedVariety, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -46,18 +48,17 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety }: Props) => {
 
     const sortedData = [...pieData].sort((a, b) => b.total_area - a.total_area);
 
-    const headers = ["지역", "총 재배 면적(ha)"];
-    const csvContent = headers.join(",") + "\n" + sortedData.map((d) => `${d.region},${(d.total_area / 10000).toFixed(2)}`).join("\n");
+    const columns: CsvColumn[] = [
+      { title: "지역", dataIndex: "region" },
+      { title: "총 재배 면적(ha)", dataIndex: "total_area_ha" },
+    ];
 
-    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `지역별_재배면적_원형.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const data = sortedData.map((d) => ({
+      region: d.region,
+      total_area_ha: d.total_area / 10_000,
+    }));
+
+    downloadCsv(columns, data, "지역별_재배면적_원형.csv");
   };
 
   useEffect(() => {
@@ -137,12 +138,12 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety }: Props) => {
       .attr("dy", "0.35em")
       .style("font-size", "18px")
       .style("font-weight", "600")
-      .style("fill", "#ffffff")
+      .style("fill", isReportMode ? "black" : "#ffffff")
       .text(`총 재배 면적 : ${(totalValue / 10000).toFixed(1).toLocaleString()}ha`);
-  }, [pieData, size]);
+  }, [pieData, size, isReportMode]);
 
   return (
-    <div className="flex h-full w-full flex-col text-white">
+    <div className={`flex h-full w-full flex-col ${isReportMode ? "text-black" : "text-white"}`}>
       <div className="mb-2 flex items-center justify-between">
         <p className="text-xl font-semibold">
           {selectedVariety === "YN-26"
@@ -156,9 +157,11 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety }: Props) => {
                   : (selectedVariety ?? "")}{" "}
           지역별 재배면적 (원 그래프)
         </p>
-        <Button type="primary" onClick={handleDownloadCsv}>
-          CSV 다운로드
-        </Button>
+        {!isReportMode && (
+          <Button type="primary" onClick={handleDownloadCsv}>
+            CSV 다운로드
+          </Button>
+        )}
       </div>
       <div className="relative h-full w-full" ref={containerRef}>
         <svg ref={svgRef} />
