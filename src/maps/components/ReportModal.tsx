@@ -157,7 +157,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       const chartSections = chartContainer ? Array.from(chartContainer.children) : [];
       const allSections = [...reportSections, ...chartSections];
 
-      const pageHeight = PAGE_HEIGHT - 20;
+      const maxY = PAGE_HEIGHT;
       let currentY = 10;
 
       for (const section of allSections) {
@@ -170,34 +170,14 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         const imgData = canvas.toDataURL("image/png");
 
-        const remainingSpace = pageHeight - currentY + 10;
-
-        if (imgHeight > remainingSpace && currentY > 10) {
+        // 섹션이 현재 페이지에 들어가지 않으면 새 페이지
+        if (currentY + imgHeight > maxY) {
           pdf.addPage();
           currentY = 10;
         }
 
-        if (imgHeight > pageHeight) {
-          let offsetY = 0;
-          while (offsetY < imgHeight) {
-            const spaceInPage = pageHeight - currentY + 10;
-            const heightToDraw = Math.min(imgHeight - offsetY, spaceInPage);
-
-            pdf.addImage(imgData, "PNG", 10, currentY - offsetY, imgWidth, imgHeight);
-
-            offsetY += heightToDraw;
-
-            if (offsetY < imgHeight) {
-              pdf.addPage();
-              currentY = 10;
-            } else {
-              currentY += heightToDraw + 5;
-            }
-          }
-        } else {
-          pdf.addImage(imgData, "PNG", 10, currentY, imgWidth, imgHeight);
-          currentY += imgHeight + 5;
-        }
+        pdf.addImage(imgData, "PNG", 10, currentY, imgWidth, imgHeight);
+        currentY += imgHeight + 5;
       }
 
       pdf.save("보고서.pdf");
