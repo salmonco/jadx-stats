@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { BarChart3 } from "lucide-react";
 import { useMemo } from "react";
 import ChartContainer from "~/features/visualization/components/common/ChartContainer";
 import SimulatorResult from "~/features/visualization/components/observation/SimulatorResult";
@@ -10,9 +11,10 @@ import visualizationApi from "~/services/apis/visualizationApi";
 
 interface Props {
   map: MandarinTreeAgeDistributionMap;
+  isReportMode?: boolean;
 }
 
-const MandarinTreeAgeDistributionChart = ({ map }: Props) => {
+const MandarinTreeAgeDistributionChart = ({ map, isReportMode }: Props) => {
   const { data: features } = useQuery<MandarinTreeAgeDistributionFeatureCollection>({
     queryKey: [
       "treeAgeDistributionFeatures",
@@ -31,7 +33,9 @@ const MandarinTreeAgeDistributionChart = ({ map }: Props) => {
   });
 
   const chartData = useMemo(() => {
-    return features?.features
+    if (!features?.features) return [];
+
+    return features.features
       .map((feature) => {
         const props = feature.properties;
         const ageGroups = props?.stats?.age_groups ?? {};
@@ -47,6 +51,26 @@ const MandarinTreeAgeDistributionChart = ({ map }: Props) => {
       .sort((a, b) => b.value - a.value)
       .slice(0, 20);
   }, [features]);
+
+  if (isReportMode) {
+    return (
+      <div className="mb-4 w-full p-4">
+        <div className="mb-4">
+          <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+            <BarChart3 size={24} />
+            <span>데이터 그래프</span>
+          </h3>
+          <TreeAgeSimulationChart
+            selectedTargetYear={map.selectedTargetYear}
+            selectedPummok={map.selectedCropGroup}
+            selectedVariety={map.selectedCropDetailGroup}
+            isReportMode={true}
+          />
+        </div>
+        <SimulatorResult chartData={chartData} isReportMode={true} />
+      </div>
+    );
+  }
 
   return (
     <ChartContainer minHeight={480} cols={2}>

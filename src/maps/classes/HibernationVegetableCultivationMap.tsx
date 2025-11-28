@@ -51,8 +51,8 @@ class HibernationVegetableCultivationMap extends CommonBackgroundMap {
     return <HibernationVegetableCultivationMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
-  renderChart() {
-    return <HibernationVegetableCultivationChart map={this} />;
+  renderChart(isReportMode?: boolean) {
+    return <HibernationVegetableCultivationChart map={this} isReportMode={isReportMode} />;
   }
 
   /**

@@ -376,9 +376,7 @@ body,
 }
 
 .report-header-hidden {
-  position: absolute;
-  left: -9999px;
-  width: 700px;
+  display: none;
 }
 
 .print-only {

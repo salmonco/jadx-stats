@@ -73,6 +73,10 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       return;
     }
 
+    const actualWidth = isReportMode && containerRef.current.parentElement 
+      ? containerRef.current.parentElement.clientWidth 
+      : size.width;
+
     const margin = {
       top: 0,
       right: firstMap?.getSelectedRegionLevel() === "ri" ? 30 : 40,
@@ -87,7 +91,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       // 트리맵 차트
       const root = d3.hierarchy({ children: chartData }).sum((d: any) => d.count);
 
-      const treemapLayout = d3.treemap().size([size.width, treemapHeight]).padding(1);
+      const treemapLayout = d3.treemap().size([actualWidth, treemapHeight]).padding(1);
 
       treemapLayout(root);
 
@@ -158,7 +162,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       const barColor = category === "avg_age" ? "#F59E0B" : "#EA580C";
 
       const chart = Plot.plot({
-        width: size.width,
+        width: actualWidth,
         height: isReportMode ? calculatedChartHeight : regionTotals.length > 11 ? calculatedChartHeight : size.height,
         marginTop: margin.top,
         marginRight: margin.right,
@@ -255,7 +259,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       <div
         ref={containerRef}
         style={isReportMode ? {} : { height: `${size.height}px` }}
-        className={isReportMode ? "min-w-full" : "custom-dark-scroll min-w-full overflow-y-auto"}
+        className={isReportMode ? "w-full min-w-full" : "custom-dark-scroll min-w-full overflow-y-auto"}
       />
     </div>
   );

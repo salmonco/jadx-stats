@@ -59,7 +59,7 @@ class YearlyDisasterInfoMap extends CommonBackgroundMap {
     return <YearlyDisasterInfoMapContent mapId={this.mapId} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />;
   }
 
-  renderChart() {
+  renderChart(isReportMode?: boolean) {
     return <YearlyDisasterInfoChart />;
   }
 

@@ -1,10 +1,8 @@
 import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 import { FileText, Map, Printer, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import logo from "~/assets/logo.png";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
-import { createReportHtml } from "~/maps/utils/createReportHtml";
 import { formatDateTime } from "~/utils/formatDateTime";
 import { ExtendedOLMap } from "../hooks/useOLMap";
 
@@ -94,28 +92,79 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose, pageT
     }
 
     try {
-      const reportHtml = await createReportHtml({
-        reportContentRef: reportContentRef.current,
-        reportHeaderRef: reportHeaderRef.current,
-        filterText,
-        reportSource: REPORT_SOURCE,
-        pageTitle,
-      });
-
       const printWindow = window.open("", "", `width=${window.innerWidth},height=${window.innerHeight}`);
       if (!printWindow) {
         alert("팝업이 차단되었습니다.");
         return;
       }
 
-      printWindow.document.write(reportHtml);
+      // 현재 페이지의 스타일 복사
+      const styles = Array.from(document.styleSheets)
+        .map((styleSheet) => {
+          try {
+            return Array.from(styleSheet.cssRules)
+              .map((rule) => rule.cssText)
+              .join("\n");
+          } catch (e) {
+            return "";
+          }
+        })
+        .join("\n");
+
+      // 헤더 HTML에서 report-header-hidden 클래스 제거
+      const headerDiv = reportHeaderRef.current.cloneNode(true) as HTMLElement;
+      headerDiv.classList.remove("report-header-hidden");
+      const headerHtml = headerDiv.outerHTML;
+
+      const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>보고서 - ${pageTitle}</title>
+            <style>
+              ${styles}
+              @media print {
+                body { margin: 0; padding: 20px; }
+                .no-print { display: none !important; }
+                .report-section { 
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+                .mb-4 { 
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+                .h-full { 
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+                .w-full { 
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+                table {
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            ${headerHtml}
+            ${reportContentRef.current.innerHTML}
+          </body>
+        </html>
+      `;
+
+      printWindow.document.write(html);
       printWindow.document.close();
       printWindow.focus();
 
       setTimeout(() => {
         printWindow.print();
         printWindow.close();
-      }, 250);
+      }, 500);
     } catch (error) {
       console.error("Error printing:", error);
       alert("인쇄 중 오류가 발생했습니다.");
@@ -129,59 +178,88 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose, pageT
     }
 
     try {
-      const reportHtml = await createReportHtml({
-        reportContentRef: reportContentRef.current,
-        reportHeaderRef: reportHeaderRef.current,
-        filterText,
-        reportSource: REPORT_SOURCE,
-        pageTitle,
-        forPdf: true,
-      });
+      // 현재 페이지의 스타일 복사
+      const styles = Array.from(document.styleSheets)
+        .map((styleSheet) => {
+          try {
+            return Array.from(styleSheet.cssRules)
+              .map((rule) => rule.cssText)
+              .join("\n");
+          } catch (e) {
+            return "";
+          }
+        })
+        .join("\n");
 
-      // 임시 iframe에 HTML 렌더링
+      // 헤더 HTML에서 report-header-hidden 클래스 제거
+      const headerDiv = reportHeaderRef.current.cloneNode(true) as HTMLElement;
+      headerDiv.classList.remove("report-header-hidden");
+      const headerHtml = headerDiv.outerHTML;
+
+      const html = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>보고서 - ${pageTitle}</title>
+            <style>
+              ${styles}
+              @media print {
+                body { margin: 0; padding: 20px; }
+                .no-print { display: none !important; }
+                .report-section { 
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+                .mb-4 { 
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+                .h-full { 
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+                .w-full { 
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+                table {
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            ${headerHtml}
+            ${reportContentRef.current.innerHTML}
+          </body>
+        </html>
+      `;
+
+      // iframe 생성
       const iframe = document.createElement("iframe");
       iframe.style.position = "absolute";
-      iframe.style.left = "-9999px";
-      iframe.style.width = "210mm";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "none";
       document.body.appendChild(iframe);
 
-      const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+      const iframeDoc = iframe.contentWindow?.document;
       if (!iframeDoc) {
         throw new Error("iframe document not available");
       }
 
       iframeDoc.open();
-      iframeDoc.write(reportHtml);
+      iframeDoc.write(html);
       iframeDoc.close();
 
-      // iframe 로드 대기
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // iframe 내용을 PDF로 변환
-      const pdf = new jsPDF("p", "mm", "a4");
-      const body = iframeDoc.body;
-      const sections = Array.from(body.children);
-
-      const maxY = PAGE_HEIGHT - 20;
-      let currentY = 10;
-
-      for (const section of sections) {
-        const canvas = await html2canvas(section as HTMLElement, { useCORS: true, scale: 2 });
-        const imgHeight = (canvas.height * (PAGE_WIDTH - 20)) / canvas.width;
-
-        if (currentY + imgHeight > maxY) {
-          pdf.addPage();
-          currentY = 10;
-        }
-
-        pdf.addImage(canvas.toDataURL("image/png"), "PNG", 10, currentY, PAGE_WIDTH - 20, imgHeight);
-        currentY += imgHeight + 8;
-      }
-
-      document.body.removeChild(iframe);
-
-      pdf.save("보고서.pdf");
-      alert("PDF가 성공적으로 저장되었습니다.");
+      setTimeout(() => {
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      }, 500);
     } catch (error) {
       console.error("Error saving PDF:", error);
       alert("PDF 저장 중 오류가 발생했습니다.");
@@ -208,7 +286,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose, pageT
             </button>
           </div>
         </div>
-        <div className="printable mt-4 h-[calc(100%-80px)] overflow-y-auto" ref={reportContentRef}>
+        <div className="printable mt-4 h-[calc(100%-80px)] overflow-y-auto overflow-x-hidden" ref={reportContentRef}>
           <div className="report-header-hidden mb-4 flex items-start justify-between border-b pb-4" ref={reportHeaderRef}>
             <img src={logo} alt="제주농업통계시스템" className="h-10" />
             <div className="text-right text-sm">
@@ -259,7 +337,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose, pageT
               {legendImage && <img className="absolute bottom-0 left-2 max-h-[200px] max-w-[200px]" src={legendImage} alt="Legend Capture" />}
             </div>
           </div>
-          <div className="chart-container">{map.renderChart(true)}</div>
+          <div className="chart-container w-full">{map.renderChart(true)}</div>
         </div>
       </div>
     </div>

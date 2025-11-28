@@ -13,9 +13,10 @@ interface Props {
   selectedTargetYear: number;
   selectedPummok: string;
   selectedVariety: string;
+  isReportMode?: boolean;
 }
 
-const TreeAgeSimulationChart = ({ selectedTargetYear, selectedPummok, selectedVariety }: Props) => {
+const TreeAgeSimulationChart = ({ selectedTargetYear, selectedPummok, selectedVariety, isReportMode }: Props) => {
   const plotRef = useRef<HTMLDivElement>(null);
   const legendRef = useRef<HTMLDivElement>(null);
   const maxAreaRef = useRef<number | null>(null);
@@ -31,8 +32,8 @@ const TreeAgeSimulationChart = ({ selectedTargetYear, selectedPummok, selectedVa
 
     const observer = new ResizeObserver((entries) => {
       const entry = entries[0];
-      const { width } = entry.contentRect;
-      setSize((prev) => ({ ...prev, width }));
+      const { width, height } = entry.contentRect;
+      setSize({ width, height });
     });
 
     observer.observe(plotRef.current);
@@ -77,7 +78,6 @@ const TreeAgeSimulationChart = ({ selectedTargetYear, selectedPummok, selectedVa
   useEffect(() => {
     if (!features || !features.features.length || !plotRef.current) return;
 
-    // const { clientWidth, clientHeight } = plotRef.current;
     const ageGroups = features.features[0]?.properties.stats.age_groups ?? {};
 
     const chartData = keys.map((key, idx) => ({
@@ -91,14 +91,21 @@ const TreeAgeSimulationChart = ({ selectedTargetYear, selectedPummok, selectedVa
       maxAreaRef.current = maxArea;
     }
 
+    const plotWidth = isReportMode ? (size.width || 750) : size.width;
+    const plotHeight = isReportMode ? 380 : size.height;
+    
+    if (plotWidth === 0) return;
+
     const plot = Plot.plot({
-      width: size.width,
-      height: size.height,
+      width: plotWidth,
+      height: plotHeight,
       marginTop: 22,
       marginBottom: 8,
       marginLeft: maxAreaRef?.current?.toString().length > 5 ? 60 : 30,
       style: {
         fontSize: "14px",
+        color: isReportMode ? "black" : undefined,
+        background: isReportMode ? "transparent" : undefined,
       },
       x: {
         domain: keys,
@@ -122,6 +129,14 @@ const TreeAgeSimulationChart = ({ selectedTargetYear, selectedPummok, selectedVa
           y: "area",
           fill: "ageGroup",
         }),
+        Plot.text(chartData, {
+          x: "ageGroup",
+          y: "area",
+          text: (d) => `${(d.area / 10000).toFixed(1)}`,
+          dy: -8,
+          fill: isReportMode ? "black" : "#ffffff",
+          fontSize: "12px",
+        }),
         Plot.ruleY([0]),
       ],
     });
@@ -133,16 +148,18 @@ const TreeAgeSimulationChart = ({ selectedTargetYear, selectedPummok, selectedVa
     // legendRef.current.appendChild(treeAgeLegend);
 
     d3.select(plot).style("overflow", "visible");
-  }, [features]);
+  }, [features, isReportMode, size]);
 
   return (
     <div className="relative flex h-full w-full flex-col items-start justify-center gap-3 pb-4">
       <div className="flex items-center gap-[10px]">
         <p className="text-xl font-semibold">수령별 면적 분포</p>
-        <InfoTooltip
-          title="수령별 면적 분포란?"
-          content={`감귤나무의 나이를 기준으로, 각 수령(수령 구간별) 감귤 재배 면적이 얼마나 되는지를 보여주는 통계입니다.\n이를 통해 현재 제주도 감귤 과원의 구성 상태와, 젋은 나무(신규 식재) 또는 오래된 나무(노후 과원)의 비중을 \n파악할 수 있습니다.`}
-        />
+        {!isReportMode && (
+          <InfoTooltip
+            title="수령별 면적 분포란?"
+            content={`감귤나무의 나이를 기준으로, 각 수령(수령 구간별) 감귤 재배 면적이 얼마나 되는지를 보여주는 통계입니다.\n이를 통해 현재 제주도 감귤 과원의 구성 상태와, 젋은 나무(신규 식재) 또는 오래된 나무(노후 과원)의 비중을 \n파악할 수 있습니다.`}
+          />
+        )}
       </div>
       <div className="absolute right-0 top-0" ref={legendRef} />
       <div className="h-full w-full" ref={plotRef} />
