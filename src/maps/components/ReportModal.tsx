@@ -86,21 +86,24 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       return;
     }
 
-    const element = reportContentRef.current;
-    const originalOverflow = element.style.overflow;
-    const originalHeight = element.style.height;
-
     try {
-      element.style.overflow = "visible";
-      element.style.height = "auto";
+      const clone = reportContentRef.current.cloneNode(true) as HTMLElement;
+      const computedStyle = window.getComputedStyle(reportContentRef.current);
 
-      const canvas = await html2canvas(element, {
+      clone.style.position = "absolute";
+      clone.style.left = "-9999px";
+      clone.style.overflow = "visible";
+      clone.style.height = "auto";
+      clone.style.width = computedStyle.width;
+
+      document.body.appendChild(clone);
+
+      const canvas = await html2canvas(clone, {
         useCORS: true,
         scale: 2,
       });
 
-      element.style.overflow = originalOverflow;
-      element.style.height = originalHeight;
+      document.body.removeChild(clone);
 
       const imgData = canvas.toDataURL("image/png");
       const printWindow = window.open("", "", `width=${window.innerWidth},height=${window.innerHeight}`);
@@ -132,8 +135,6 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
         printWindow.close();
       }, 250);
     } catch (error) {
-      element.style.overflow = originalOverflow;
-      element.style.height = originalHeight;
       console.error("Error printing:", error);
       alert("인쇄 중 오류가 발생했습니다.");
     }
@@ -145,21 +146,24 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       return;
     }
 
-    const element = reportContentRef.current;
-    const originalOverflow = element.style.overflow;
-    const originalHeight = element.style.height;
-
     try {
-      element.style.overflow = "visible";
-      element.style.height = "auto";
+      const clone = reportContentRef.current.cloneNode(true) as HTMLElement;
+      const computedStyle = window.getComputedStyle(reportContentRef.current);
 
-      const canvas = await html2canvas(element, {
+      clone.style.position = "absolute";
+      clone.style.left = "-9999px";
+      clone.style.overflow = "visible";
+      clone.style.height = "auto";
+      clone.style.width = computedStyle.width;
+
+      document.body.appendChild(clone);
+
+      const canvas = await html2canvas(clone, {
         useCORS: true,
         scale: 2,
       });
 
-      element.style.overflow = originalOverflow;
-      element.style.height = originalHeight;
+      document.body.removeChild(clone);
 
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
@@ -182,8 +186,6 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       pdf.save("보고서.pdf");
       alert("PDF가 성공적으로 저장되었습니다.");
     } catch (error) {
-      element.style.overflow = originalOverflow;
-      element.style.height = originalHeight;
       console.error("Error saving PDF:", error);
       alert("PDF 저장 중 오류가 발생했습니다.");
     }
