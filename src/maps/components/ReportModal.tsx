@@ -4,6 +4,7 @@ import { FileText, Map, Printer, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import logo from "~/assets/logo.png";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
+import { createReportHtml } from "~/maps/utils/createReportHtml";
 import { formatDateTime } from "~/utils/formatDateTime";
 import { ExtendedOLMap } from "../hooks/useOLMap";
 
@@ -150,85 +151,12 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     }
 
     try {
-      const reportSections = Array.from(reportContentRef.current.querySelectorAll(".report-section"));
-      const chartContainer = reportContentRef.current.querySelector(".chart-container");
-      const chartSections = chartContainer ? Array.from(chartContainer.children) : [];
-
-      const headerImage = await captureAsImage(reportHeaderRef.current);
-      const tableHtml = createTableHtml();
-
-      // 아이콘 SVG
-      const mapIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>`;
-      const tableIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>`;
-      const chartIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>`;
-
-      // 지도 섹션 - 타이틀 제외하고 콘텐츠만 캡처
-      const mapSection = reportSections[1];
-      const mapContent = mapSection?.querySelector('div[style*="position: relative"]');
-      const mapContentImage = mapContent ? await captureAsImage(mapContent as HTMLElement) : "";
-      const mapSectionHtml = mapContentImage
-        ? `
-        <div style="margin-bottom: 16px; padding: 16px; page-break-inside: avoid;">
-          ${createTitleHtml(mapIconSvg, "지도 시각화 화면")}
-          <img src="${mapContentImage}" style="width: 100%; height: auto; display: block; border-radius: 8px;" />
-        </div>
-      `
-        : "";
-
-      // 차트 섹션들 처리
-      let chartSectionsHtml = "";
-      for (let i = 0; i < chartSections.length; i++) {
-        const section = chartSections[i] as HTMLElement;
-        const icon = i === 0 ? tableIconSvg : chartIconSvg;
-        const title = i === 0 ? "데이터 표" : "데이터 그래프";
-
-        if (i === 1) {
-          // 데이터 그래프 섹션
-          const chartWrapper = section.querySelector("div.flex.flex-col.gap-4");
-
-          if (chartWrapper) {
-            const individualCharts = Array.from(chartWrapper.children);
-
-            // 개별 차트들
-            for (let j = 0; j < individualCharts.length; j++) {
-              const chart = individualCharts[j];
-              const chartImage = await captureAsImage(chart as HTMLElement);
-
-              if (j === 0) {
-                // 첫 번째 차트는 타이틀과 함께
-                chartSectionsHtml += `
-                  <div style="margin-bottom: 16px; padding: 16px; page-break-inside: avoid;">
-                    ${createTitleHtml(icon, title)}
-                    <img src="${chartImage}" style="width: 100%; height: auto; display: block;" />
-                  </div>
-                `;
-              } else {
-                // 나머지 차트들은 개별
-                chartSectionsHtml += `
-                  <div style="padding: 0 16px 16px 16px; page-break-inside: avoid;">
-                    <img src="${chartImage}" style="width: 100%; height: auto; display: block;" />
-                  </div>
-                `;
-              }
-            }
-          }
-        } else {
-          // 데이터 표 섹션 - 콘텐츠만 캡처
-          const content = Array.from(section.children).filter((child) => child.tagName !== "H3");
-          const tempDiv = document.createElement("div");
-          content.forEach((child) => tempDiv.appendChild(child.cloneNode(true)));
-          document.body.appendChild(tempDiv);
-          const contentImage = await captureAsImage(tempDiv);
-          document.body.removeChild(tempDiv);
-
-          chartSectionsHtml += `
-            <div style="margin-bottom: 16px; padding: 16px; page-break-inside: avoid;">
-              ${createTitleHtml(icon, title)}
-              <img src="${contentImage}" style="width: 100%; height: auto; display: block;" />
-            </div>
-          `;
-        }
-      }
+      const reportHtml = await createReportHtml({
+        reportContentRef: reportContentRef.current,
+        reportHeaderRef: reportHeaderRef.current,
+        filterText,
+        reportSource: REPORT_SOURCE,
+      });
 
       const printWindow = window.open("", "", `width=${window.innerWidth},height=${window.innerHeight}`);
       if (!printWindow) {
@@ -236,7 +164,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
         return;
       }
 
-      printWindow.document.write(createPrintDocument(headerImage, tableHtml, mapSectionHtml + chartSectionsHtml));
+      printWindow.document.write(reportHtml);
       printWindow.document.close();
       printWindow.focus();
 
@@ -257,34 +185,54 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     }
 
     try {
-      const pdf = new jsPDF("p", "mm", "a4");
-      const reportSections = Array.from(reportContentRef.current.querySelectorAll(".report-section"));
-      const chartContainer = reportContentRef.current.querySelector(".chart-container");
-      const chartSections = chartContainer ? Array.from(chartContainer.children) : [];
-      const allSections = [reportHeaderRef.current, ...reportSections, ...chartSections];
+      const reportHtml = await createReportHtml({
+        reportContentRef: reportContentRef.current,
+        reportHeaderRef: reportHeaderRef.current,
+        filterText,
+        reportSource: REPORT_SOURCE,
+      });
 
-      const maxY = PAGE_HEIGHT;
+      // 임시 iframe에 HTML 렌더링
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "absolute";
+      iframe.style.left = "-9999px";
+      iframe.style.width = "210mm";
+      document.body.appendChild(iframe);
+
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!iframeDoc) {
+        throw new Error("iframe document not available");
+      }
+
+      iframeDoc.open();
+      iframeDoc.write(reportHtml);
+      iframeDoc.close();
+
+      // iframe 로드 대기
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // iframe 내용을 PDF로 변환
+      const pdf = new jsPDF("p", "mm", "a4");
+      const body = iframeDoc.body;
+      const sections = Array.from(body.children);
+
+      const maxY = PAGE_HEIGHT - 20;
       let currentY = 10;
 
-      for (const section of allSections) {
-        const canvas = await html2canvas(section as HTMLElement, {
-          useCORS: true,
-          scale: 2,
-        });
+      for (const section of sections) {
+        const canvas = await html2canvas(section as HTMLElement, { useCORS: true, scale: 2 });
+        const imgHeight = (canvas.height * (PAGE_WIDTH - 20)) / canvas.width;
 
-        const imgWidth = PAGE_WIDTH - 20;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        const imgData = canvas.toDataURL("image/png");
-
-        // 섹션이 현재 페이지에 들어가지 않으면 새 페이지
         if (currentY + imgHeight > maxY) {
           pdf.addPage();
           currentY = 10;
         }
 
-        pdf.addImage(imgData, "PNG", 10, currentY, imgWidth, imgHeight);
-        currentY += imgHeight + 5;
+        pdf.addImage(canvas.toDataURL("image/png"), "PNG", 10, currentY, PAGE_WIDTH - 20, imgHeight);
+        currentY += imgHeight + 8;
       }
+
+      document.body.removeChild(iframe);
 
       pdf.save("보고서.pdf");
       alert("PDF가 성공적으로 저장되었습니다.");
