@@ -8,11 +8,19 @@ interface TransposedRow {
   [label: string]: string | number;
 }
 
-interface Props {
-  chartData: AgingChartData[];
+interface ReportRow {
+  key: string;
+  region: string;
+  avg_age: string;
+  count: string;
 }
 
-const AgingStatusTransposedTable = ({ chartData }: Props) => {
+interface Props {
+  chartData: AgingChartData[];
+  isReportMode?: boolean;
+}
+
+const AgingStatusTransposedTable = ({ chartData, isReportMode }: Props) => {
   const maxColumns = 14;
   const limitedChartData = chartData.slice(0, maxColumns); // 최대 14개 지역까지만
 
@@ -51,6 +59,34 @@ const AgingStatusTransposedTable = ({ chartData }: Props) => {
     countRow[d.label] = d.count?.toLocaleString() ?? "-";
   }
 
+  const reportColumns: ColumnsType<ReportRow> = [
+    {
+      title: "지역",
+      dataIndex: "region",
+      key: "region",
+      align: "center" as const,
+    },
+    {
+      title: "평균 연령(세)",
+      dataIndex: "avg_age",
+      key: "avg_age",
+      align: "center" as const,
+    },
+    {
+      title: "총 경영체 수(개)",
+      dataIndex: "count",
+      key: "count",
+      align: "center" as const,
+    },
+  ];
+
+  const reportDataSource: ReportRow[] = chartData.map((d) => ({
+    key: d.region,
+    region: d.label,
+    avg_age: d.avg_age?.toFixed(2) ?? "-",
+    count: d.count?.toLocaleString() ?? "-",
+  }));
+
   const handleDownloadCsv = () => {
     const labels = chartData.map((d) => d.label);
     const columns: CsvColumn[] = [
@@ -80,14 +116,38 @@ const AgingStatusTransposedTable = ({ chartData }: Props) => {
     downloadCsv(columns, dataRows, "경영체_연령_분포_현황.csv");
   };
 
+  if (isReportMode) {
+    return (
+      <div className="rounded-lg">
+        <Table
+          columns={reportColumns}
+          dataSource={reportDataSource}
+          size="middle"
+          pagination={false}
+          bordered={false}
+          scroll={undefined}
+          className={"custom-report-table"}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-lg bg-[#43516D] p-5 pt-2">
+    <div className={`rounded-lg bg-[#43516D] p-5 pt-2`}>
       <div className="mb-2 flex justify-end">
         <Button type="primary" onClick={handleDownloadCsv}>
           CSV 다운로드
         </Button>
       </div>
-      <Table columns={columns} dataSource={[avgAgeRow, countRow]} size="middle" pagination={false} bordered={false} scroll={{ x: true }} className="custom-dark-table" />
+      <Table
+        columns={columns}
+        dataSource={[avgAgeRow, countRow]}
+        size="middle"
+        pagination={false}
+        bordered={false}
+        scroll={{ x: true }}
+        className={"custom-dark-table"}
+      />
     </div>
   );
 };

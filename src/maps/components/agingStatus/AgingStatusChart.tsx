@@ -16,9 +16,10 @@ export interface AgingChartData {
 
 interface Props {
   map: AgingStatusMap;
+  isReportMode?: boolean;
 }
 
-const AgingStatusChart = ({ map }: Props) => {
+const AgingStatusChart = ({ map, isReportMode }: Props) => {
   const { data: features } = useQuery({
     queryKey: ["agingStatus", map.getSelectedRegionLevel(), map.excludeDong],
     queryFn: () => visualizationApi.getAgingStatus(map.getSelectedRegionLevel(), map.excludeDong),
@@ -28,12 +29,30 @@ const AgingStatusChart = ({ map }: Props) => {
 
   const chartData: AgingChartData[] = useMemo(() => transformToChartData(features?.features ?? []), [features]);
 
+  if (isReportMode) {
+    return (
+      <>
+        <div className="mb-4 rounded-md border p-4">
+          <h3 className="mb-2 text-lg font-bold">데이터 표</h3>
+          <AgingStatusTable chartData={chartData} isReportMode={true} />
+        </div>
+        <div className="mb-4 rounded-md border p-4">
+          <h3 className="mb-2 text-lg font-bold">데이터 그래프</h3>
+          <div className="flex flex-col gap-4">
+            <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} isReportMode={true} />
+            <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} isReportMode={true} />
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <AgingStatusTable chartData={chartData} />
+      <AgingStatusTable chartData={chartData} isReportMode={isReportMode} />
       <ChartContainer cols={2} minHeight={500}>
-        <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} />
-        <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} />
+        <AgingStatusDivergingBarChart title={"평균 연령"} category={"avg_age"} chartData={chartData} isReportMode={isReportMode} />
+        <AgingStatusDivergingBarChart title={"총 경영체 수"} category={"count"} chartData={chartData} isReportMode={isReportMode} />
       </ChartContainer>
     </div>
   );

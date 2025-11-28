@@ -22,7 +22,6 @@ const PAGE_HEIGHT = 297;
 const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Props<M>) => {
   const [mapImage, setMapImage] = useState<string | null>(null);
   const [legendImage, setLegendImage] = useState<string | null>(null);
-  const [chartImage, setChartImage] = useState<string | null>(null);
   const reportContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -70,21 +69,6 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       }
     } else {
       console.error("Legend element not found.");
-    }
-
-    // Capture chart
-    const chartElement = document.getElementById("main-chart-container");
-    if (chartElement.hasChildNodes()) {
-      try {
-        const canvas = await html2canvas(chartElement, {
-          useCORS: true,
-        });
-        setChartImage(canvas.toDataURL());
-      } catch (error) {
-        console.error("Error capturing chart:", error);
-      }
-    } else {
-      console.error("Chart element not found.");
     }
   };
 
@@ -180,12 +164,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
               {legendImage && <img className="absolute bottom-0 left-2 max-h-[200px] max-w-[200px]" src={legendImage} alt="Legend Capture" />}
             </div>
           </div>
-          {chartImage && (
-            <div className="mb-4 rounded-md border p-4">
-              <h3 className="mb-2 text-lg font-bold">지역별 그래프</h3>
-              <img src={chartImage} alt="Chart Capture" className="w-full" />
-            </div>
-          )}
+          {map.renderChart(true)}
         </div>
       </div>
     </div>

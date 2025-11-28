@@ -11,9 +11,10 @@ interface Props {
   title: string;
   category: "avg_age" | "count";
   chartData: AgingChartData[];
+  isReportMode?: boolean;
 }
 
-const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => {
+const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode }: Props) => {
   const mapList = useMapList<AgingStatusMap>();
   const firstMap = mapList.getFirstMap();
 
@@ -72,11 +73,23 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
       return;
     }
 
+    const margin = {
+      top: 0,
+      right: firstMap?.getSelectedRegionLevel() === "ri" ? 30 : 40,
+      bottom: 30,
+      left: firstMap?.getSelectedRegionLevel() === "ri" ? 80 : 55,
+    };
+    const barHeight = chartData.length > 12 ? 32 : 48;
+    const calculatedChartHeight = chartData.length * barHeight + margin.top + margin.bottom;
+
     if (category === "count") {
       // 트리맵 차트
       const root = d3.hierarchy({ children: chartData }).sum((d: any) => d.count);
 
-      const treemapLayout = d3.treemap().size([size.width, size.height]).padding(1);
+      const treemapLayout = d3
+        .treemap()
+        .size([size.width, isReportMode ? calculatedChartHeight : size.height])
+        .padding(1);
 
       treemapLayout(root);
 
@@ -85,10 +98,11 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
       const svg = d3
         .create("svg")
         .attr("width", size.width)
-        .attr("height", size.height)
-        .attr("viewBox", `0 0 ${size.width} ${size.height}`)
+        .attr("height", isReportMode ? calculatedChartHeight : size.height)
+        .attr("viewBox", `0 0 ${size.width} ${isReportMode ? calculatedChartHeight : size.height}`)
         .style("font", "10px sans-serif")
-        .style("overflow", "visible");
+        .style("overflow", "visible")
+        .style("background", isReportMode ? "transparent" : undefined);
 
       const leaf = svg
         .selectAll("g")
@@ -111,7 +125,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
         .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 - 5)
         .attr("text-anchor", "middle")
         .text((d: any) => d.data.label)
-        .attr("fill", "white")
+        .attr("fill", isReportMode ? "black" : "white") // Conditional text color
         .style("font-size", "12px");
 
       svg
@@ -123,9 +137,8 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
         .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 + 10)
         .attr("text-anchor", "middle")
         .text((d: any) => `${d.data.count.toLocaleString()}개`)
-        .attr("fill", "white")
+        .attr("fill", isReportMode ? "black" : "white") // Conditional text color
         .style("font-size", "12px");
-
       containerRef.current.innerHTML = "";
       containerRef.current.appendChild(svg.node()!);
     } else {
@@ -138,14 +151,6 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
         .filter((d) => typeof d.value === "number" && !isNaN(d.value))
         .sort((a, b) => b.value - a.value);
 
-      const margin = {
-        top: 0,
-        right: firstMap.getSelectedRegionLevel() === "ri" ? 30 : 40,
-        bottom: 30,
-        left: firstMap.getSelectedRegionLevel() === "ri" ? 80 : 55,
-      };
-      const barHeight = regionTotals.length > 12 ? 32 : 48;
-      const height = regionTotals.length > 11 ? regionTotals.length * barHeight + margin.top + margin.bottom : size.height;
       const barInset = regionTotals.length === 1 ? 110 : regionTotals.length === 2 ? 40 : regionTotals.length === 4 ? 15 : 7;
 
       const maxAbs = d3.max(regionTotals, (d) => Math.abs(d.value)) || 1;
@@ -156,7 +161,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
 
       const chart = Plot.plot({
         width: size.width,
-        height,
+        height: isReportMode ? calculatedChartHeight : regionTotals.length > 11 ? calculatedChartHeight : size.height,
         marginTop: margin.top,
         marginRight: margin.right,
         marginBottom: margin.bottom,
@@ -196,14 +201,15 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
             dx: 5,
             dy: 1,
             textAnchor: "start",
-            fill: "#e9e9e9",
+            fill: isReportMode ? "black" : "#e9e9e9",
             fontSize: "14px",
           }),
           Plot.ruleX([xMin], { stroke: "#e9e9e9", opacity: 0.5 }),
         ],
         style: {
           fontSize: "15px",
-          color: "#e9e9e9",
+          color: isReportMode ? "black" : "#e9e9e9",
+          background: isReportMode ? "transparent" : undefined,
         },
       });
 
@@ -218,7 +224,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
         containerRef.current.innerHTML = "";
       }
     };
-  }, [chartData, category, size]);
+  }, [chartData, category, size, isReportMode, firstMap]);
 
   const handleDownloadCsv = () => {
     const columns: CsvColumn[] = [{ title: "지역", dataIndex: "region" }];
@@ -242,11 +248,17 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
     <div className="h-full w-full">
       <div className="mb-[8px] flex items-center justify-between">
         <p className="text-xl font-semibold">{title}</p>
-        <Button type="primary" onClick={handleDownloadCsv}>
-          CSV 다운로드
-        </Button>
+        {!isReportMode && (
+          <Button type="primary" onClick={handleDownloadCsv}>
+            CSV 다운로드
+          </Button>
+        )}
       </div>
-      <div ref={containerRef} style={{ height: `${size.height}px` }} className="custom-dark-scroll min-w-full overflow-y-auto" />
+      <div
+        ref={containerRef}
+        style={isReportMode ? {} : { height: `${size.height}px` }}
+        className={isReportMode ? "min-w-full" : "custom-dark-scroll min-w-full overflow-y-auto"}
+      />
     </div>
   );
 };

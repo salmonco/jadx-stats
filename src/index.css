@@ -291,6 +291,25 @@ body,
   content: none !important;
 }
 
+/* Custom styles for tables in report mode */
+.custom-report-table .ant-table {
+  background-color: transparent !important;
+}
+
+.custom-report-table .ant-table-thead > tr > th {
+  background-color: transparent !important;
+  color: #000000 !important; /* Black text for headers in report mode */
+  border-bottom: 1px solid #000000 !important;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.custom-report-table .ant-table-tbody > tr > td {
+  background-color: transparent !important;
+  border-bottom: 1px solid #cccccc !important; /* Lighter border for light background */
+  color: #000000 !important; /* Black text for body cells in report mode */
+}
+
 .cultivation-harvest-table .ant-table-thead > tr > th {
   background-color: #43516d;
   border: none;
@@ -345,4 +364,13 @@ body,
 
 .basic-layer-panel .ant-collapse-content-box {
   padding: 8px 20px !important;
+}
+
+@media print {
+  .custom-report-table .ant-table-thead > tr > th,
+  .custom-report-table .ant-table-tbody > tr > td {
+    word-wrap: break-word; /* Ensures long words break */
+    white-space: normal;  /* Allows text to wrap */
+    /* Further adjustments like font-size: 10px !important; might be needed if content still overflows */
+  }
 }
