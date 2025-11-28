@@ -6,7 +6,7 @@ const transformToChartData = (features: AgingStatusFeature[]): AgingChartData[] 
     .map((f): AgingChartData => {
       const p = f.properties;
       return {
-        region: `${p.vrbs_nm} (${p.id})`,
+        region: p.vrbs_nm,
         label: p.vrbs_nm,
         avg_age: p?.stats?.avg_age,
         count: p?.stats?.count,
