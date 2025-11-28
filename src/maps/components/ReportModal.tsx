@@ -86,64 +86,6 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     return "적용된 필터가 없습니다.";
   }, [map]);
 
-  const captureAsImage = async (element: HTMLElement) => {
-    const canvas = await html2canvas(element, { useCORS: true, scale: 2 });
-    return canvas.toDataURL("image/png");
-  };
-
-  const createTableHtml = () => {
-    const cellStyle = "border: 1px solid #d1d5db; padding: 12px; vertical-align: middle; height: 50px;";
-    const headerCellStyle = `${cellStyle} background-color: #e5e7eb; text-align: center; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;`;
-
-    return `
-      <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px; table-layout: fixed;">
-        <tbody>
-          <tr style="height: 50px;">
-            <td style="width: 16.666667%; ${headerCellStyle}">검색조건</td>
-            <td style="width: 33.333333%; ${cellStyle}">${filterText}</td>
-            <td style="width: 16.666667%; ${headerCellStyle}">출처</td>
-            <td style="width: 33.333333%; ${cellStyle}">${REPORT_SOURCE}</td>
-          </tr>
-        </tbody>
-      </table>
-    `;
-  };
-
-  const createTitleHtml = (iconSvg: string, title: string) => {
-    return `
-      <table style="width: 100%; margin-bottom: 12px; border-collapse: collapse; table-layout: fixed;">
-        <tbody>
-          <tr style="height: 30px;">
-            <td style="width: 24px; vertical-align: middle; padding: 0; height: 30px;">
-              ${iconSvg}
-            </td>
-            <td style="vertical-align: middle; padding-left: 8px; font-size: 18px; font-weight: bold; height: 30px;">
-              ${title}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    `;
-  };
-
-  const createPrintDocument = (headerImage: string, tableHtml: string, imagesHtml: string) => `
-    <html>
-      <head>
-        <title>보고서</title>
-        <style>
-          @page { size: A4; margin: 10mm; }
-          body { margin: 0; padding: 0; }
-          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-        </style>
-      </head>
-      <body>
-        <img src="${headerImage}" style="width: 100%; height: auto; display: block; margin-bottom: 16px;" />
-        ${tableHtml}
-        ${imagesHtml}
-      </body>
-    </html>
-  `;
-
   const handlePrint = async () => {
     if (!reportContentRef.current || !reportHeaderRef.current) {
       alert("보고서 내용을 찾을 수 없습니다.");
