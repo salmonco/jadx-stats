@@ -223,15 +223,17 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
               <div className="mt-1 text-gray-600">작성일자 : {currentDateTime}</div>
             </div>
           </div>
-          <div className="report-section mb-4 grid grid-cols-2 gap-4">
-            <div className="rounded-md border p-4">
-              <h3 className="mb-2 text-lg font-bold">검색조건</h3>
-              <p>{filterText}</p>
-            </div>
-            <div className="rounded-md border p-4">
-              <h3 className="mb-2 text-lg font-bold">출처</h3>
-              <p>{REPORT_SOURCE}</p>
-            </div>
+          <div className="report-section mb-4">
+            <table className="w-full border-collapse border">
+              <tbody>
+                <tr>
+                  <td className="w-1/6 border bg-gray-200 p-3 text-center font-bold">검색조건</td>
+                  <td className="w-1/3 border p-3">{filterText}</td>
+                  <td className="w-1/6 border bg-gray-200 p-3 text-center font-bold">출처</td>
+                  <td className="w-1/3 border p-3">{REPORT_SOURCE}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div className="report-section mb-4 rounded-md border p-4">
             <h3 className="mb-2 text-lg font-bold">지도 시각화 화면</h3>
