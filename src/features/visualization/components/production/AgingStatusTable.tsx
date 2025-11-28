@@ -51,15 +51,41 @@ const AgingStatusTransposedTable = ({ chartData }: Props) => {
   }
 
   const handleDownloadCsv = () => {
-    const header = columns.map((col) => col.title).join(",");
-    const dataRows = [avgAgeRow, countRow];
+    const fullLabels = chartData.map((d) => d.label);
+    const fullColumns: ColumnsType<TransposedRow> = [
+      {
+        title: "지표",
+        dataIndex: "key",
+        key: "key",
+      },
+      ...fullLabels.map((label) => ({
+        title: label,
+        dataIndex: label,
+        key: label,
+      })),
+    ];
+
+    const fullAvgAgeRow: TransposedRow = {
+      key: "평균 연령",
+    };
+    const fullCountRow: TransposedRow = {
+      key: "총 경영체 수",
+    };
+
+    for (const d of chartData) {
+      fullAvgAgeRow[d.label] = d.avg_age?.toFixed(2) ?? "-";
+      fullCountRow[d.label] = d.count?.toLocaleString() ?? "-";
+    }
+
+    const header = fullColumns.map((col) => col.title).join(",");
+    const dataRows = [fullAvgAgeRow, fullCountRow];
 
     const csvContent =
       header +
       "\n" +
       dataRows
         .map((row) =>
-          columns
+          fullColumns
             .map((col) => {
               const column = col as ColumnType<TransposedRow>;
               const value = row[column.dataIndex as string];
