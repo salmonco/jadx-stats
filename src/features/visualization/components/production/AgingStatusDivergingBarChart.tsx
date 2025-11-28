@@ -81,15 +81,13 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
     };
     const barHeight = chartData.length > 12 ? 32 : 48;
     const calculatedChartHeight = chartData.length * barHeight + margin.top + margin.bottom;
+    const treemapHeight = isReportMode ? Math.min(550, calculatedChartHeight) : size.height;
 
     if (category === "count") {
       // 트리맵 차트
       const root = d3.hierarchy({ children: chartData }).sum((d: any) => d.count);
 
-      const treemapLayout = d3
-        .treemap()
-        .size([size.width, isReportMode ? calculatedChartHeight : size.height])
-        .padding(1);
+      const treemapLayout = d3.treemap().size([size.width, treemapHeight]).padding(1);
 
       treemapLayout(root);
 
@@ -98,8 +96,8 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       const svg = d3
         .create("svg")
         .attr("width", size.width)
-        .attr("height", isReportMode ? calculatedChartHeight : size.height)
-        .attr("viewBox", `0 0 ${size.width} ${isReportMode ? calculatedChartHeight : size.height}`)
+        .attr("height", treemapHeight)
+        .attr("viewBox", `0 0 ${size.width} ${treemapHeight}`)
         .style("font", "10px sans-serif")
         .style("overflow", "visible")
         .style("background", isReportMode ? "transparent" : undefined);
