@@ -87,25 +87,21 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     }
 
     try {
-      const clone = reportContentRef.current.cloneNode(true) as HTMLElement;
-      const computedStyle = window.getComputedStyle(reportContentRef.current);
+      const reportSections = Array.from(reportContentRef.current.querySelectorAll(".report-section"));
+      const chartContainer = reportContentRef.current.querySelector(".chart-container");
+      const chartSections = chartContainer ? Array.from(chartContainer.children) : [];
+      const allSections = [...reportSections, ...chartSections];
+      const images: string[] = [];
 
-      clone.style.position = "absolute";
-      clone.style.left = "-9999px";
-      clone.style.overflow = "visible";
-      clone.style.height = "auto";
-      clone.style.width = computedStyle.width;
+      for (const section of allSections) {
+        const canvas = await html2canvas(section as HTMLElement, {
+          useCORS: true,
+          scale: 2,
+        });
 
-      document.body.appendChild(clone);
+        images.push(canvas.toDataURL("image/png"));
+      }
 
-      const canvas = await html2canvas(clone, {
-        useCORS: true,
-        scale: 2,
-      });
-
-      document.body.removeChild(clone);
-
-      const imgData = canvas.toDataURL("image/png");
       const printWindow = window.open("", "", `width=${window.innerWidth},height=${window.innerHeight}`);
 
       if (!printWindow) {
@@ -113,18 +109,26 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
         return;
       }
 
+      const imagesHtml = images
+        .map(
+          (img, index) =>
+            `<div style="page-break-inside: avoid; ${index > 0 ? "page-break-before: auto;" : ""}">
+          <img src="${img}" style="width: 100%; height: auto; display: block;" />
+        </div>`
+        )
+        .join("");
+
       printWindow.document.write(`
         <html>
           <head>
             <title>보고서</title>
             <style>
-              @page { size: A4; margin: 0; }
+              @page { size: A4; margin: 10mm; }
               body { margin: 0; padding: 0; }
-              img { width: 100%; height: auto; display: block; }
             </style>
           </head>
           <body>
-            <img src="${imgData}" />
+            ${imagesHtml}
           </body>
         </html>
       `);
@@ -147,40 +151,53 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     }
 
     try {
-      const clone = reportContentRef.current.cloneNode(true) as HTMLElement;
-      const computedStyle = window.getComputedStyle(reportContentRef.current);
-
-      clone.style.position = "absolute";
-      clone.style.left = "-9999px";
-      clone.style.overflow = "visible";
-      clone.style.height = "auto";
-      clone.style.width = computedStyle.width;
-
-      document.body.appendChild(clone);
-
-      const canvas = await html2canvas(clone, {
-        useCORS: true,
-        scale: 2,
-      });
-
-      document.body.removeChild(clone);
-
-      const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
+      const reportSections = Array.from(reportContentRef.current.querySelectorAll(".report-section"));
+      const chartContainer = reportContentRef.current.querySelector(".chart-container");
+      const chartSections = chartContainer ? Array.from(chartContainer.children) : [];
+      const allSections = [...reportSections, ...chartSections];
 
-      const imgHeight = (canvas.height * PAGE_WIDTH) / canvas.width;
-      let heightLeft = imgHeight;
+      const pageHeight = PAGE_HEIGHT - 20;
+      let currentY = 10;
 
-      let position = 0;
+      for (const section of allSections) {
+        const canvas = await html2canvas(section as HTMLElement, {
+          useCORS: true,
+          scale: 2,
+        });
 
-      pdf.addImage(imgData, "PNG", 0, position, PAGE_WIDTH, imgHeight);
-      heightLeft -= PAGE_HEIGHT;
+        const imgWidth = PAGE_WIDTH - 20;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const imgData = canvas.toDataURL("image/png");
 
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, PAGE_WIDTH, imgHeight);
-        heightLeft -= PAGE_HEIGHT;
+        const remainingSpace = pageHeight - currentY + 10;
+
+        if (imgHeight > remainingSpace && currentY > 10) {
+          pdf.addPage();
+          currentY = 10;
+        }
+
+        if (imgHeight > pageHeight) {
+          let offsetY = 0;
+          while (offsetY < imgHeight) {
+            const spaceInPage = pageHeight - currentY + 10;
+            const heightToDraw = Math.min(imgHeight - offsetY, spaceInPage);
+
+            pdf.addImage(imgData, "PNG", 10, currentY - offsetY, imgWidth, imgHeight);
+
+            offsetY += heightToDraw;
+
+            if (offsetY < imgHeight) {
+              pdf.addPage();
+              currentY = 10;
+            } else {
+              currentY += heightToDraw + 5;
+            }
+          }
+        } else {
+          pdf.addImage(imgData, "PNG", 10, currentY, imgWidth, imgHeight);
+          currentY += imgHeight + 5;
+        }
       }
 
       pdf.save("보고서.pdf");
@@ -212,15 +229,17 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
           </div>
         </div>
         <div className="printable mt-4 h-[calc(100%-80px)] overflow-y-auto" ref={reportContentRef}>
-          <div className="mb-4 rounded-md border p-4">
-            <h3 className="mb-2 text-lg font-bold">검색조건</h3>
-            <p>{filterText}</p>
+          <div className="report-section mb-4 grid grid-cols-2 gap-4">
+            <div className="rounded-md border p-4">
+              <h3 className="mb-2 text-lg font-bold">검색조건</h3>
+              <p>{filterText}</p>
+            </div>
+            <div className="rounded-md border p-4">
+              <h3 className="mb-2 text-lg font-bold">출처</h3>
+              <p>{REPORT_SOURCE}</p>
+            </div>
           </div>
-          <div className="mb-4 rounded-md border p-4">
-            <h3 className="mb-2 text-lg font-bold">출처</h3>
-            <p>{REPORT_SOURCE}</p>
-          </div>
-          <div className="mb-4 rounded-md border p-4">
+          <div className="report-section mb-4 rounded-md border p-4">
             <h3 className="mb-2 text-lg font-bold">지도 시각화 화면</h3>
             <div style={{ position: "relative" }}>
               {mapImage ? (
@@ -233,7 +252,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
               {legendImage && <img className="absolute bottom-0 left-2 max-h-[200px] max-w-[200px]" src={legendImage} alt="Legend Capture" />}
             </div>
           </div>
-          {map.renderChart(true)}
+          <div className="chart-container">{map.renderChart(true)}</div>
         </div>
       </div>
     </div>
