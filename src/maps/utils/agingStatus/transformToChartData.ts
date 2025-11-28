@@ -6,6 +6,9 @@ const transformToChartData = (features: AgingStatusFeature[]): AgingChartData[] 
 
   /**
    * 같은 지역의 데이터를 집계
+   * - 같은 지역명(vrbs_nm)을 가진 데이터를 Map으로 집계
+   * - 평균 연령은 가중 평균으로 계산 (각 지역의 평균 연령 × 경영체 수를 합산 후 총 경영체 수로 나눔)
+   * - 총 경영체 수는 합산
    * - FIXME: API에서 같은 지역명을 가진 feature가 여러 개 오는 문제
    */
   features.forEach((f) => {
