@@ -80,8 +80,63 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
     return "적용된 필터가 없습니다.";
   }, [map]);
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async () => {
+    if (!reportContentRef.current) {
+      alert("보고서 내용을 찾을 수 없습니다.");
+      return;
+    }
+
+    const element = reportContentRef.current;
+    const originalOverflow = element.style.overflow;
+    const originalHeight = element.style.height;
+
+    try {
+      element.style.overflow = "visible";
+      element.style.height = "auto";
+
+      const canvas = await html2canvas(element, {
+        useCORS: true,
+        scale: 2,
+      });
+
+      element.style.overflow = originalOverflow;
+      element.style.height = originalHeight;
+
+      const imgData = canvas.toDataURL("image/png");
+      const printWindow = window.open("", "", `width=${window.innerWidth},height=${window.innerHeight}`);
+
+      if (!printWindow) {
+        alert("팝업이 차단되었습니다.");
+        return;
+      }
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>보고서</title>
+            <style>
+              @page { size: A4; margin: 0; }
+              body { margin: 0; padding: 0; }
+              img { width: 100%; height: auto; display: block; }
+            </style>
+          </head>
+          <body>
+            <img src="${imgData}" />
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 250);
+    } catch (error) {
+      element.style.overflow = originalOverflow;
+      element.style.height = originalHeight;
+      console.error("Error printing:", error);
+      alert("인쇄 중 오류가 발생했습니다.");
+    }
   };
 
   const handleSavePdf = async () => {
