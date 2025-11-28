@@ -12,6 +12,7 @@ interface Props<M> {
   map: M;
   olMap: ExtendedOLMap;
   onClose: () => void;
+  pageTitle: string;
 }
 
 const MAP_CAPTURE_DELAY = 200;
@@ -23,7 +24,7 @@ const PAGE_WIDTH = 210;
 /** A4 height in mm */
 const PAGE_HEIGHT = 297;
 
-const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Props<M>) => {
+const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose, pageTitle }: Props<M>) => {
   const [mapImage, setMapImage] = useState<string | null>(null);
   const [legendImage, setLegendImage] = useState<string | null>(null);
   const reportContentRef = useRef<HTMLDivElement>(null);
@@ -98,6 +99,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
         reportHeaderRef: reportHeaderRef.current,
         filterText,
         reportSource: REPORT_SOURCE,
+        pageTitle,
       });
 
       const printWindow = window.open("", "", `width=${window.innerWidth},height=${window.innerHeight}`);
@@ -132,6 +134,8 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
         reportHeaderRef: reportHeaderRef.current,
         filterText,
         reportSource: REPORT_SOURCE,
+        pageTitle,
+        forPdf: true,
       });
 
       // 임시 iframe에 HTML 렌더링
@@ -212,6 +216,11 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
                 {REPORT_SOURCE} ({REPORT_SOURCE_URL})
               </div>
               <div className="mt-1 text-gray-600">작성일자 : {currentDateTime}</div>
+            </div>
+          </div>
+          <div className="report-section mb-4">
+            <div className="mb-4 flex items-center justify-center">
+              <h2 className="text-xl font-bold">{pageTitle}</h2>
             </div>
           </div>
           <div className="report-section mb-4">

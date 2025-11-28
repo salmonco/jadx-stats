@@ -5,6 +5,8 @@ interface CreateReportHtmlParams {
   reportHeaderRef: HTMLDivElement;
   filterText: string;
   reportSource: string;
+  pageTitle: string;
+  forPdf?: boolean;
 }
 
 const captureAsImage = async (element: HTMLElement) => {
@@ -12,7 +14,20 @@ const captureAsImage = async (element: HTMLElement) => {
   return canvas.toDataURL("image/png");
 };
 
-const createTableHtml = (filterText: string, reportSource: string) => {
+const createTableHtml = (filterText: string, reportSource: string, forPdf: boolean = false) => {
+  if (forPdf) {
+    // PDF용: flexbox 구조
+    return `
+      <div style="display: flex; margin-bottom: 16px; border: 1px solid #d1d5db;">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 12px; background-color: #e5e7eb; border-right: 1px solid #d1d5db; font-weight: bold; min-height: 50px;">검색조건</div>
+        <div style="flex: 2; display: flex; align-items: center; padding: 12px; border-right: 1px solid #d1d5db; min-height: 50px;">${filterText}</div>
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 12px; background-color: #e5e7eb; border-right: 1px solid #d1d5db; font-weight: bold; min-height: 50px;">출처</div>
+        <div style="flex: 2; display: flex; align-items: center; padding: 12px; min-height: 50px;">${reportSource}</div>
+      </div>
+    `;
+  }
+
+  // 인쇄용: 테이블 구조
   const cellStyle = "border: 1px solid #d1d5db; padding: 12px; vertical-align: middle; height: 50px;";
   const headerCellStyle = `${cellStyle} background-color: #e5e7eb; text-align: center; font-weight: bold; -webkit-print-color-adjust: exact; print-color-adjust: exact;`;
 
@@ -30,7 +45,18 @@ const createTableHtml = (filterText: string, reportSource: string) => {
   `;
 };
 
-const createTitleHtml = (iconSvg: string, title: string) => {
+const createTitleHtml = (iconSvg: string, title: string, forPdf: boolean = false) => {
+  if (forPdf) {
+    // PDF용: flexbox 구조
+    return `
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+        <div style="width: 24px; height: 24px; flex-shrink: 0;">${iconSvg}</div>
+        <div style="font-size: 18px; font-weight: bold;">${title}</div>
+      </div>
+    `;
+  }
+
+  // 인쇄용: 테이블 구조
   return `
     <table style="width: 100%; margin-bottom: 12px; border-collapse: collapse; table-layout: fixed;">
       <tbody>
@@ -47,13 +73,21 @@ const createTitleHtml = (iconSvg: string, title: string) => {
   `;
 };
 
-export const createReportHtml = async ({ reportContentRef, reportHeaderRef, filterText, reportSource }: CreateReportHtmlParams) => {
+export const createReportHtml = async ({ reportContentRef, reportHeaderRef, filterText, reportSource, pageTitle, forPdf = false }: CreateReportHtmlParams) => {
   const reportSections = Array.from(reportContentRef.querySelectorAll(".report-section"));
   const chartContainer = reportContentRef.querySelector(".chart-container");
   const chartSections = chartContainer ? Array.from(chartContainer.children) : [];
 
   const headerImage = await captureAsImage(reportHeaderRef);
-  const tableHtml = createTableHtml(filterText, reportSource);
+
+  // 페이지 타이틀 HTML
+  const pageTitleHtml = `
+    <div style="margin-bottom: 16px; text-align: center;">
+      <h2 style="font-size: 20px; font-weight: bold; margin: 0;">${pageTitle}</h2>
+    </div>
+  `;
+
+  const tableHtml = createTableHtml(filterText, reportSource, forPdf);
 
   // 아이콘 SVG
   const mapIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>`;
@@ -61,13 +95,13 @@ export const createReportHtml = async ({ reportContentRef, reportHeaderRef, filt
   const chartIconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>`;
 
   // 지도 섹션
-  const mapSection = reportSections[1];
+  const mapSection = reportSections[2];
   const mapContent = mapSection?.querySelector('div[style*="position: relative"]');
   const mapContentImage = mapContent ? await captureAsImage(mapContent as HTMLElement) : "";
   const mapSectionHtml = mapContentImage
     ? `
       <div style="margin-bottom: 16px; padding: 16px; page-break-inside: avoid;">
-        ${createTitleHtml(mapIconSvg, "지도 시각화 화면")}
+        ${createTitleHtml(mapIconSvg, "지도 시각화 화면", forPdf)}
         <img src="${mapContentImage}" style="width: 100%; height: auto; display: block; border-radius: 8px;" />
       </div>
     `
@@ -93,7 +127,7 @@ export const createReportHtml = async ({ reportContentRef, reportHeaderRef, filt
           if (j === 0) {
             chartSectionsHtml += `
               <div style="margin-bottom: 16px; padding: 16px; page-break-inside: avoid;">
-                ${createTitleHtml(icon, title)}
+                ${createTitleHtml(icon, title, forPdf)}
                 <img src="${chartImage}" style="width: 100%; height: auto; display: block;" />
               </div>
             `;
@@ -116,7 +150,7 @@ export const createReportHtml = async ({ reportContentRef, reportHeaderRef, filt
 
       chartSectionsHtml += `
         <div style="margin-bottom: 16px; padding: 16px; page-break-inside: avoid;">
-          ${createTitleHtml(icon, title)}
+          ${createTitleHtml(icon, title, forPdf)}
           <img src="${contentImage}" style="width: 100%; height: auto; display: block;" />
         </div>
       `;
@@ -135,6 +169,7 @@ export const createReportHtml = async ({ reportContentRef, reportHeaderRef, filt
       </head>
       <body>
         <img src="${headerImage}" style="width: 100%; height: auto; display: block; margin-bottom: 16px;" />
+        ${pageTitleHtml}
         ${tableHtml}
         ${mapSectionHtml}
         ${chartSectionsHtml}
