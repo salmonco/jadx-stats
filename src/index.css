@@ -370,7 +370,23 @@ body,
   .custom-report-table .ant-table-thead > tr > th,
   .custom-report-table .ant-table-tbody > tr > td {
     word-wrap: break-word; /* Ensures long words break */
-    white-space: normal;  /* Allows text to wrap */
+    white-space: normal; /* Allows text to wrap */
     /* Further adjustments like font-size: 10px !important; might be needed if content still overflows */
+  }
+}
+
+.report-header-hidden {
+  position: absolute;
+  left: -9999px;
+  width: 700px;
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  .print-only {
+    display: flex !important;
   }
 }

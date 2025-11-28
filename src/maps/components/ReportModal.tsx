@@ -2,7 +2,9 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { FileText, Printer, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import logo from "~/assets/logo.png";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
+import { formatDateTime } from "~/utils/formatDateTime";
 import { ExtendedOLMap } from "../hooks/useOLMap";
 
 interface Props<M> {
@@ -13,6 +15,7 @@ interface Props<M> {
 
 const MAP_CAPTURE_DELAY = 200;
 const REPORT_SOURCE = "제주농업통계시스템";
+const REPORT_SOURCE_URL = "https://agri.jeju.go.kr/stats/";
 
 /** A4 width in mm */
 const PAGE_WIDTH = 210;
@@ -23,6 +26,8 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
   const [mapImage, setMapImage] = useState<string | null>(null);
   const [legendImage, setLegendImage] = useState<string | null>(null);
   const reportContentRef = useRef<HTMLDivElement>(null);
+  const reportHeaderRef = useRef<HTMLDivElement>(null);
+  const currentDateTime = useMemo(() => formatDateTime(), []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -81,7 +86,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
   }, [map]);
 
   const handlePrint = async () => {
-    if (!reportContentRef.current) {
+    if (!reportContentRef.current || !reportHeaderRef.current) {
       alert("보고서 내용을 찾을 수 없습니다.");
       return;
     }
@@ -90,7 +95,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       const reportSections = Array.from(reportContentRef.current.querySelectorAll(".report-section"));
       const chartContainer = reportContentRef.current.querySelector(".chart-container");
       const chartSections = chartContainer ? Array.from(chartContainer.children) : [];
-      const allSections = [...reportSections, ...chartSections];
+      const allSections = [reportHeaderRef.current, ...reportSections, ...chartSections];
       const images: string[] = [];
 
       for (const section of allSections) {
@@ -145,7 +150,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
   };
 
   const handleSavePdf = async () => {
-    if (!reportContentRef.current) {
+    if (!reportContentRef.current || !reportHeaderRef.current) {
       alert("보고서 내용을 찾을 수 없습니다.");
       return;
     }
@@ -155,7 +160,7 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
       const reportSections = Array.from(reportContentRef.current.querySelectorAll(".report-section"));
       const chartContainer = reportContentRef.current.querySelector(".chart-container");
       const chartSections = chartContainer ? Array.from(chartContainer.children) : [];
-      const allSections = [...reportSections, ...chartSections];
+      const allSections = [reportHeaderRef.current, ...reportSections, ...chartSections];
 
       const maxY = PAGE_HEIGHT;
       let currentY = 10;
@@ -209,6 +214,15 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose }: Pro
           </div>
         </div>
         <div className="printable mt-4 h-[calc(100%-80px)] overflow-y-auto" ref={reportContentRef}>
+          <div className="report-header-hidden mb-4 flex items-start justify-between border-b pb-4" ref={reportHeaderRef}>
+            <img src={logo} alt="제주농업통계시스템" className="h-10" />
+            <div className="text-right text-sm">
+              <div className="font-bold">
+                {REPORT_SOURCE} ({REPORT_SOURCE_URL})
+              </div>
+              <div className="mt-1 text-gray-600">작성일자 : {currentDateTime}</div>
+            </div>
+          </div>
           <div className="report-section mb-4 grid grid-cols-2 gap-4">
             <div className="rounded-md border p-4">
               <h3 className="mb-2 text-lg font-bold">검색조건</h3>
