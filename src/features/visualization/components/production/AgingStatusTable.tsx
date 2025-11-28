@@ -39,10 +39,10 @@ const AgingStatusTransposedTable = ({ chartData, isReportMode }: Props) => {
         return value;
       },
     },
-    ...labels.map((label) => ({
+    ...labels.map((label, index) => ({
       title: label,
       dataIndex: label,
-      key: label,
+      key: `${label}-${index}`,
       align: "center" as const,
     })),
   ];
@@ -80,8 +80,8 @@ const AgingStatusTransposedTable = ({ chartData, isReportMode }: Props) => {
     },
   ];
 
-  const reportDataSource: ReportRow[] = chartData.map((d) => ({
-    key: d.label,
+  const reportDataSource: ReportRow[] = chartData.map((d, index) => ({
+    key: `${d.label}-${index}`,
     region: d.label,
     avg_age: d.avg_age?.toFixed(2) ?? "-",
     count: d.count?.toLocaleString() ?? "-",
