@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import AgingStatusMap from "~/maps/classes/AgingStatusMap";
 import { AgingChartData } from "~/maps/components/agingStatus/AgingStatusChart";
 import { useMapList } from "~/maps/hooks/useMapList";
+import downloadCsv from "~/utils/downloadCsv";
 
 interface Props {
   title: string;
@@ -220,15 +221,12 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
   }, [chartData, category, size]);
 
   const handleDownloadCsv = () => {
-    const headers = ["지역"];
-    const dataKeys: (keyof AgingChartData)[] = ["region"];
+    const columns: { title: string; dataIndex: string }[] = [{ title: "지역", dataIndex: "region" }];
 
     if (category === "avg_age") {
-      headers.push("평균 연령");
-      dataKeys.push("avg_age");
+      columns.push({ title: "평균 연령", dataIndex: "avg_age" });
     } else if (category === "count") {
-      headers.push("총 경영체 수");
-      dataKeys.push("count");
+      columns.push({ title: "총 경영체 수", dataIndex: "count" });
     }
 
     const sortedChartData = [...chartData].sort((a, b) => {
@@ -237,29 +235,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData }: Props) => 
       return valB - valA;
     });
 
-    const csvContent =
-      headers.join(",") +
-      "\n" +
-      sortedChartData
-        .map((d) =>
-          dataKeys
-            .map((key) => {
-              const value = d[key];
-              return typeof value === "string" ? `"${value.replace(/"/g, '""')}"` : value;
-            })
-            .join(",")
-        )
-        .join("\n");
-
-    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `경영체_연령_분포_차트_데이터_${category}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    downloadCsv(columns, sortedChartData, `경영체_연령_분포_차트_데이터_${category}.csv`);
   };
 
   return (

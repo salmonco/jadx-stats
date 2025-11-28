@@ -2,6 +2,7 @@ import { Button } from "antd";
 import * as d3 from "d3";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getColor } from "~/maps/constants/mandarinCultivationInfo";
+import downloadCsv from "~/utils/downloadCsv";
 
 interface Props {
   chartData: any;
@@ -46,18 +47,17 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety }: Props) => {
 
     const sortedData = [...pieData].sort((a, b) => b.total_area - a.total_area);
 
-    const headers = ["지역", "총 재배 면적(ha)"];
-    const csvContent = headers.join(",") + "\n" + sortedData.map((d) => `${d.region},${(d.total_area / 10000).toFixed(2)}`).join("\n");
+    const columns = [
+      { title: "지역", dataIndex: "region" },
+      { title: "총 재배 면적(ha)", dataIndex: "total_area_ha" },
+    ];
 
-    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `지역별_재배면적_원형.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const data = sortedData.map((d) => ({
+      region: d.region,
+      total_area_ha: (d.total_area / 10_000).toFixed(2),
+    }));
+
+    downloadCsv(columns, data, "지역별_재배면적_원형.csv");
   };
 
   useEffect(() => {

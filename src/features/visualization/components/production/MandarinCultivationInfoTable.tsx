@@ -1,6 +1,7 @@
 import { Button, Table } from "antd";
-import type { ColumnType, ColumnsType } from "antd/es/table";
+import type { ColumnsType } from "antd/es/table";
 import { useMemo } from "react";
+import downloadCsv from "~/utils/downloadCsv";
 
 interface MandarinCultivationChartData {
   [region: string]: {
@@ -143,32 +144,7 @@ const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedC
 
   const handleDownloadCsv = () => {
     if (!csvData.dataSource.length) return;
-
-    const headers = csvData.columns.map((col) => col.title).join(",");
-    const csvContent =
-      headers +
-      "\n" +
-      csvData.dataSource
-        .map((row) =>
-          csvData.columns
-            .map((col) => {
-              const column = col as ColumnType<TransposedRow>;
-              const value = row[column.dataIndex as string];
-              return typeof value === "string" ? `"${value.replace(/"/g, '""')}"` : value;
-            })
-            .join(",")
-        )
-        .join("\n");
-
-    const blob = new Blob(["\ufeff", csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `품종_지역_데이터_${selectedCropPummok}_${selectedCropGroup}_${selectedCropDetailGroup}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    downloadCsv(csvData.columns, csvData.dataSource, `품종_지역_데이터_${selectedCropPummok}_${selectedCropGroup}_${selectedCropDetailGroup}.csv`);
   };
 
   return (
