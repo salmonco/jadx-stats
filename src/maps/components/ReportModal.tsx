@@ -5,6 +5,7 @@ import logo from "~/assets/logo.png";
 import CommonBackgroundMap from "~/maps/classes/CommonBackgroundMap";
 import { formatDateTime } from "~/utils/formatDateTime";
 import { ExtendedOLMap } from "../hooks/useOLMap";
+import { generatePrintHtml } from "../utils/generatePrintHtml";
 
 interface Props<M> {
   map: M;
@@ -98,64 +99,11 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose, pageT
         return;
       }
 
-      // 현재 페이지의 스타일 복사
-      const styles = Array.from(document.styleSheets)
-        .map((styleSheet) => {
-          try {
-            return Array.from(styleSheet.cssRules)
-              .map((rule) => rule.cssText)
-              .join("\n");
-          } catch (e) {
-            return "";
-          }
-        })
-        .join("\n");
-
-      // 헤더 HTML에서 report-header-hidden 클래스 제거
-      const headerDiv = reportHeaderRef.current.cloneNode(true) as HTMLElement;
-      headerDiv.classList.remove("report-header-hidden");
-      const headerHtml = headerDiv.outerHTML;
-
-      const html = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <title>보고서 - ${pageTitle}</title>
-            <style>
-              ${styles}
-              @media print {
-                body { margin: 0; padding: 20px; }
-                .no-print { display: none !important; }
-                .report-section { 
-                  page-break-inside: avoid;
-                  break-inside: avoid;
-                }
-                .mb-4 { 
-                  page-break-inside: avoid;
-                  break-inside: avoid;
-                }
-                .h-full { 
-                  page-break-inside: avoid;
-                  break-inside: avoid;
-                }
-                .w-full { 
-                  page-break-inside: avoid;
-                  break-inside: avoid;
-                }
-                table {
-                  -webkit-print-color-adjust: exact;
-                  print-color-adjust: exact;
-                }
-              }
-            </style>
-          </head>
-          <body>
-            ${headerHtml}
-            ${reportContentRef.current.innerHTML}
-          </body>
-        </html>
-      `;
+      const html = generatePrintHtml({
+        reportHeaderRef: reportHeaderRef.current,
+        reportContentRef: reportContentRef.current,
+        pageTitle,
+      });
 
       printWindow.document.write(html);
       printWindow.document.close();
@@ -177,72 +125,22 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose, pageT
       return;
     }
 
+    let iframe: HTMLIFrameElement | null = null;
+
     try {
-      // 현재 페이지의 스타일 복사
-      const styles = Array.from(document.styleSheets)
-        .map((styleSheet) => {
-          try {
-            return Array.from(styleSheet.cssRules)
-              .map((rule) => rule.cssText)
-              .join("\n");
-          } catch (e) {
-            return "";
-          }
-        })
-        .join("\n");
-
-      // 헤더 HTML에서 report-header-hidden 클래스 제거
-      const headerDiv = reportHeaderRef.current.cloneNode(true) as HTMLElement;
-      headerDiv.classList.remove("report-header-hidden");
-      const headerHtml = headerDiv.outerHTML;
-
-      const html = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <title>보고서 - ${pageTitle}</title>
-            <style>
-              ${styles}
-              @media print {
-                body { margin: 0; padding: 20px; }
-                .no-print { display: none !important; }
-                .report-section { 
-                  page-break-inside: avoid;
-                  break-inside: avoid;
-                }
-                .mb-4 { 
-                  page-break-inside: avoid;
-                  break-inside: avoid;
-                }
-                .h-full { 
-                  page-break-inside: avoid;
-                  break-inside: avoid;
-                }
-                .w-full { 
-                  page-break-inside: avoid;
-                  break-inside: avoid;
-                }
-                table {
-                  -webkit-print-color-adjust: exact;
-                  print-color-adjust: exact;
-                }
-              }
-            </style>
-          </head>
-          <body>
-            ${headerHtml}
-            ${reportContentRef.current.innerHTML}
-          </body>
-        </html>
-      `;
+      const html = generatePrintHtml({
+        reportHeaderRef: reportHeaderRef.current,
+        reportContentRef: reportContentRef.current,
+        pageTitle,
+      });
 
       // iframe 생성
-      const iframe = document.createElement("iframe");
+      iframe = document.createElement("iframe");
       iframe.style.position = "absolute";
       iframe.style.width = "0";
       iframe.style.height = "0";
       iframe.style.border = "none";
+      iframe.style.visibility = "hidden";
       document.body.appendChild(iframe);
 
       const iframeDoc = iframe.contentWindow?.document;
@@ -255,14 +153,20 @@ const ReportModal = <M extends CommonBackgroundMap>({ map, olMap, onClose, pageT
       iframeDoc.close();
 
       setTimeout(() => {
-        iframe.contentWindow?.print();
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-        }, 1000);
+        iframe?.contentWindow?.print();
       }, 500);
     } catch (error) {
       console.error("Error saving PDF:", error);
       alert("PDF 저장 중 오류가 발생했습니다.");
+    } finally {
+      // 인쇄 대화상자가 닫힌 후 iframe 제거
+      if (iframe) {
+        setTimeout(() => {
+          if (iframe && iframe.parentNode) {
+            document.body.removeChild(iframe);
+          }
+        }, 2000);
+      }
     }
   };
 
