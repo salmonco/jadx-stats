@@ -3,6 +3,7 @@ import { BarChart3, Table } from "lucide-react";
 import { useEffect, useState } from "react";
 import ChartContainer from "~/features/visualization/components/common/ChartContainer";
 import CultivationChangeDivergingBarChart from "~/features/visualization/components/production/CultivationChangeDivergingBarChart";
+import HibernationVegetableCultivationPieChart from "~/features/visualization/components/production/HibernationVegetableCultivationPieChart";
 import HibernationVegetableCultivationTable from "~/features/visualization/components/production/HibernationVegetableCultivationTable";
 import { HibernationFeatureCollection } from "~/features/visualization/layers/HibernationVegetableCultivationLayer";
 import HibernationVegetableCultivationMap from "~/maps/classes/HibernationVegetableCultivationMap";
@@ -67,8 +68,11 @@ const HibernationVegetableCultivationChart = ({ map, isReportMode }: Props) => {
       <HibernationVegetableCultivationTable chartData={tableData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} />
       <ChartContainer cols={2} minHeight={500}>
         <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"absolute"} />
-        <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"area"} />
+        <HibernationVegetableCultivationPieChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} />
       </ChartContainer>
+      {/* <ChartContainer cols={1} minHeight={500}>
+        <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"rate"} />
+      </ChartContainer> */}
     </div>
   );
 };
