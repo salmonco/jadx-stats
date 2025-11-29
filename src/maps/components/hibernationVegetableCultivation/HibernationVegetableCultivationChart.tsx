@@ -65,9 +65,8 @@ const HibernationVegetableCultivationChart = ({ map, isReportMode }: Props) => {
   return (
     <div className="flex flex-col gap-4">
       <HibernationVegetableCultivationTable chartData={tableData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} />
-      <ChartContainer cols={3} minHeight={500}>
+      <ChartContainer cols={2} minHeight={500}>
         <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"absolute"} />
-        <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"rate"} />
         <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"area"} />
       </ChartContainer>
     </div>
