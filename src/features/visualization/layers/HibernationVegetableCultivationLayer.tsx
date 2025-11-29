@@ -8,6 +8,7 @@ interface AreaChange {
   crop_nm: string;
   drctn: 1 | -1 | 2;
   chg_pct: number;
+  area_std: number;
 }
 
 interface HibernationProperties {
