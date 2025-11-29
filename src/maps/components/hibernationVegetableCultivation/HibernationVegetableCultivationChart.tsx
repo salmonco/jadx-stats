@@ -53,11 +53,11 @@ const HibernationVegetableCultivationChart = ({ map, isReportMode }: Props) => {
             <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"absolute"} isReportMode />
           </div>
           <div className="report-section">
+            <HibernationVegetableCultivationPieChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} isReportMode />
+          </div>
+          {/* <div className="report-section">
             <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"rate"} isReportMode />
-          </div>
-          <div className="report-section">
-            <CultivationChangeDivergingBarChart chartData={chartData} selectedCrop={map.selectedCrop} year={map.selectedTargetYear} viewType={"area"} isReportMode />
-          </div>
+          </div> */}
         </div>
       </>
     );
