@@ -75,11 +75,52 @@ const HibernationVegetableCultivationTable = ({ chartData, selectedCrop, year, i
     rateChangeRow[d.region_nm] = rate > 0 ? `+${rate.toFixed(1)}%` : `${rate.toFixed(1)}%`;
   }
 
+  const renderCell = (value: any, rowKey: string) => {
+    if (rowKey === "변화 추이 (면적, ha)" || rowKey === "변화 추이 (변화율, %)") {
+      const isNegative = typeof value === "string" && value.startsWith("-");
+      return <span style={{ color: isNegative ? "#FF1F1F" : "inherit" }}>{value}</span>;
+    }
+    return value;
+  };
+
+  const columnsWithRender = [
+    { title: "품목 / 지역", dataIndex: "key", key: "key", align: "center" as const, width: "11%" },
+    {
+      title: "총 면적(ha)",
+      dataIndex: "전체",
+      key: "전체",
+      align: "center" as const,
+      render: (value: any, record: TransposedRow) => renderCell(value, record.key),
+    },
+    ...columns.slice(2).map((col) => ({
+      ...col,
+      render: (value: any, record: TransposedRow) => renderCell(value, record.key),
+    })),
+  ];
+
   const reportColumns: ColumnsType<ReportRow> = [
     { title: "품목 / 지역", dataIndex: "region", key: "region", align: "center" as const },
-    { title: "총 면적(ha)", dataIndex: "total_area", key: "total_area", align: "center" as const },
-    { title: "변화 추이 (면적, ha)", dataIndex: "area_change", key: "area_change", align: "center" as const },
-    { title: "변화 추이 (변화율, %)", dataIndex: "rate_change", key: "rate_change", align: "center" as const },
+    {
+      title: "총 면적(ha)",
+      dataIndex: "total_area",
+      key: "total_area",
+      align: "center" as const,
+      render: (value: string) => <span style={{ color: value.startsWith("-") ? "#FF1F1F" : "inherit" }}>{value}</span>,
+    },
+    {
+      title: "변화 추이 (면적, ha)",
+      dataIndex: "area_change",
+      key: "area_change",
+      align: "center" as const,
+      render: (value: string) => <span style={{ color: value.startsWith("-") ? "#FF1F1F" : "inherit" }}>{value}</span>,
+    },
+    {
+      title: "변화 추이 (변화율, %)",
+      dataIndex: "rate_change",
+      key: "rate_change",
+      align: "center" as const,
+      render: (value: string) => <span style={{ color: value.startsWith("-") ? "#FF1F1F" : "inherit" }}>{value}</span>,
+    },
   ];
 
   const reportDataSource: ReportRow[] = [
@@ -146,11 +187,7 @@ const HibernationVegetableCultivationTable = ({ chartData, selectedCrop, year, i
         </Button>
       </div>
       <Table
-        columns={[
-          { title: "품목 / 지역", dataIndex: "key", key: "key", align: "center" as const, width: "11%" },
-          { title: "총 면적(ha)", dataIndex: "전체", key: "전체", align: "center" as const },
-          ...columns.slice(2),
-        ]}
+        columns={columnsWithRender}
         dataSource={[totalAreaRow, areaChangeRow, rateChangeRow]}
         size="middle"
         pagination={false}
