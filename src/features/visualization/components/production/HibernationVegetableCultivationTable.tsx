@@ -28,8 +28,11 @@ const HibernationVegetableCultivationTable = ({ chartData, selectedCrop, year, i
   const cropData = chartData[selectedCrop];
   if (!cropData || cropData.length === 0) return null;
 
+  // Sort by current_area descending
+  const sortedCropData = [...cropData].sort((a: any, b: any) => b.current_area - a.current_area);
+
   const maxColumns = 14;
-  const limitedData = cropData.slice(0, maxColumns);
+  const limitedData = sortedCropData.slice(0, maxColumns);
 
   const regions = limitedData.map((d: any) => d.region_nm);
 
@@ -131,7 +134,7 @@ const HibernationVegetableCultivationTable = ({ chartData, selectedCrop, year, i
       area_change: Number(totalChange) > 0 ? `+${totalChange.toFixed(1)}` : totalChange.toFixed(1),
       rate_change: Number(totalRateChange) > 0 ? `+${totalRateChange}%` : `${totalRateChange}%`,
     },
-    ...cropData.map((d: any, index: number) => ({
+    ...sortedCropData.map((d: any, index: number) => ({
       key: `${d.region_nm}-${index}`,
       region: d.region_nm,
       total_area: d.current_area?.toFixed(1) ?? "-",
@@ -144,14 +147,14 @@ const HibernationVegetableCultivationTable = ({ chartData, selectedCrop, year, i
     const columns: CsvColumn[] = [
       { title: "품목 / 지역", dataIndex: "key" },
       { title: "총 면적(ha)", dataIndex: "전체" },
-      ...cropData.map((d: any) => ({ title: d.region_nm, dataIndex: d.region_nm })),
+      ...sortedCropData.map((d: any) => ({ title: d.region_nm, dataIndex: d.region_nm })),
     ];
 
     const totalAreaRow = { key: selectedCrop, 전체: totalArea.toFixed(1) };
     const areaChangeRow = { key: "변화 추이 (면적, ha)", 전체: Number(totalChange) > 0 ? `+${totalChange.toFixed(1)}` : totalChange.toFixed(1) };
     const rateChangeRow = { key: "변화 추이 (변화율, %)", 전체: Number(totalRateChange) > 0 ? `+${totalRateChange}%` : `${totalRateChange}%` };
 
-    for (const d of cropData) {
+    for (const d of sortedCropData) {
       totalAreaRow[d.region_nm] = d.current_area?.toFixed(1) ?? "-";
       const change = d.area_change ?? 0;
       areaChangeRow[d.region_nm] = change > 0 ? `+${change.toFixed(1)}` : change.toFixed(1);
