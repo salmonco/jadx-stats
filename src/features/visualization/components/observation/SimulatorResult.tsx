@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { Button } from "antd";
 import * as d3 from "d3";
+import { Download } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import InfoTooltip from "~/components/InfoTooltip";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface Props {
   chartData: any;
@@ -16,34 +19,57 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      const { width, height } = entry.contentRect;
+    const updateSize = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
       setSize({
-        width,
-        height: Math.max(300, height),
+        width: rect.width,
+        height: Math.max(300, rect.height),
       });
+    };
+
+    const observer = new ResizeObserver(() => {
+      updateSize();
     });
 
     observer.observe(containerRef.current);
+
+    setTimeout(updateSize, 0);
+
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    if (!chartData || chartData.length === 0 || !svgRef.current) return;
+    if (!containerRef.current) return;
+    setTimeout(() => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      if (rect.width > 0) {
+        setSize({
+          width: rect.width,
+          height: Math.max(300, rect.height),
+        });
+      }
+    }, 100);
+  }, [chartData]);
+
+  useEffect(() => {
+    if (!chartData || chartData.length === 0) return;
 
     // Filter out zero values
     const filteredData = chartData.filter((d: any) => d.value > 0);
     if (filteredData.length === 0) return;
 
     const { width, height } = size;
-    const radius = Math.min(width, height) / 2 - 40;
+    const actualWidth = width > 0 ? width : 800;
+
+    const radius = Math.min(actualWidth, height) / 2 - 40;
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
-    svg.attr("width", width).attr("height", height);
+    svg.attr("width", actualWidth).attr("height", height);
 
-    const group = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
+    const group = svg.append("g").attr("transform", `translate(${actualWidth / 2}, ${height / 2})`);
 
     const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -109,21 +135,54 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
       .text(`총 면적: ${(totalValue / 10000).toFixed(1)}ha`);
   }, [chartData, size, isReportMode]);
 
+  const handleDownloadCsv = () => {
+    if (!chartData || chartData.length === 0) return;
+
+    const filteredData = chartData.filter((d: any) => d.value > 0);
+
+    const columns: CsvColumn[] = [
+      { title: "지역", dataIndex: "region" },
+      { title: "경제수령 면적(ha)", dataIndex: "area" },
+    ];
+
+    const data = filteredData.map((d: any) => ({
+      region: d.label,
+      area: (d.value / 10000).toFixed(1),
+    }));
+
+    downloadCsv(columns, data, "지역별_경제수령_면적.csv");
+  };
+
   if (!chartData || chartData.length === 0) {
     return null;
   }
 
   const filteredCount = chartData.filter((d: any) => d.value > 0).length;
 
+  if (filteredCount === 0) {
+    return (
+      <div className={`flex h-full w-full flex-col items-center justify-center ${isReportMode ? "text-black" : "text-white"}`}>
+        <p className="text-base">표시할 데이터가 없습니다</p>
+      </div>
+    );
+  }
+
   return (
     <div className={`flex h-full w-full flex-col ${isReportMode ? "text-black" : "text-white"}`}>
-      <div className="mb-2 flex items-center gap-[10px]">
-        <p className="text-xl font-semibold">지역별 경제수령 면적 {filteredCount === 20 && "(상위 20개 지역)"}</p>
+      <div className="mb-2 flex items-center justify-between">
+        <div className="flex items-center gap-[10px]">
+          <p className="text-xl font-semibold">지역별 경제수령 면적 {filteredCount === 20 && "(상위 20개 지역)"}</p>
+          {!isReportMode && (
+            <InfoTooltip
+              title="지역별 경제수령 면적이란?"
+              content={`경제수령기(일반적으로 수령 15~25년)의 감귤나무가 지역별로 얼마나 재배되고 있는지를 나타내는 자료입니다.\n경제수령기의 나무는 생산성이 높고 과실 품질이 우수하기 때문에, 해당 지역의 생산 효율성과 경쟁력을 가늠하는 \n데 지표가 됩니다.`}
+            />
+          )}
+        </div>
         {!isReportMode && (
-          <InfoTooltip
-            title="지역별 경제수령 면적이란?"
-            content={`경제수령기(일반적으로 수령 15~25년)의 감귤나무가 지역별로 얼마나 재배되고 있는지를 나타내는 자료입니다.\n경제수령기의 나무는 생산성이 높고 과실 품질이 우수하기 때문에, 해당 지역의 생산 효율성과 경쟁력을 가늠하는 \n데 지표가 됩니다.`}
-          />
+          <Button type="primary" icon={<Download size={16} />} onClick={handleDownloadCsv}>
+            CSV 다운로드
+          </Button>
         )}
       </div>
       <div ref={containerRef} className="relative flex-1">
