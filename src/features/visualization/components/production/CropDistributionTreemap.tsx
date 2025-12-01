@@ -32,38 +32,35 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
     return () => observer.disconnect();
   }, []);
 
-  const flatData = useMemo(() => {
-    const data: { crop: string; region: string; area: number }[] = [];
+  const cropTotals = useMemo(() => {
+    const totals: { crop: string; area: number }[] = [];
     Object.entries(chartData).forEach(([crop, regions]) => {
-      Object.entries(regions).forEach(([region, area]) => {
-        data.push({ crop, region, area });
-      });
+      const totalArea = Object.values(regions).reduce((sum, area) => sum + area, 0);
+      totals.push({ crop, area: totalArea });
     });
-    return data.sort((a, b) => b.area - a.area);
+    return totals.sort((a, b) => b.area - a.area);
   }, [chartData]);
 
   const handleDownloadCsv = () => {
     const columns: CsvColumn[] = [
       { title: "작물", dataIndex: "crop" },
-      { title: "지역", dataIndex: "region" },
-      { title: "재배면적(ha)", dataIndex: "area" },
+      { title: "재배 면적(ha)", dataIndex: "area" },
     ];
 
-    const data = flatData.map((d) => ({
+    const data = cropTotals.map((d) => ({
       crop: d.crop,
-      region: d.region,
       area: d.area.toFixed(1),
     }));
 
-    downloadCsv(columns, data, "작물별_재배면적_트리맵.csv");
+    downloadCsv(columns, data, "작물별_재배_면적_트리맵.csv");
   };
 
   useEffect(() => {
-    if (!flatData.length || !containerRef.current) return;
+    if (!cropTotals.length || !containerRef.current) return;
 
     const actualWidth = isReportMode && containerRef.current.parentElement ? containerRef.current.parentElement.clientWidth : size.width;
 
-    const root = d3.hierarchy({ children: flatData }).sum((d: any) => d.area);
+    const root = d3.hierarchy({ children: cropTotals }).sum((d: any) => d.area);
 
     const treemapLayout = d3.treemap().size([actualWidth, size.height]).padding(1);
     treemapLayout(root);
@@ -89,20 +86,6 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
       .attr("width", (d: d3.HierarchyRectangularNode<any>) => d.x1 - d.x0)
       .attr("height", (d: d3.HierarchyRectangularNode<any>) => d.y1 - d.y0);
 
-    // Region label
-    svg
-      .selectAll(".treemap-label-region")
-      .data(root.leaves())
-      .join("text")
-      .attr("class", "treemap-label-region")
-      .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
-      .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 - 10)
-      .attr("text-anchor", "middle")
-      .text((d: any) => d.data.region)
-      .attr("fill", isReportMode ? "black" : "white")
-      .style("font-size", "12px")
-      .style("font-weight", "600");
-
     // Crop label
     svg
       .selectAll(".treemap-label-crop")
@@ -110,11 +93,12 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
       .join("text")
       .attr("class", "treemap-label-crop")
       .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
-      .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 + 5)
+      .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 - 5)
       .attr("text-anchor", "middle")
       .text((d: any) => d.data.crop)
       .attr("fill", isReportMode ? "black" : "white")
-      .style("font-size", "11px");
+      .style("font-size", "14px")
+      .style("font-weight", "600");
 
     // Area label
     svg
@@ -123,11 +107,11 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
       .join("text")
       .attr("class", "treemap-label-area")
       .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
-      .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 + 20)
+      .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 + 15)
       .attr("text-anchor", "middle")
       .text((d: any) => `${d.data.area.toFixed(1)}ha`)
       .attr("fill", isReportMode ? "black" : "white")
-      .style("font-size", "11px");
+      .style("font-size", "12px");
 
     if (containerRef.current) {
       containerRef.current.innerHTML = "";
@@ -139,7 +123,7 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
         containerRef.current.innerHTML = "";
       }
     };
-  }, [flatData, size, isReportMode]);
+  }, [cropTotals, size, isReportMode]);
 
   return (
     <div className="h-full w-full">
