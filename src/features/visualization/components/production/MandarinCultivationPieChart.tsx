@@ -113,7 +113,7 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety, isReportMode 
                 <div style="color: #FFC132; font-size: 16px;">▶</div>
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                   <div style="color: #FFC132;"><strong>${d.data.region}</strong></div>
-                  <div>${(d.data.total_area / 10000).toFixed(1).toLocaleString()} ha</div>
+                  <div>${(d.data.total_area / 10_000).toFixed(1).toLocaleString()} ha</div>
                 </div>
               </div>
             `
@@ -139,7 +139,7 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety, isReportMode 
       .style("font-size", "18px")
       .style("font-weight", "600")
       .style("fill", isReportMode ? "black" : "#ffffff")
-      .text(`총 재배 면적 : ${(totalValue / 10000).toFixed(1).toLocaleString()}ha`);
+      .text(`총 재배 면적 : ${(totalValue / 10_000).toFixed(1).toLocaleString()}ha`);
   }, [pieData, size, isReportMode]);
 
   return (

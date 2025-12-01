@@ -41,6 +41,7 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
 
   useEffect(() => {
     if (!containerRef.current) return;
+    const delay = isReportMode ? 200 : 100;
     setTimeout(() => {
       if (!containerRef.current) return;
       const rect = containerRef.current.getBoundingClientRect();
@@ -50,8 +51,8 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
           height: Math.max(300, rect.height),
         });
       }
-    }, 100);
-  }, [chartData]);
+    }, delay);
+  }, [chartData, isReportMode]);
 
   useEffect(() => {
     if (!chartData || chartData.length === 0) return;
@@ -61,7 +62,7 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
     if (filteredData.length === 0) return;
 
     const { width, height } = size;
-    const actualWidth = width > 0 ? width : 800;
+    const actualWidth = width > 0 ? width : isReportMode ? 1200 : 800;
 
     const radius = Math.min(actualWidth, height) / 2 - 40;
 
@@ -106,7 +107,7 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
                 <div style="color: #FFC132; font-size: 16px;">▶</div>
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                   <div style="color: #FFC132;"><strong>${d.data.label}</strong></div>
-                  <div>${(d.data.value / 10000).toFixed(1)} ha</div>
+                  <div>${(d.data.value / 10_000).toFixed(1).toLocaleString()} ha</div>
                 </div>
               </div>
             `
@@ -132,7 +133,7 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
       .style("font-size", "18px")
       .style("font-weight", "600")
       .style("fill", isReportMode ? "black" : "#ffffff")
-      .text(`총 면적: ${(totalValue / 10000).toFixed(1)}ha`);
+      .text(`총 경제수령 면적 : ${(totalValue / 10_000).toFixed(1).toLocaleString()}ha`);
   }, [chartData, size, isReportMode]);
 
   const handleDownloadCsv = () => {
