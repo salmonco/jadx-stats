@@ -31,21 +31,27 @@ const MandarinCultivationInfoTable = ({ chartData, selectedCropPummok, selectedC
     }
 
     const flattenedData: { region: string; prdct_nm: string; total_area: number }[] = [];
-    const uniqueRegions: string[] = [];
-    const uniqueCropGroups: string[] = [];
+    const regionTotals: Map<string, number> = new Map();
+    const cropGroupTotals: Map<string, number> = new Map();
 
     for (const regionName in chartData) {
-      uniqueRegions.push(regionName);
+      let regionTotal = 0;
       chartData[regionName].forEach((item) => {
         flattenedData.push({ region: regionName, prdct_nm: item.prdct_nm, total_area: item.total_area });
-        if (!uniqueCropGroups.includes(item.prdct_nm)) {
-          uniqueCropGroups.push(item.prdct_nm);
-        }
+        regionTotal += item.total_area;
+        cropGroupTotals.set(item.prdct_nm, (cropGroupTotals.get(item.prdct_nm) || 0) + item.total_area);
       });
+      regionTotals.set(regionName, regionTotal);
     }
 
-    uniqueCropGroups.sort();
-    uniqueRegions.sort();
+    // Sort by total area descending
+    const uniqueRegions = Array.from(regionTotals.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([region]) => region);
+
+    const uniqueCropGroups = Array.from(cropGroupTotals.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([crop]) => crop);
 
     return { flattenedData, uniqueCropGroups, uniqueRegions };
   }, [chartData]);
