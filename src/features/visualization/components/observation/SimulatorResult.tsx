@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
-import * as Plot from "@observablehq/plot";
 import InfoTooltip from "~/components/InfoTooltip";
 
 interface Props {
@@ -9,134 +8,117 @@ interface Props {
 }
 
 const SimulatorResult = ({ chartData, isReportMode }: Props) => {
-  const plotRef = useRef<HTMLDivElement>(null);
-  const legendRef = useRef<HTMLDivElement>(null);
-
-  const [chartDataLength, setChartDataLength] = useState<number>(0);
-  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-
-  const getInset = (length: number) => {
-    if (length === 20) return 3;
-    if (length === 14) return 5;
-    if (length === 4) return 20;
-    if (length === 2) return 40;
-    return 120;
-  };
+  const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ width: 800, height: 420 });
 
   useEffect(() => {
-    if (!plotRef.current) return;
+    if (!containerRef.current) return;
 
     const observer = new ResizeObserver((entries) => {
       const entry = entries[0];
       const { width, height } = entry.contentRect;
-      setContainerSize({ width, height });
+      setSize({
+        width,
+        height: Math.max(300, height),
+      });
     });
 
-    observer.observe(plotRef.current);
+    observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    if (!chartData || !plotRef.current || !legendRef.current) return;
-    
-    const width = isReportMode ? (containerSize.width || 750) : (containerSize.width || 800);
-    const height = isReportMode ? 400 : (containerSize.height || 400);
-    
-    if (width === 0 || height === 0) return;
+    if (!chartData || chartData.length === 0 || !svgRef.current) return;
 
-    setChartDataLength(chartData?.length);
+    // Filter out zero values
+    const filteredData = chartData.filter((d: any) => d.value > 0);
+    if (filteredData.length === 0) return;
 
-    const regionLegend = Plot.legend({
-      color: {
-        type: "categorical",
-        domain: ["경제수령"],
-        range: ["#698bcf"],
-      },
-      width: 110,
-      style: {
-        fontSize: "14px",
-        color: isReportMode ? "black" : "#fff",
-        marginRight: "-25px",
-      },
-    });
+    const { width, height } = size;
+    const radius = Math.min(width, height) / 2 - 40;
 
-    const maxValue = Math.max(...chartData.map((d) => d.value));
-    const desiredTicks = 8;
-    const niceStep = d3.tickStep(0, maxValue, desiredTicks);
-    const yMax = Math.ceil(maxValue / niceStep) * niceStep;
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
+    svg.attr("width", width).attr("height", height);
 
-    const plot = Plot.plot({
-      width: width,
-      height: height,
-      marginTop: 40,
-      marginBottom: chartData.length === 20 ? 35 : 10,
-      marginLeft: 60,
-      style: {
-        fontSize: "16px",
-        color: isReportMode ? "black" : undefined,
-        background: isReportMode ? "transparent" : undefined,
-      },
-      x: {
-        label: "",
-      },
-      y: {
-        domain: [0, yMax],
-        ticks: 8,
-        tickFormat: (d) => (d / 10000).toLocaleString(),
-        grid: true,
-        label: "면적(ha)",
-        labelOffset: 55,
-      },
-      color: {
-        range: ["#698bcf"],
-      },
-      marks: [
-        Plot.axisX({
-          tickSize: 0,
-          tickPadding: chartData.length === 20 ? 13 : 10,
-          tickRotate: chartData.length === 20 ? -45 : 0,
-          fontSize: "15px",
-          tickFormat: (region) => {
-            const found = chartData.find((d) => d.region === region);
-            return found?.label ?? region;
-          },
-        }),
-        Plot.barY(chartData, {
-          x: "region", // 사용자에게 보여주는 그룹화 키
-          y: "value",
-          fill: "#698bcf", // 혹은 제거 가능
-          sort: { x: "-y" },
-          insetLeft: getInset(chartData.length),
-          insetRight: getInset(chartData.length),
-        }),
-        Plot.text(chartData, {
-          x: "region",
-          y: "value",
-          text: (d) => `${(d.value / 10000).toFixed(1)}`,
-          dy: -8,
-          fill: isReportMode ? "black" : "#ffffff",
-          fontSize: "12px",
-        }),
-        Plot.ruleY([0]),
-      ],
-    });
+    const group = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    plotRef.current.innerHTML = "";
-    legendRef.current.innerHTML = "";
+    const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
-    plotRef.current.appendChild(plot);
-    legendRef.current.appendChild(regionLegend);
-    d3.select(plot).style("overflow", "visible");
-  }, [chartData, isReportMode, containerSize]);
+    const pie = d3
+      .pie<any>()
+      .sort(null)
+      .value((d) => d.value)
+      .startAngle(-Math.PI * 2)
+      .endAngle(1.5 * Math.PI);
+
+    const arc = d3
+      .arc<any>()
+      .innerRadius(radius * 0.75)
+      .outerRadius(radius);
+
+    const tooltip = d3.select(tooltipRef.current);
+
+    const paths = group
+      .selectAll("path")
+      .data(pie(filteredData))
+      .join("path")
+      .attr("d", arc)
+      .attr("fill", (d, i) => colorScale(i.toString()))
+      .attr("stroke", "#a9a9a9")
+      .attr("stroke-width", 1)
+      .style("cursor", "pointer");
+
+    paths
+      .on("mouseover", function (_, d) {
+        tooltip
+          .html(
+            `
+              <div style="display: grid; grid-template-columns: auto 1fr; column-gap: 6px; padding: 14px 18px 14px 14px;">
+                <div style="color: #FFC132; font-size: 16px;">▶</div>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <div style="color: #FFC132;"><strong>${d.data.label}</strong></div>
+                  <div>${(d.data.value / 10000).toFixed(1)} ha</div>
+                </div>
+              </div>
+            `
+          )
+          .style("display", "block")
+          .style("visibility", "visible")
+          .style("pointer-events", "none");
+        d3.select(this).attr("fill-opacity", 0.7);
+      })
+      .on("mousemove", function (event) {
+        tooltip.style("left", `${event.clientX + 10}px`).style("top", `${event.clientY - 20}px`);
+      })
+      .on("mouseout", function () {
+        tooltip.style("display", "none");
+        d3.select(this).attr("fill-opacity", 1);
+      });
+
+    const totalValue = filteredData.reduce((sum: number, d: any) => sum + d.value, 0);
+    group
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("dy", "0.35em")
+      .style("font-size", "18px")
+      .style("font-weight", "600")
+      .style("fill", isReportMode ? "black" : "#ffffff")
+      .text(`총 면적: ${(totalValue / 10000).toFixed(1)}ha`);
+  }, [chartData, size, isReportMode]);
 
   if (!chartData || chartData.length === 0) {
     return null;
   }
 
+  const filteredCount = chartData.filter((d: any) => d.value > 0).length;
+
   return (
-    <div className="relative flex h-full w-full flex-col items-start justify-center gap-3 pb-4">
-      <div className="flex items-center gap-[10px]">
-        <p className="text-xl font-semibold">지역별 경제수령 면적 {chartDataLength === 20 && "(상위 20개 지역)"}</p>
+    <div className={`flex h-full w-full flex-col ${isReportMode ? "text-black" : "text-white"}`}>
+      <div className="mb-2 flex items-center gap-[10px]">
+        <p className="text-xl font-semibold">지역별 경제수령 면적 {filteredCount === 20 && "(상위 20개 지역)"}</p>
         {!isReportMode && (
           <InfoTooltip
             title="지역별 경제수령 면적이란?"
@@ -144,8 +126,14 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
           />
         )}
       </div>
-      <div className="absolute right-0 top-0" ref={legendRef} />
-      <div className="h-full w-full" ref={plotRef} />
+      <div ref={containerRef} className="relative flex-1">
+        <svg ref={svgRef} style={{ width: "100%", height: "100%" }} />
+        <div
+          ref={tooltipRef}
+          className="pointer-events-none fixed z-50 rounded-lg border border-gray-300 bg-[#37445E] text-white shadow-lg"
+          style={{ display: "none" }}
+        />
+      </div>
     </div>
   );
 };
