@@ -91,9 +91,39 @@ const YearlyDisasterInfoTable = ({ features, selectedDisaster, selectedDisasterC
   };
 
   if (isReportMode) {
+    const reportColumns: ColumnsType<any> = [
+      {
+        title: "지역명",
+        dataIndex: "region",
+        key: "region",
+        align: "center" as const,
+      },
+      {
+        title: selectedDisaster,
+        dataIndex: "value",
+        key: "value",
+        align: "center" as const,
+        render: (value: number) => value?.toLocaleString() || "0",
+      },
+    ];
+
+    const reportDataSource = sortedRegions.map((region) => ({
+      key: region,
+      region,
+      value: dataSource[0][region],
+    }));
+
     return (
       <div className="rounded-lg">
-        <Table columns={columns} dataSource={dataSource} size="middle" pagination={false} bordered={false} scroll={undefined} className="custom-report-table" />
+        <Table
+          columns={reportColumns}
+          dataSource={reportDataSource}
+          size="middle"
+          pagination={false}
+          bordered={false}
+          scroll={undefined}
+          className="custom-report-table"
+        />
       </div>
     );
   }
