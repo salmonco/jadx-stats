@@ -89,7 +89,12 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
         };
       })
       .filter((d) => d !== null)
-      .sort((a, b) => b.chg_cn - a.chg_cn);
+      .sort((a, b) => {
+        if (viewType === "absolute") {
+          return b.current_area - a.current_area;
+        }
+        return b.chg_cn - a.chg_cn;
+      });
 
     if (regionTotals.length === 0) return;
 
@@ -272,9 +277,11 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
           current_area: currentArea.toFixed(1),
           change: (match.chg_cn / 10_000).toFixed(1),
           change_rate: match.chg_pct.toFixed(1),
+          current_area_num: currentArea,
         };
       })
-      .filter((d) => d !== null);
+      .filter((d) => d !== null)
+      .sort((a, b) => b.current_area_num - a.current_area_num);
 
     downloadCsv(columns, regionTotals, `${selectedCrop}_재배면적_추이_${year}.csv`);
   };
