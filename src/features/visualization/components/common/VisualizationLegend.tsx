@@ -36,11 +36,11 @@ const VisualizationLegend = ({ minValue, maxValue, legendOptions, onLevelChange,
 
         let rangeText;
         if (i === 0) {
-          rangeText = `${lowerValue.toFixed(2)} 초과`;
+          rangeText = `${lowerValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} 초과`;
         } else if (i === actualLevel - 1) {
-          rangeText = `${upperValue.toFixed(2)} 이하`;
+          rangeText = `${upperValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} 이하`;
         } else {
-          rangeText = `${lowerValue.toFixed(2)} ~ ${upperValue.toFixed(2)} 이하`;
+          rangeText = `${lowerValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} ~ ${upperValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} 이하`;
         }
 
         return {
@@ -58,11 +58,11 @@ const VisualizationLegend = ({ minValue, maxValue, legendOptions, onLevelChange,
 
         let rangeText;
         if (i === 0) {
-          rangeText = `${lowerValue.toFixed(2)} 초과`;
+          rangeText = `${lowerValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} 초과`;
         } else if (i === level - 1) {
-          rangeText = `${upperValue.toFixed(2)} 이하`;
+          rangeText = `${upperValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} 이하`;
         } else {
-          rangeText = `${lowerValue.toFixed(2)} ~ ${upperValue.toFixed(2)} 이하`;
+          rangeText = `${lowerValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} ~ ${upperValue.toLocaleString(undefined, { maximumFractionDigits: 2 })} 이하`;
         }
 
         return {

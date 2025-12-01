@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import * as d3 from "d3";
 import * as Plot from "@observablehq/plot";
 import { useQuery } from "@tanstack/react-query";
-import { MandarinTreeAgeDistributionFeatureCollection } from "../../layers/MandarinTreeAgeDistributionLayer";
-import visualizationApi from "~/services/apis/visualizationApi";
+import { Button } from "antd";
+import * as d3 from "d3";
+import { Download } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import InfoTooltip from "~/components/InfoTooltip";
+import visualizationApi from "~/services/apis/visualizationApi";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
+import { MandarinTreeAgeDistributionFeatureCollection } from "../../layers/MandarinTreeAgeDistributionLayer";
 
 const keys = ["10년 이하", "10~19년", "20~29년", "30~39년", "40~49년", "50년 이상"];
 const treeAgeColors = ["#cef2e4", "#6cd7ad", "#2c9a6f", "#fed72f", "#fd6923", "#fd1a20"];
@@ -91,9 +94,9 @@ const TreeAgeSimulationChart = ({ selectedTargetYear, selectedPummok, selectedVa
       maxAreaRef.current = maxArea;
     }
 
-    const plotWidth = isReportMode ? (size.width || 750) : size.width;
+    const plotWidth = isReportMode ? size.width || 750 : size.width;
     const plotHeight = isReportMode ? 380 : size.height;
-    
+
     if (plotWidth === 0) return;
 
     const plot = Plot.plot({
@@ -150,15 +153,40 @@ const TreeAgeSimulationChart = ({ selectedTargetYear, selectedPummok, selectedVa
     d3.select(plot).style("overflow", "visible");
   }, [features, isReportMode, size]);
 
+  const handleDownloadCsv = () => {
+    if (!features || !features.features.length) return;
+
+    const ageGroups = features.features[0]?.properties.stats.age_groups ?? {};
+
+    const columns: CsvColumn[] = [
+      { title: "수령", dataIndex: "ageGroup" },
+      { title: "면적(ha)", dataIndex: "area" },
+    ];
+
+    const data = keys.map((key) => ({
+      ageGroup: key,
+      area: ((ageGroups[key]?.total_area ?? 0) / 10000).toFixed(1),
+    }));
+
+    downloadCsv(columns, data, "수령별_면적_분포.csv");
+  };
+
   return (
     <div className="relative flex h-full w-full flex-col items-start justify-center gap-3 pb-4">
-      <div className="flex items-center gap-[10px]">
-        <p className="text-xl font-semibold">수령별 면적 분포</p>
+      <div className="flex w-full items-center justify-between">
+        <div className="flex items-center gap-[10px]">
+          <p className="text-xl font-semibold">수령별 면적 분포</p>
+          {!isReportMode && (
+            <InfoTooltip
+              title="수령별 면적 분포란?"
+              content={`감귤나무의 나이를 기준으로, 각 수령(수령 구간별) 감귤 재배 면적이 얼마나 되는지를 보여주는 통계입니다.\n이를 통해 현재 제주도 감귤 과원의 구성 상태와, 젋은 나무(신규 식재) 또는 오래된 나무(노후 과원)의 비중을 \n파악할 수 있습니다.`}
+            />
+          )}
+        </div>
         {!isReportMode && (
-          <InfoTooltip
-            title="수령별 면적 분포란?"
-            content={`감귤나무의 나이를 기준으로, 각 수령(수령 구간별) 감귤 재배 면적이 얼마나 되는지를 보여주는 통계입니다.\n이를 통해 현재 제주도 감귤 과원의 구성 상태와, 젋은 나무(신규 식재) 또는 오래된 나무(노후 과원)의 비중을 \n파악할 수 있습니다.`}
-          />
+          <Button type="primary" icon={<Download size={16} />} onClick={handleDownloadCsv}>
+            CSV 다운로드
+          </Button>
         )}
       </div>
       <div className="absolute right-0 top-0" ref={legendRef} />

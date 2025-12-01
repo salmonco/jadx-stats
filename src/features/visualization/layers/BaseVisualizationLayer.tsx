@@ -509,7 +509,7 @@ export abstract class BaseVisualizationLayer<T = any> extends BaseLayer {
     if (labelOptions.isShowValue) {
       const value = this.getValue(feature);
       if (value) {
-        labels.push(value.toFixed(1));
+        labels.push(value.toLocaleString(undefined, { maximumFractionDigits: 1 }));
       }
     }
 

@@ -60,7 +60,7 @@ class YearlyDisasterInfoMap extends CommonBackgroundMap {
   }
 
   renderChart(isReportMode?: boolean) {
-    return <YearlyDisasterInfoChart />;
+    return <YearlyDisasterInfoChart map={this} isReportMode={isReportMode} />;
   }
 
   getSnapshot() {
