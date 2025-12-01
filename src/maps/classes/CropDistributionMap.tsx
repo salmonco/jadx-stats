@@ -51,7 +51,7 @@ class CropDistributionMap extends CommonBackgroundMap {
   }
 
   renderChart(isReportMode?: boolean) {
-    return <CropDistributionChart />;
+    return <CropDistributionChart isReportMode={isReportMode} />;
   }
 
   getSnapshot() {
