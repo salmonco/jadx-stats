@@ -1,0 +1,159 @@
+import * as d3 from "d3";
+import { Button } from "antd";
+import { Download } from "lucide-react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { CROPS, CROP_COLORS } from "~/maps/constants/cropDistribution";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
+
+const KOREAN_CROP_COLORS: { [key: string]: string } = {};
+Object.entries(CROPS).forEach(([korean, english]) => {
+  KOREAN_CROP_COLORS[korean] = CROP_COLORS[english];
+});
+
+interface Props {
+  chartData: { [crop: string]: { [region: string]: number } };
+  isReportMode?: boolean;
+}
+
+const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ width: 800, height: 420 });
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      const { width, height } = entry.contentRect;
+      setSize({ width, height: Math.max(300, height) });
+    });
+
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const flatData = useMemo(() => {
+    const data: { crop: string; region: string; area: number }[] = [];
+    Object.entries(chartData).forEach(([crop, regions]) => {
+      Object.entries(regions).forEach(([region, area]) => {
+        data.push({ crop, region, area });
+      });
+    });
+    return data.sort((a, b) => b.area - a.area);
+  }, [chartData]);
+
+  const handleDownloadCsv = () => {
+    const columns: CsvColumn[] = [
+      { title: "작물", dataIndex: "crop" },
+      { title: "지역", dataIndex: "region" },
+      { title: "재배면적(ha)", dataIndex: "area" },
+    ];
+
+    const data = flatData.map((d) => ({
+      crop: d.crop,
+      region: d.region,
+      area: d.area.toFixed(1),
+    }));
+
+    downloadCsv(columns, data, "작물별_재배면적_트리맵.csv");
+  };
+
+  useEffect(() => {
+    if (!flatData.length || !containerRef.current) return;
+
+    const actualWidth = isReportMode && containerRef.current.parentElement ? containerRef.current.parentElement.clientWidth : size.width;
+
+    const root = d3.hierarchy({ children: flatData }).sum((d: any) => d.area);
+
+    const treemapLayout = d3.treemap().size([actualWidth, size.height]).padding(1);
+    treemapLayout(root);
+
+    const svg = d3
+      .create("svg")
+      .attr("width", actualWidth)
+      .attr("height", size.height)
+      .attr("viewBox", `0 0 ${actualWidth} ${size.height}`)
+      .style("font", "10px sans-serif")
+      .style("overflow", "visible")
+      .style("background", isReportMode ? "transparent" : undefined);
+
+    const leaf = svg
+      .selectAll("g")
+      .data(root.leaves())
+      .join("g")
+      .attr("transform", (d: d3.HierarchyRectangularNode<any>) => `translate(${d.x0},${d.y0})`);
+
+    leaf
+      .append("rect")
+      .attr("fill", (d: d3.HierarchyRectangularNode<any>) => KOREAN_CROP_COLORS[d.data.crop] || "#999")
+      .attr("width", (d: d3.HierarchyRectangularNode<any>) => d.x1 - d.x0)
+      .attr("height", (d: d3.HierarchyRectangularNode<any>) => d.y1 - d.y0);
+
+    // Region label
+    svg
+      .selectAll(".treemap-label-region")
+      .data(root.leaves())
+      .join("text")
+      .attr("class", "treemap-label-region")
+      .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
+      .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 - 10)
+      .attr("text-anchor", "middle")
+      .text((d: any) => d.data.region)
+      .attr("fill", isReportMode ? "black" : "white")
+      .style("font-size", "12px")
+      .style("font-weight", "600");
+
+    // Crop label
+    svg
+      .selectAll(".treemap-label-crop")
+      .data(root.leaves())
+      .join("text")
+      .attr("class", "treemap-label-crop")
+      .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
+      .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 + 5)
+      .attr("text-anchor", "middle")
+      .text((d: any) => d.data.crop)
+      .attr("fill", isReportMode ? "black" : "white")
+      .style("font-size", "11px");
+
+    // Area label
+    svg
+      .selectAll(".treemap-label-area")
+      .data(root.leaves())
+      .join("text")
+      .attr("class", "treemap-label-area")
+      .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
+      .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 + 20)
+      .attr("text-anchor", "middle")
+      .text((d: any) => `${d.data.area.toFixed(1)}ha`)
+      .attr("fill", isReportMode ? "black" : "white")
+      .style("font-size", "11px");
+
+    if (containerRef.current) {
+      containerRef.current.innerHTML = "";
+      containerRef.current.appendChild(svg.node()!);
+    }
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.innerHTML = "";
+      }
+    };
+  }, [flatData, size, isReportMode]);
+
+  return (
+    <div className="h-full w-full">
+      <div className="mb-[8px] flex items-center justify-between">
+        <p className="text-xl font-semibold">작물별 재배 면적 (트리맵)</p>
+        {!isReportMode && (
+          <Button type="primary" icon={<Download size={16} />} onClick={handleDownloadCsv}>
+            CSV 다운로드
+          </Button>
+        )}
+      </div>
+      <div ref={containerRef} style={isReportMode ? {} : { height: `${size.height}px` }} className={isReportMode ? "w-full min-w-full" : "w-full"} />
+    </div>
+  );
+};
+
+export default CropDistributionTreemap;
