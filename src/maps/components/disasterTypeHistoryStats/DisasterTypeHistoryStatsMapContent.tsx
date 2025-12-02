@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
-import CropFilter from "~/features/visualization/components/common/CropFilter";
 import CultivationTypeFilter from "~/features/visualization/components/common/CultivationTypeFilter";
 import DateRangeFilter from "~/features/visualization/components/common/DateRangeFilter";
 import DisasterFilter from "~/features/visualization/components/common/DisasterFilter";
 import FloatingContainer from "~/features/visualization/components/common/FloatingContainer";
 import RegionFilter from "~/features/visualization/components/common/RegionFilter";
+import VegetableFilter from "~/features/visualization/components/common/VegetableFilter";
 import useRegionFilter from "~/features/visualization/hooks/useRegionFilter";
 import { useVisualizationLayer } from "~/features/visualization/hooks/useVisualizationLayer";
 import { DisasterTypeHistoryStatsFeatureCollection, DisasterTypeHistoryStatsLayer } from "~/features/visualization/layers/DisasterTypeHistoryStatsLayer";
@@ -14,6 +14,7 @@ import DisasterTypeHistoryStatsLegend from "~/maps/components/disasterTypeHistor
 import ListManagedBackgroundMap from "~/maps/components/ListManagedBackgroundMap";
 import { DISASTER_TYPE_HISTORY_MOCK_DATA } from "~/maps/constants/disasterTypeHistoryMockData";
 import { CULTIVATION_TYPE_OPTIONS } from "~/maps/constants/disasterTypeHistoryStats";
+import { CROP_LEGEND_ITEMS, CropType } from "~/maps/constants/hibernationVegetableCultivation";
 import { VisualizationSetting } from "~/maps/constants/visualizationSetting";
 import { useMapList } from "~/maps/hooks/useMapList";
 import useSetupOL from "~/maps/hooks/useSetupOL";
@@ -40,11 +41,14 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen, getPopup
     retry: 1,
   });
 
-  const { data: cropList } = useQuery({
-    queryKey: ["mandarinVarietyList"],
-    queryFn: () => visualizationApi.getMandarinVarietyList(),
-    retry: 1,
-  });
+  /**
+   * @todo 작물 종류 API가 확정되면 아래 주석을 해제하고 CROP_LEGEND_ITEMS 대신 사용
+   */
+  // const { data: cropList } = useQuery({
+  //   queryKey: ["mandarinVarietyList"],
+  //   queryFn: () => visualizationApi.getMandarinVarietyList(),
+  //   retry: 1,
+  // });
 
   /**
    * @todo DISASTER_TYPE_HISTORY_MOCK_DATA 목데이터를 실제 API 요청으로 대체해야 합니다.
@@ -85,10 +89,22 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen, getPopup
   });
 
   useEffect(() => {
-    if (disasterName) {
+    if (disasterName && disasterName.length > 0) {
       map.setSelectedDisaster(disasterName[0].name);
     }
-  }, [disasterName]);
+  }, [disasterName, map]);
+
+  /**
+   * @todo 작물 종류 API가 확정되면 제거
+   * 현재는 CROP_LEGEND_ITEMS의 첫 번째 값으로 초기화
+   */
+  useEffect(() => {
+    if (CROP_LEGEND_ITEMS.length > 0 && !CROP_LEGEND_ITEMS.find((item) => item.value === map.selectedCropPummok)) {
+      map.setSelectedCropPummok(CROP_LEGEND_ITEMS[0].value);
+      map.setSelectedCropGroup("전체");
+      map.setSelectedCropDetailGroup("전체");
+    }
+  }, [map]);
 
   const disasterOptionsMap: Record<string, string[]> = useMemo(() => {
     const result: Record<string, string[]> = {};
@@ -99,6 +115,17 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen, getPopup
   }, [disasterName]);
 
   const hasSecondDepth = disasterOptionsMap[map.selectedDisaster]?.length > 0;
+
+  /**
+   * @todo 작물 종류 API가 확정되면 cropList 기반으로 변경
+   * 현재는 임시로 CROP_LEGEND_ITEMS 사용
+   */
+  // 작물 선택 변경 핸들러
+  const handleCropChange = (value: CropType) => {
+    map.setSelectedCropPummok(value);
+    map.setSelectedCropGroup("전체");
+    map.setSelectedCropDetailGroup("전체");
+  };
 
   if (!map) {
     return null;
@@ -140,8 +167,14 @@ const DisasterTypeHistoryStatsMapContent = ({ mapId, onClickFullScreen, getPopup
               hasSecondDepth={hasSecondDepth}
               getPopupContainer={getPopupContainer}
             />
-            {/* 품목, 세부 품목 */}
-            <CropFilter cropList={cropList} map={map} getPopupContainer={getPopupContainer} />
+            {/* 작물 종류 */}
+            <VegetableFilter
+              title="작물 종류"
+              options={CROP_LEGEND_ITEMS}
+              selectedValues={map.selectedCropPummok as CropType}
+              onSelectionChange={handleCropChange}
+              getPopupContainer={getPopupContainer}
+            />
             {/* 재배 방식 */}
             <CultivationTypeFilter
               title="재배 방식"

@@ -29,9 +29,11 @@ export interface MarketQuantityData {
 // 가격
 export interface MarketPriceData {
   intrvl: string; // 기간
+  jeju_yn: boolean; // 제주 여부
   lhldy_yn: boolean; // 공휴일 여부
   mm_strt: number; // 시작 월
   prc: number; // 가격
+  rgn_nm: string; // 지역명
   vrty_clsf_nm: string; // 품종 분류명
   wk_id: string; // 주차 ID
   wk_se: string; // 주차 구분
@@ -97,7 +99,11 @@ const WholesaleMarketShare = () => {
               <MarketQuantityBarLineChart marketQuantityData={marketStatsData?.data?.rgn_dlng_stts_amt} selectedPummok={selectedPummok} />
             </div>
             <div className="min-h-[341px]">
-              <MarketPriceLineChart priceData={marketStatsData?.data?.rgn_dlng_stts_prc} selectedPummok={selectedPummok} />
+              <MarketPriceLineChart
+                priceData={marketStatsData?.data?.rgn_dlng_stts_prc}
+                quantityData={marketStatsData?.data?.rgn_dlng_stts_amt}
+                selectedPummok={selectedPummok}
+              />
             </div>
           </div>
           <div className="flex flex-[3.3] flex-col gap-5 3xl:flex-[3.5]">

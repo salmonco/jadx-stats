@@ -89,11 +89,19 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
   getFilterText() {
     const filterParts = super.getFilterText();
 
-    filterParts.push(`${this.#selectedStartDate} ~ ${this.#selectedEndDate}`);
+    filterParts.push(`${this.#selectedStartDate.format("YYYY-MM-DD")} ~ ${this.#selectedEndDate.format("YYYY-MM-DD")}`);
     filterParts.push(`${this.#selectedDisaster}`);
-    filterParts.push(`${this.#selectedCropPummok}`);
-    filterParts.push(`${this.#selectedCropGroup}`);
-    filterParts.push(`${this.#selectedCropDetailGroup}`);
+
+    // 작물 종류 조합
+    const cropParts = [this.#selectedCropPummok];
+    if (this.#selectedCropGroup && this.#selectedCropGroup !== "전체") {
+      cropParts.push(this.#selectedCropGroup);
+    }
+    if (this.#selectedCropDetailGroup && this.#selectedCropDetailGroup !== "전체") {
+      cropParts.push(this.#selectedCropDetailGroup);
+    }
+    filterParts.push(`작물 종류: ${cropParts.join(" > ")}`);
+
     filterParts.push(`${getKeyByValue(CULTIVATION_TYPE, this.#selectedCultivationType)}`);
 
     return filterParts;
@@ -104,7 +112,7 @@ class DisasterTypeHistoryStatsMap extends CommonBackgroundMap {
   }
 
   renderChart(isReportMode?: boolean) {
-    return <DisasterTypeHistoryStatsChart />;
+    return <DisasterTypeHistoryStatsChart map={this} isReportMode={isReportMode} />;
   }
 
   getSnapshot() {

@@ -8,6 +8,7 @@ import OneDepthScrollSelector from "~/features/visualization/components/common/O
 import VisualizationContainer from "~/features/visualization/components/common/VisualizationContainer";
 import YearSelector from "~/features/visualization/components/common/YearSelector";
 import YearlyExportLineChart from "~/features/visualization/components/retail/YearlyExportLineChart";
+import YearlyExportTable from "~/features/visualization/components/retail/YearlyExportTable";
 import { useGroupedExportData } from "~/features/visualization/hooks/useGroupedExportData";
 import MandarinExportLayer, { RANK_COLORS } from "~/features/visualization/layers/MandarinExportLayer";
 import BackgroundMap from "~/maps/components/BackgroundMap";
@@ -140,10 +141,14 @@ const YearlyCountryExportInfo = () => {
         </FilterContainer>
       }
       chartContent={
-        <ChartContainer minHeight={400} cols={2}>
-          <YearlyExportLineChart yearlyData={groupedCountryYears} type={"totalAmount"} countryOptions={countryOptions} />
-          <YearlyExportLineChart yearlyData={groupedCountryYears} type={"totalWeight"} countryOptions={countryOptions} />
-        </ChartContainer>
+        <div className="flex flex-col gap-4">
+          <ChartContainer minHeight={400} cols={2}>
+            <YearlyExportLineChart yearlyData={groupedCountryYears} type={"totalAmount"} countryOptions={countryOptions} />
+            <YearlyExportLineChart yearlyData={groupedCountryYears} type={"totalWeight"} countryOptions={countryOptions} />
+          </ChartContainer>
+          <YearlyExportTable yearlyData={groupedCountryYears} type={"totalAmount"} countryOptions={countryOptions} />
+          <YearlyExportTable yearlyData={groupedCountryYears} type={"totalWeight"} countryOptions={countryOptions} />
+        </div>
       }
     />
   );
