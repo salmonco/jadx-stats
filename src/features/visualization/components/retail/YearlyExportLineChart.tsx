@@ -132,17 +132,18 @@ const YearlyExportLineChart = ({ yearlyData, type, countryOptions }: YearlyExpor
           x: "year",
           y: "value",
           text: (d) => d.value.toLocaleString(undefined, { maximumFractionDigits: 0 }),
-          dy: -12, // Position above the dot
+          dy: -12, // 위로 약간 이동
           fontSize: 10,
           fill: (d) => colorMap[d.country], // Match line color
           fontWeight: "bold",
         }),
+        // 마지막 점에 국가명 추가
         Plot.text(lastPoints, {
           x: "year",
           y: "value",
           text: "country",
           dx: 6, // 오른쪽으로 약간 이동
-          dy: -6, // 위로 약간 이동
+          dy: -26, // 위로 약간 이동
           fill: (d) => colorMap[d.country], // 색상도 맞춰줌
           fontWeight: "bold",
         }),
