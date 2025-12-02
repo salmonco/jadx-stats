@@ -67,7 +67,7 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
 
     const data = pieData.map((d) => ({
       region: d.region,
-      area: d.area.toFixed(1),
+      area: d.area.toLocaleString("ko-KR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
     }));
 
     downloadCsv(columns, data, `농업재해_${selectedDisaster}_${selectedCropPummok}_지역별_피해면적.csv`);
@@ -120,7 +120,7 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
                 <div style="color: #FFC132; font-size: 16px;">▶</div>
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                   <div style="color: #FFC132;"><strong>${d.data.region}</strong></div>
-                  <div>${d.data.area.toFixed(1)}ha</div>
+                  <div>${d.data.area.toLocaleString("ko-KR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}ha</div>
                 </div>
               </div>
             `
@@ -160,7 +160,7 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
           .append("tspan")
           .attr("x", 0)
           .attr("dy", "1.2em")
-          .text(`${d.data.area.toFixed(1)}ha`);
+          .text(`${d.data.area.toLocaleString("ko-KR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}ha`);
       });
   }, [pieData, size, isReportMode]);
 
