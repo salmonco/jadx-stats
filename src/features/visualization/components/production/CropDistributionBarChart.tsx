@@ -67,13 +67,17 @@ const CropDistributionBarChart = ({ chartData, isReportMode }: Props) => {
     setSize((prev) => ({ ...prev, height: 420 * multiplier }));
   }, [windowWidth]);
 
-  const cropTotals = useMemo(() => {
+  const { displayData, totalCount } = useMemo(() => {
     const totals: { crop: string; area: number }[] = [];
     Object.entries(chartData).forEach(([crop, regions]) => {
       const totalArea = Object.values(regions).reduce((sum, area) => sum + area, 0);
       totals.push({ crop, area: totalArea });
     });
-    return totals.sort((a, b) => b.area - a.area).slice(0, TOP_CROPS_LIMIT);
+    const sortedTotals = totals.sort((a, b) => b.area - a.area);
+    return {
+      displayData: sortedTotals.slice(0, TOP_CROPS_LIMIT),
+      totalCount: sortedTotals.length,
+    };
   }, [chartData]);
 
   const handleDownloadCsv = () => {
@@ -99,22 +103,22 @@ const CropDistributionBarChart = ({ chartData, isReportMode }: Props) => {
   };
 
   useEffect(() => {
-    if (!cropTotals.length || !containerRef.current) return;
+    if (!displayData.length || !containerRef.current) return;
 
     const actualWidth = isReportMode && containerRef.current.parentElement ? containerRef.current.parentElement.clientWidth : size.width;
 
     const margin = { top: 10, right: 100, bottom: 0, left: 90 };
-    const barHeight = cropTotals.length > TOP_CROPS_LIMIT ? 32 : 48;
-    const height = cropTotals.length > TOP_CROPS_LIMIT ? cropTotals.length * barHeight + margin.top + margin.bottom : size.height;
-    const barInset = cropTotals.length === 1 ? 110 : cropTotals.length === 2 ? 40 : cropTotals.length === 4 ? 10 : 3;
+    const barHeight = 48;
+    const chartHeight = displayData.length * barHeight + margin.top + margin.bottom;
+    const barInset = displayData.length === 1 ? 110 : displayData.length === 2 ? 40 : displayData.length === 4 ? 10 : 3;
 
     const chart = Plot.plot({
       width: actualWidth,
-      height: height,
+      height: chartHeight,
       marginTop: margin.top,
       marginRight: margin.right,
       marginBottom: margin.bottom,
-      marginLeft: cropTotals.length > TOP_CROPS_LIMIT ? margin.left : 70,
+      marginLeft: totalCount > TOP_CROPS_LIMIT ? margin.left : 70,
       x: {
         grid: true,
         label: "재배면적 (ha)",
@@ -124,10 +128,10 @@ const CropDistributionBarChart = ({ chartData, isReportMode }: Props) => {
       },
       y: {
         label: null,
-        domain: cropTotals.map((d) => d.crop),
+        domain: displayData.map((d) => d.crop),
       },
       marks: [
-        Plot.barX(cropTotals, {
+        Plot.barX(displayData, {
           y: "crop",
           x: "area",
           fill: (d) => KOREAN_CROP_COLORS[d.crop] || "#999",
@@ -136,7 +140,7 @@ const CropDistributionBarChart = ({ chartData, isReportMode }: Props) => {
           insetTop: barInset,
           insetBottom: barInset,
         }),
-        Plot.text(cropTotals, {
+        Plot.text(displayData, {
           x: "area",
           y: "crop",
           text: (d) => `${d.area.toFixed(1)} ha`,
@@ -165,7 +169,7 @@ const CropDistributionBarChart = ({ chartData, isReportMode }: Props) => {
         containerRef.current.innerHTML = "";
       }
     };
-  }, [cropTotals, size, isReportMode]);
+  }, [displayData, totalCount, size, isReportMode]);
 
   return (
     <div className="h-full w-full">
