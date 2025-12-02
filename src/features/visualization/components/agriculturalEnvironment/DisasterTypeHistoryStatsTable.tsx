@@ -111,7 +111,7 @@ const DisasterTypeHistoryStatsTable = ({
       period: periodText,
       disaster: selectedDisaster,
       crop: cropText,
-      category: "피해면적",
+      category: "피해면적(ha)",
     };
 
     const damageHouseholdsRow: any = {
@@ -119,7 +119,7 @@ const DisasterTypeHistoryStatsTable = ({
       period: periodText,
       disaster: selectedDisaster,
       crop: cropText,
-      category: "피해 농가수",
+      category: "피해 농가수(개)",
     };
 
     regionNames.forEach((region) => {
@@ -170,14 +170,14 @@ const DisasterTypeHistoryStatsTable = ({
         align: "center" as const,
       },
       {
-        title: "피해면적",
+        title: "피해면적(ha)",
         dataIndex: "damageArea",
         key: "damageArea",
         align: "center" as const,
         render: (value: number) => (value !== undefined ? value.toLocaleString() : "-"),
       },
       {
-        title: "피해 농가수",
+        title: "피해 농가수(개)",
         dataIndex: "damageHouseholds",
         key: "damageHouseholds",
         align: "center" as const,
