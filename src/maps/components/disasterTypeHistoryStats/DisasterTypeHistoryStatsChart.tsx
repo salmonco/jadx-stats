@@ -1,4 +1,4 @@
-import { PieChart, Table } from "lucide-react";
+import { BarChart3, Table } from "lucide-react";
 import DisasterTypeHistoryStatsAreaPieChart from "~/features/visualization/components/agriculturalEnvironment/DisasterTypeHistoryStatsAreaPieChart";
 import DisasterTypeHistoryStatsPieChart from "~/features/visualization/components/agriculturalEnvironment/DisasterTypeHistoryStatsPieChart";
 import DisasterTypeHistoryStatsTable from "~/features/visualization/components/agriculturalEnvironment/DisasterTypeHistoryStatsTable";
@@ -36,27 +36,27 @@ const DisasterTypeHistoryStatsChart = ({ map, isReportMode }: Props) => {
         <div className="w-full p-4">
           <div className="report-section">
             <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
-              <PieChart size={24} />
-              <span>지역별 피해 통계</span>
+              <BarChart3 size={24} />
+              <span>데이터 그래프</span>
             </h3>
-            <div className="grid grid-cols-2 gap-4">
-              <DisasterTypeHistoryStatsPieChart
-                features={features}
-                startDate={map.selectedStartDate}
-                endDate={map.selectedEndDate}
-                selectedDisaster={map.selectedDisaster}
-                selectedCropPummok={map.selectedCropPummok}
-                isReportMode
-              />
-              <DisasterTypeHistoryStatsAreaPieChart
-                features={features}
-                startDate={map.selectedStartDate}
-                endDate={map.selectedEndDate}
-                selectedDisaster={map.selectedDisaster}
-                selectedCropPummok={map.selectedCropPummok}
-                isReportMode
-              />
-            </div>
+            <DisasterTypeHistoryStatsPieChart
+              features={features}
+              startDate={map.selectedStartDate}
+              endDate={map.selectedEndDate}
+              selectedDisaster={map.selectedDisaster}
+              selectedCropPummok={map.selectedCropPummok}
+              isReportMode
+            />
+          </div>
+          <div className="report-section">
+            <DisasterTypeHistoryStatsAreaPieChart
+              features={features}
+              startDate={map.selectedStartDate}
+              endDate={map.selectedEndDate}
+              selectedDisaster={map.selectedDisaster}
+              selectedCropPummok={map.selectedCropPummok}
+              isReportMode
+            />
           </div>
         </div>
       </>
