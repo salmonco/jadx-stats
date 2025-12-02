@@ -3,6 +3,7 @@ import { Download } from "lucide-react";
 import { useMemo } from "react";
 import { ScrollSelectorOption } from "~/features/visualization/components/common/OneDepthScrollSelector";
 import { GroupedCountryYearData } from "~/features/visualization/hooks/useGroupedExportData";
+import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface YearlyExportTableProps {
   yearlyData: GroupedCountryYearData;
@@ -50,7 +51,11 @@ const YearlyExportTable = ({ yearlyData, type, countryOptions }: YearlyExportTab
   }, [yearlyData, type, countryOptions]);
 
   const handleDownloadCsv = () => {
-    console.log("Downloading data...", tableData);
+    const columns: CsvColumn[] = [{ title: "지표", dataIndex: "지표" }, ...years.map((year) => ({ title: `${year}년`, dataIndex: year }))];
+
+    const filename = type === "totalAmount" ? "연도별_수출액.csv" : "연도별_수출량.csv";
+
+    downloadCsv(columns, tableData, filename);
   };
 
   return (
