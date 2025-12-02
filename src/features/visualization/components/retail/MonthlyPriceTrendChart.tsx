@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as d3 from "d3";
 import { useResponsiveSize } from "~/features/visualization/hooks/useResponsiveSize";
 import { MonthlyComparisonData } from "~/pages/visualization/retail/CropTradeInfo";
-import { Empty } from "antd";
+import { Checkbox, Empty } from "antd";
 
 interface Props {
   pummok: string;
@@ -14,6 +14,7 @@ const MonthlyPriceTrendChart = ({ pummok, tradeChartData }: Props) => {
   const plotRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const size = useResponsiveSize(containerRef, 0.4, 540);
+  const [showPriceValue, setShowPriceValue] = useState(true);
 
   const augmentedData = useMemo(() => {
     return tradeChartData?.map((d) => ({
@@ -96,6 +97,20 @@ const MonthlyPriceTrendChart = ({ pummok, tradeChartData }: Props) => {
         .attr("cy", (d) => y(d.value))
         .attr("r", 4)
         .attr("fill", color);
+
+      if (showPriceValue) {
+        g.selectAll(`text.price-label.${key}`)
+          .data(filledLineData.filter((d) => d.value != null))
+          .enter()
+          .append("text")
+          .attr("class", `price-label ${key}`)
+          .attr("x", (d) => x(d.month)!)
+          .attr("y", (d) => y(d.value) - 10)
+          .attr("text-anchor", "middle")
+          .attr("fill", color)
+          .attr("font-size", "12px")
+          .text((d) => d.value.toLocaleString(undefined, { maximumFractionDigits: 0 }));
+      }
     });
 
     const legend = svg
@@ -167,11 +182,16 @@ const MonthlyPriceTrendChart = ({ pummok, tradeChartData }: Props) => {
       tooltip.style.display = "none";
       hoverLine.style("opacity", 0);
     });
-  }, [augmentedData, size]);
+  }, [augmentedData, size, showPriceValue]);
 
   return (
     <div className="flex w-full flex-1 flex-col gap-3 rounded-lg bg-[#43516D] p-5">
-      <p className="text-[20px] font-semibold">{pummok} 전국 평균 월별 가격 추이</p>
+      <div className="flex items-center justify-between">
+        <p className="text-[20px] font-semibold">{pummok} 전국 평균 월별 가격 추이</p>
+        <Checkbox checked={showPriceValue} onChange={(e) => setShowPriceValue(e.target.checked)} style={{ color: "white" }}>
+          <span className="text-white">가격 표시</span>
+        </Checkbox>
+      </div>
       <div className={`relative h-full w-full ${!tradeChartData || tradeChartData.length === 0 ? "flex items-center justify-center" : ""}`} ref={containerRef}>
         {!tradeChartData || tradeChartData.length === 0 ? (
           <div className="flex h-full items-center justify-center">
