@@ -127,6 +127,16 @@ const YearlyExportLineChart = ({ yearlyData, type, countryOptions }: YearlyExpor
           fill: "white",
           title: (d) => `${d.country}\n${d.year}년\n${d.value.toLocaleString()}\n)`,
         }),
+        // 그래프에 값 추가
+        Plot.text(data, {
+          x: "year",
+          y: "value",
+          text: (d) => d.value.toLocaleString(undefined, { maximumFractionDigits: 0 }),
+          dy: -12, // Position above the dot
+          fontSize: 10,
+          fill: (d) => colorMap[d.country], // Match line color
+          fontWeight: "bold",
+        }),
         Plot.text(lastPoints, {
           x: "year",
           y: "value",
@@ -207,7 +217,6 @@ const YearlyExportLineChart = ({ yearlyData, type, countryOptions }: YearlyExpor
 
   return (
     <div ref={containerRef} className="h-full max-h-[360px] w-full">
-      {/* <div className="legend flex flex-wrap gap-2 mb-4"></div> */}
       <div className="mb-2 flex justify-between text-xl font-semibold">
         {config.title}
         <div className="flex flex-wrap gap-3 p-2">
