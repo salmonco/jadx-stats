@@ -9,6 +9,7 @@ interface YearlyExportTableProps {
   yearlyData: GroupedCountryYearData;
   type: "totalAmount" | "totalWeight";
   countryOptions: ScrollSelectorOption[];
+  selectedCountries: string[];
 }
 
 const metricConfig = {
@@ -22,7 +23,7 @@ const metricConfig = {
   },
 };
 
-const YearlyExportTable = ({ yearlyData, type, countryOptions }: YearlyExportTableProps) => {
+const YearlyExportTable = ({ yearlyData, type, countryOptions, selectedCountries }: YearlyExportTableProps) => {
   const config = metricConfig[type];
 
   const { years, countries, tableData } = useMemo(() => {
@@ -36,7 +37,7 @@ const YearlyExportTable = ({ yearlyData, type, countryOptions }: YearlyExportTab
     });
     const years = Array.from(yearSet).sort((a, b) => Number(b) - Number(a));
 
-    const countries = countryOptions.map((opt) => opt.value);
+    const countries = selectedCountries;
 
     const tableData = countries.map((country) => {
       const row: { [key: string]: string | number } = { 지표: country };
@@ -48,7 +49,7 @@ const YearlyExportTable = ({ yearlyData, type, countryOptions }: YearlyExportTab
     });
 
     return { years, countries, tableData };
-  }, [yearlyData, type, countryOptions]);
+  }, [yearlyData, type, selectedCountries]);
 
   const handleDownloadCsv = () => {
     const columns: CsvColumn[] = [{ title: "지표", dataIndex: "지표" }, ...years.map((year) => ({ title: `${year}년`, dataIndex: year }))];
