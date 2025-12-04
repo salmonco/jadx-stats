@@ -10,6 +10,8 @@ interface Props {
   isReportMode?: boolean;
 }
 
+const MAX_DISPLAY_ITEMS = 20;
+
 const MandarinCultivationBarChart = ({ chartData, selectedVariety, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -63,37 +65,56 @@ const MandarinCultivationBarChart = ({ chartData, selectedVariety, isReportMode 
   const regionTotals = useMemo(() => {
     if (!chartData) return [];
 
-    return Object.entries(chartData)
+    const allRegions = Object.entries(chartData)
       .map(([region, products]) => {
         const match = (products as any[]).find((p) => p.prdct_nm === selectedVariety);
         return match ? { region: region, total_area: match.total_area } : null;
       })
       .filter((d) => d !== null)
       .sort((a, b) => b.total_area - a.total_area);
+
+    // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+    const topItems = allRegions.slice(0, MAX_DISPLAY_ITEMS);
+    const others = allRegions.slice(MAX_DISPLAY_ITEMS);
+
+    if (others.length > 0) {
+      const othersSum = others.reduce((sum, item) => sum + item.total_area, 0);
+      return [
+        ...topItems,
+        {
+          region: "기타",
+          total_area: othersSum,
+        },
+      ];
+    }
+
+    return topItems;
   }, [chartData, selectedVariety]);
 
   const handleDownloadCsv = () => {
-    if (!regionTotals.length) return;
+    if (!chartData) return;
 
     const columns: CsvColumn[] = [
       { title: "지역", dataIndex: "region" },
       { title: "총 재배 면적(ha)", dataIndex: "total_area_ha" },
     ];
 
-    const data = regionTotals.map((d) => ({
-      region: d.region,
-      total_area_ha: d.total_area / 10_000,
-    }));
+    // 전체 데이터를 CSV로 다운로드
+    const allData = Object.entries(chartData)
+      .map(([region, products]) => {
+        const match = (products as any[]).find((p) => p.prdct_nm === selectedVariety);
+        return match ? { region: region, total_area_ha: match.total_area / 10_000 } : null;
+      })
+      .filter((d) => d !== null)
+      .sort((a, b) => b.total_area_ha - a.total_area_ha);
 
-    downloadCsv(columns, data, "지역별_재배면적.csv");
+    downloadCsv(columns, allData, "지역별_재배면적.csv");
   };
 
   useEffect(() => {
     if (!regionTotals.length || !containerRef.current) return;
 
-    const actualWidth = isReportMode && containerRef.current.parentElement 
-      ? containerRef.current.parentElement.clientWidth 
-      : size.width;
+    const actualWidth = isReportMode && containerRef.current.parentElement ? containerRef.current.parentElement.clientWidth : size.width;
 
     const margin = { top: 10, right: 100, bottom: 0, left: 70 };
     const barHeight = regionTotals.length > 12 ? 32 : 48;
@@ -184,7 +205,11 @@ const MandarinCultivationBarChart = ({ chartData, selectedVariety, isReportMode 
           </Button>
         )}
       </div>
-      <div ref={containerRef} style={isReportMode ? {} : { height: `${size.height}px` }} className={isReportMode ? "w-full min-w-full" : "custom-dark-scroll min-w-full overflow-y-auto"} />
+      <div
+        ref={containerRef}
+        style={isReportMode ? {} : { height: `${size.height}px` }}
+        className={isReportMode ? "w-full min-w-full" : "custom-dark-scroll min-w-full overflow-y-auto"}
+      />
     </div>
   );
 };

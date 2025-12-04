@@ -17,11 +17,6 @@ const MarketPriceLineChart = ({ priceData, quantityData, selectedPummok }: Props
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [showJejuPrice, setShowJejuPrice] = useState(true);
 
-  const nationalData = useMemo(() => {
-    if (!priceData) return [];
-    return priceData.filter((d) => d.vrty_clsf_nm === selectedPummok);
-  }, [priceData, selectedPummok]);
-
   const jejuData = useMemo(() => {
     if (!quantityData) return [];
     // 1. 거래량 데이터(quantityData)를 기반으로 각 항목의 가격(prc)을 계산합니다.
@@ -37,6 +32,11 @@ const MarketPriceLineChart = ({ priceData, quantityData, selectedPummok }: Props
     // 4. 계산된 가격이 0보다 큰 데이터만 필터링하여 그래프의 들쭉날쭉함을 방지합니다.
     return jejuItems.filter((d) => d.prc > 0);
   }, [quantityData, selectedPummok]);
+
+  const nationalData = useMemo(() => {
+    if (!priceData) return [];
+    return priceData.filter((d) => d.vrty_clsf_nm === selectedPummok);
+  }, [priceData, selectedPummok]);
 
   const filteredData = nationalData;
 
@@ -69,6 +69,19 @@ const MarketPriceLineChart = ({ priceData, quantityData, selectedPummok }: Props
     chartRef.current.innerHTML = "";
 
     const domain = filteredData.map((d) => d.wk_id);
+
+    // 전국 데이터의 모든 wk_id에 대해 제주 데이터를 매핑 (없으면 null)
+    const jejuDataMap = new Map(jejuData.map((d) => [d.wk_id, d]));
+    const alignedJejuData = filteredData.map((d) => {
+      const jejuItem = jejuDataMap.get(d.wk_id);
+      return {
+        wk_id: d.wk_id,
+        prc: jejuItem?.prc ?? null,
+        lhldy_yn: jejuItem?.lhldy_yn ?? false,
+        intrvl: jejuItem?.intrvl ?? d.intrvl,
+      };
+    });
+
     const allPrices = [...filteredData.map((d) => d.prc), ...(showJejuPrice ? jejuData.map((d) => d.prc) : [])];
     const maxPrice = d3.max(allPrices) as number;
     const range = [0, maxPrice * 1.1];
@@ -113,7 +126,7 @@ const MarketPriceLineChart = ({ priceData, quantityData, selectedPummok }: Props
 
     if (showJejuPrice && jejuData.length > 0) {
       marks.push(
-        Plot.line(jejuData, {
+        Plot.line(alignedJejuData, {
           x: "wk_id",
           y: "prc",
           stroke: "#FFC132",
@@ -121,7 +134,7 @@ const MarketPriceLineChart = ({ priceData, quantityData, selectedPummok }: Props
           curve: "catmull-rom",
           opacity: 1.0,
         }),
-        Plot.dot(jejuData, {
+        Plot.dot(alignedJejuData, {
           x: "wk_id",
           y: "prc",
           r: 5,
@@ -129,7 +142,7 @@ const MarketPriceLineChart = ({ priceData, quantityData, selectedPummok }: Props
           fillOpacity: 1,
         }),
         Plot.circle(
-          jejuData.filter((d) => d.lhldy_yn),
+          alignedJejuData.filter((d) => d.lhldy_yn),
           {
             x: "wk_id",
             y: "prc",
@@ -250,9 +263,11 @@ const MarketPriceLineChart = ({ priceData, quantityData, selectedPummok }: Props
       <div className="flex justify-between">
         <p className="ml-[4px] text-xl font-semibold text-white">제주도 및 전국 {selectedPummok} 가격 추이</p>
         <div className="flex items-center gap-4">
-          <Checkbox checked={showJejuPrice} onChange={(e) => setShowJejuPrice(e.target.checked)} style={{ color: "white" }}>
-            <span style={{ color: "white" }}>제주산 가격 표시</span>
-          </Checkbox>
+          {jejuData.length > 0 && (
+            <Checkbox checked={showJejuPrice} onChange={(e) => setShowJejuPrice(e.target.checked)} style={{ color: "white" }}>
+              <span style={{ color: "white" }}>제주산 가격 표시</span>
+            </Checkbox>
+          )}
           <HolidayLegend />
         </div>
       </div>

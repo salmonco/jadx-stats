@@ -146,8 +146,8 @@ const YearlyCountryExportInfo = () => {
             <YearlyExportLineChart yearlyData={groupedCountryYears} type={"totalAmount"} countryOptions={countryOptions} />
             <YearlyExportLineChart yearlyData={groupedCountryYears} type={"totalWeight"} countryOptions={countryOptions} />
           </ChartContainer>
-          <YearlyExportTable yearlyData={groupedCountryYears} type={"totalAmount"} countryOptions={countryOptions} />
-          <YearlyExportTable yearlyData={groupedCountryYears} type={"totalWeight"} countryOptions={countryOptions} />
+          <YearlyExportTable yearlyData={groupedCountryYears} type={"totalAmount"} countryOptions={countryOptions} selectedCountries={selectedCountries} />
+          <YearlyExportTable yearlyData={groupedCountryYears} type={"totalWeight"} countryOptions={countryOptions} selectedCountries={selectedCountries} />
         </div>
       }
     />

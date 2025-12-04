@@ -10,7 +10,7 @@ import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 import { MandarinTreeAgeDistributionFeatureCollection } from "../../layers/MandarinTreeAgeDistributionLayer";
 
 const keys = ["10년 이하", "10~19년", "20~29년", "30~39년", "40~49년", "50년 이상"];
-const treeAgeColors = ["#cef2e4", "#6cd7ad", "#2c9a6f", "#fed72f", "#fd6923", "#fd1a20"];
+const treeAgeColors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"];
 
 interface Props {
   selectedTargetYear: number;

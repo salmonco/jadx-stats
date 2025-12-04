@@ -12,7 +12,7 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
 
   #mapConstructor: new (mapOptions: MapOptions, title: string, tooltip?: React.ReactNode) => M;
   #listeners: Set<() => void> = new Set();
-  #mapPositions: Map<string, { x: number; y: number }> = new Map();
+  #mapPositions: Map<string, { x: number; y: number; width?: number; height?: number }> = new Map();
 
   constructor({
     title,
@@ -37,6 +37,7 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
     this.addMap = this.addMap.bind(this);
     this.removeMap = this.removeMap.bind(this);
     this.updateMapPosition = this.updateMapPosition.bind(this);
+    this.updateMapSize = this.updateMapSize.bind(this);
     this.getMapPosition = this.getMapPosition.bind(this);
     this.getLastMap = this.getLastMap.bind(this);
   }
@@ -81,7 +82,13 @@ class BackgroundMapList<M extends CommonBackgroundMap = CommonBackgroundMap> {
   }
 
   updateMapPosition(mapId: string, x: number, y: number) {
-    this.#mapPositions.set(mapId, { x, y });
+    const current = this.#mapPositions.get(mapId);
+    this.#mapPositions.set(mapId, { ...current, x, y });
+  }
+
+  updateMapSize(mapId: string, width: number, height: number) {
+    const current = this.#mapPositions.get(mapId);
+    this.#mapPositions.set(mapId, { ...current, x: current?.x || 0, y: current?.y || 0, width, height });
   }
 
   getMapById(mapId: string) {

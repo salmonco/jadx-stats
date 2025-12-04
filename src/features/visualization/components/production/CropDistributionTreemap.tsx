@@ -10,6 +10,8 @@ Object.entries(CROPS).forEach(([korean, english]) => {
   KOREAN_CROP_COLORS[korean] = CROP_COLORS[english];
 });
 
+const MAX_DISPLAY_ITEMS = 20;
+
 interface Props {
   chartData: { [crop: string]: { [region: string]: number } };
   isReportMode?: boolean;
@@ -38,7 +40,24 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
       const totalArea = Object.values(regions).reduce((sum, area) => sum + area, 0);
       totals.push({ crop, area: totalArea });
     });
-    return totals.sort((a, b) => b.area - a.area);
+    const sorted = totals.sort((a, b) => b.area - a.area);
+
+    // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+    const topItems = sorted.slice(0, MAX_DISPLAY_ITEMS);
+    const others = sorted.slice(MAX_DISPLAY_ITEMS);
+
+    if (others.length > 0) {
+      const othersSum = others.reduce((sum, item) => sum + item.area, 0);
+      return [
+        ...topItems,
+        {
+          crop: "기타",
+          area: othersSum,
+        },
+      ];
+    }
+
+    return topItems;
   }, [chartData]);
 
   const handleDownloadCsv = () => {
@@ -47,7 +66,15 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
       { title: "재배 면적(ha)", dataIndex: "area" },
     ];
 
-    const data = cropTotals.map((d) => ({
+    // 전체 데이터를 CSV로 다운로드
+    const allTotals: { crop: string; area: number }[] = [];
+    Object.entries(chartData).forEach(([crop, regions]) => {
+      const totalArea = Object.values(regions).reduce((sum, area) => sum + area, 0);
+      allTotals.push({ crop, area: totalArea });
+    });
+    const sorted = allTotals.sort((a, b) => b.area - a.area);
+
+    const data = sorted.map((d) => ({
       crop: d.crop,
       area: d.area.toFixed(1),
     }));
@@ -62,19 +89,26 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
 
     const root = d3.hierarchy({ children: cropTotals }).sum((d: any) => d.area);
 
-    const treemapLayout = d3.treemap().size([actualWidth, size.height]).padding(1);
+    // 텍스트를 위한 여백 추가
+    const padding = 10;
+    const treemapWidth = actualWidth - padding * 2;
+    const treemapContentHeight = size.height - padding * 2;
+
+    const treemapLayout = d3.treemap().size([treemapWidth, treemapContentHeight]).padding(1);
     treemapLayout(root);
 
     const svg = d3
       .create("svg")
       .attr("width", actualWidth)
       .attr("height", size.height)
-      .attr("viewBox", `0 0 ${actualWidth} ${size.height}`)
       .style("font", "10px sans-serif")
       .style("overflow", "visible")
       .style("background", isReportMode ? "transparent" : undefined);
 
-    const leaf = svg
+    // 전체 트리맵을 감싸는 그룹에 패딩 적용
+    const mainGroup = svg.append("g").attr("transform", `translate(${padding},${padding})`);
+
+    const leaf = mainGroup
       .selectAll("g")
       .data(root.leaves())
       .join("g")
@@ -82,22 +116,23 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
 
     leaf
       .append("rect")
-      .attr("fill", (d: d3.HierarchyRectangularNode<any>) => KOREAN_CROP_COLORS[d.data.crop] || "#999")
+      .attr("fill", (d: d3.HierarchyRectangularNode<any>) => (d.data.crop === "기타" ? "#808080" : KOREAN_CROP_COLORS[d.data.crop] || "#999"))
       .attr("width", (d: d3.HierarchyRectangularNode<any>) => d.x1 - d.x0)
       .attr("height", (d: d3.HierarchyRectangularNode<any>) => d.y1 - d.y0);
 
-    // Crop label
+    // 텍스트를 SVG에 직접 추가하여 클리핑 방지 (padding 적용)
     svg
       .selectAll(".treemap-label-crop")
       .data(root.leaves())
       .join("text")
       .attr("class", "treemap-label-crop")
-      .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
-      .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 - 5)
+      .attr("x", (d: d3.HierarchyRectangularNode<any>) => padding + d.x0 + (d.x1 - d.x0) / 2)
+      .attr("y", (d: d3.HierarchyRectangularNode<any>) => padding + d.y0 + (d.y1 - d.y0) / 2 - 5)
       .attr("text-anchor", "middle")
+      .attr("pointer-events", "none")
       .text((d: any) => d.data.crop)
       .attr("fill", isReportMode ? "black" : "white")
-      .style("font-size", "14px")
+      .style("font-size", "12px")
       .style("font-weight", "600");
 
     // Area label
@@ -106,9 +141,10 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
       .data(root.leaves())
       .join("text")
       .attr("class", "treemap-label-area")
-      .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
-      .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 + 15)
+      .attr("x", (d: d3.HierarchyRectangularNode<any>) => padding + d.x0 + (d.x1 - d.x0) / 2)
+      .attr("y", (d: d3.HierarchyRectangularNode<any>) => padding + d.y0 + (d.y1 - d.y0) / 2 + 15)
       .attr("text-anchor", "middle")
+      .attr("pointer-events", "none")
       .text((d: any) => `${d.data.area.toFixed(1)}ha`)
       .attr("fill", isReportMode ? "black" : "white")
       .style("font-size", "12px");

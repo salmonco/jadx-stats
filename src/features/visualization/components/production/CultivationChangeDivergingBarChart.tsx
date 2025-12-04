@@ -13,11 +13,13 @@ interface Props {
   isReportMode?: boolean;
 }
 
+const MAX_DISPLAY_ITEMS = 20;
+
 const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, viewType, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [size, setSize] = useState({ width: 800, height: 420 });
-  const barColor = viewType === "absolute" ? "#F48FB1" : viewType === "rate" ? "#7E57C2" : "#4DB6AC";
+  const barColor = viewType === "absolute" ? "#8B5CF6" : viewType === "rate" ? "#3B82F6" : "#10B981";
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -69,7 +71,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
 
     const actualWidth = isReportMode && containerRef.current.parentElement ? containerRef.current.parentElement.clientWidth : size.width;
 
-    const regionTotals = Object.entries(chartData)
+    const allRegions = Object.entries(chartData)
       .map(([region, products]) => {
         const match = (products as any[]).find((p) => p.crop_nm === selectedCrop);
         if (!match) return null;
@@ -96,7 +98,36 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
         return b.chg_cn - a.chg_cn;
       });
 
-    if (regionTotals.length === 0) return;
+    if (allRegions.length === 0) return;
+
+    // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+    const topItems = allRegions.slice(0, MAX_DISPLAY_ITEMS);
+    const others = allRegions.slice(MAX_DISPLAY_ITEMS);
+
+    let regionTotals = topItems;
+
+    if (others.length > 0) {
+      const othersAvgChgCn = others.reduce((sum, item) => sum + item.chg_cn, 0) / others.length;
+      const othersAvgChgPct = others.reduce((sum, item) => sum + item.chg_pct, 0) / others.length;
+      const othersAvgAreaStd = others.reduce((sum, item) => sum + item.area_std, 0) / others.length;
+      const othersAvgCurrentArea = others.reduce((sum, item) => sum + item.current_area, 0) / others.length;
+      const othersAvgPreviousArea = others.reduce((sum, item) => sum + item.previous_area, 0) / others.length;
+      const value = viewType === "absolute" ? othersAvgChgCn : viewType === "rate" ? othersAvgChgPct : othersAvgAreaStd;
+
+      regionTotals = [
+        ...topItems,
+        {
+          region: "기타",
+          chg_cn: othersAvgChgCn,
+          chg_pct: othersAvgChgPct,
+          area_std: othersAvgAreaStd,
+          current_area: othersAvgCurrentArea,
+          previous_area: othersAvgPreviousArea,
+          dx: value < 0 ? -5 : 5,
+          textAnchor: value < 0 ? "end" : "start",
+        },
+      ];
+    }
 
     const margin = { top: 0, right: 30, bottom: 27, left: 97 };
     const barHeight = regionTotals.length > 12 ? 32 : 48;
@@ -126,7 +157,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
             Plot.barX(regionTotals, {
               x: "previous_area",
               y: "region",
-              fill: "#7E57C2",
+              fill: "#8B5CF6",
               insetTop: barInset,
               insetBottom: barInset,
             }),
@@ -143,13 +174,13 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
             Plot.line(regionTotals, {
               x: "current_area",
               y: "region",
-              stroke: "#FF6B6B",
+              stroke: "#EF4444",
               strokeWidth: 3,
             }),
             Plot.dot(regionTotals, {
               x: "current_area",
               y: "region",
-              fill: "#FF6B6B",
+              fill: "#EF4444",
               r: 5,
             }),
             Plot.text(regionTotals, {
@@ -263,6 +294,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
       { title: "변화율(%)", dataIndex: "change_rate" },
     ];
 
+    // 전체 데이터를 CSV로 다운로드
     const regionTotals = Object.entries(chartData)
       .map(([region, products]) => {
         const match = (products as any[]).find((p) => p.crop_nm === selectedCrop);
