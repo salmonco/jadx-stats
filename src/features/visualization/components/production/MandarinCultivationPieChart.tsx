@@ -10,6 +10,8 @@ interface Props {
   isReportMode?: boolean;
 }
 
+const MAX_DISPLAY_ITEMS = 20;
+
 const MandarinCultivationPieChart = ({ chartData, selectedVariety, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -35,30 +37,50 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety, isReportMode 
   const pieData = useMemo(() => {
     if (!chartData) return [];
 
-    return Object.entries(chartData)
+    const allRegions = Object.entries(chartData)
       .map(([region, products]) => {
         const match = (products as any[]).find((p) => p.prdct_nm === selectedVariety);
         return match ? { region, total_area: match.total_area } : null;
       })
-      .filter((d) => d !== null) as { region: string; total_area: number }[];
+      .filter((d) => d !== null)
+      .sort((a, b) => b.total_area - a.total_area) as { region: string; total_area: number }[];
+
+    // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+    const topItems = allRegions.slice(0, MAX_DISPLAY_ITEMS);
+    const others = allRegions.slice(MAX_DISPLAY_ITEMS);
+
+    if (others.length > 0) {
+      const othersSum = others.reduce((sum, item) => sum + item.total_area, 0);
+      return [
+        ...topItems,
+        {
+          region: "기타",
+          total_area: othersSum,
+        },
+      ];
+    }
+
+    return topItems;
   }, [chartData, selectedVariety]);
 
   const handleDownloadCsv = () => {
-    if (!pieData.length) return;
-
-    const sortedData = [...pieData].sort((a, b) => b.total_area - a.total_area);
+    if (!chartData) return;
 
     const columns: CsvColumn[] = [
       { title: "지역", dataIndex: "region" },
       { title: "총 재배 면적(ha)", dataIndex: "total_area_ha" },
     ];
 
-    const data = sortedData.map((d) => ({
-      region: d.region,
-      total_area_ha: d.total_area / 10_000,
-    }));
+    // 전체 데이터를 CSV로 다운로드
+    const allData = Object.entries(chartData)
+      .map(([region, products]) => {
+        const match = (products as any[]).find((p) => p.prdct_nm === selectedVariety);
+        return match ? { region: region, total_area_ha: match.total_area / 10_000 } : null;
+      })
+      .filter((d) => d !== null)
+      .sort((a, b) => b.total_area_ha - a.total_area_ha);
 
-    downloadCsv(columns, data, "지역별_재배면적_원형.csv");
+    downloadCsv(columns, allData, "지역별_재배면적_원형.csv");
   };
 
   useEffect(() => {
@@ -73,7 +95,10 @@ const MandarinCultivationPieChart = ({ chartData, selectedVariety, isReportMode 
 
     const group = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    const pieDataSorted = [...pieData].sort((a, b) => b.total_area - a.total_area);
+    // "기타"를 제외하고 정렬한 후, "기타"를 맨 마지막에 추가
+    const othersItem = pieData.find((d) => d.region === "기타");
+    const nonOthersData = pieData.filter((d) => d.region !== "기타").sort((a, b) => b.total_area - a.total_area);
+    const pieDataSorted = othersItem ? [...nonOthersData, othersItem] : nonOthersData;
 
     const color = d3
       .scaleOrdinal<string, string>()
