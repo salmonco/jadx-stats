@@ -10,6 +10,8 @@ Object.entries(CROPS).forEach(([korean, english]) => {
   KOREAN_CROP_COLORS[korean] = CROP_COLORS[english];
 });
 
+const MAX_DISPLAY_ITEMS = 20;
+
 interface Props {
   chartData: { [crop: string]: { [region: string]: number } };
   isReportMode?: boolean;
@@ -38,7 +40,24 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
       const totalArea = Object.values(regions).reduce((sum, area) => sum + area, 0);
       totals.push({ crop, area: totalArea });
     });
-    return totals.sort((a, b) => b.area - a.area);
+    const sorted = totals.sort((a, b) => b.area - a.area);
+
+    // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+    const topItems = sorted.slice(0, MAX_DISPLAY_ITEMS);
+    const others = sorted.slice(MAX_DISPLAY_ITEMS);
+
+    if (others.length > 0) {
+      const othersSum = others.reduce((sum, item) => sum + item.area, 0);
+      return [
+        ...topItems,
+        {
+          crop: "기타",
+          area: othersSum,
+        },
+      ];
+    }
+
+    return topItems;
   }, [chartData]);
 
   const handleDownloadCsv = () => {
@@ -47,7 +66,15 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
       { title: "재배 면적(ha)", dataIndex: "area" },
     ];
 
-    const data = cropTotals.map((d) => ({
+    // 전체 데이터를 CSV로 다운로드
+    const allTotals: { crop: string; area: number }[] = [];
+    Object.entries(chartData).forEach(([crop, regions]) => {
+      const totalArea = Object.values(regions).reduce((sum, area) => sum + area, 0);
+      allTotals.push({ crop, area: totalArea });
+    });
+    const sorted = allTotals.sort((a, b) => b.area - a.area);
+
+    const data = sorted.map((d) => ({
       crop: d.crop,
       area: d.area.toFixed(1),
     }));
@@ -82,7 +109,7 @@ const CropDistributionTreemap = ({ chartData, isReportMode }: Props) => {
 
     leaf
       .append("rect")
-      .attr("fill", (d: d3.HierarchyRectangularNode<any>) => KOREAN_CROP_COLORS[d.data.crop] || "#999")
+      .attr("fill", (d: d3.HierarchyRectangularNode<any>) => (d.data.crop === "기타" ? "#808080" : KOREAN_CROP_COLORS[d.data.crop] || "#999"))
       .attr("width", (d: d3.HierarchyRectangularNode<any>) => d.x1 - d.x0)
       .attr("height", (d: d3.HierarchyRectangularNode<any>) => d.y1 - d.y0);
 
