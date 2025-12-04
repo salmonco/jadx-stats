@@ -14,6 +14,8 @@ interface Props {
   isReportMode?: boolean;
 }
 
+const MAX_DISPLAY_ITEMS = 20;
+
 const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, selectedDisaster, selectedCropPummok, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -36,9 +38,9 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
     return () => observer.disconnect();
   }, []);
 
-  const pieData = useMemo(() => {
+  const { pieData, allData } = useMemo(() => {
     if (!features?.features || features.features.length === 0) {
-      return [];
+      return { pieData: [], allData: [] };
     }
 
     const data: { region: string; area: number }[] = [];
@@ -54,18 +56,43 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
       }
     });
 
-    return data.sort((a, b) => b.area - a.area);
+    const sorted = data.sort((a, b) => b.area - a.area);
+
+    // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+    const topItems = sorted.slice(0, MAX_DISPLAY_ITEMS);
+    const others = sorted.slice(MAX_DISPLAY_ITEMS);
+
+    let displayData = topItems;
+
+    if (others.length > 0) {
+      const othersSum = others.reduce((sum, item) => sum + item.area, 0);
+      displayData = [
+        ...topItems,
+        {
+          region: "기타",
+          area: othersSum,
+        },
+      ];
+    }
+
+    // "기타"를 제외하고 정렬한 후, "기타"를 맨 마지막에 추가
+    const othersItem = displayData.find((d) => d.region === "기타");
+    const nonOthersData = displayData.filter((d) => d.region !== "기타");
+    const finalData = othersItem ? [...nonOthersData, othersItem] : nonOthersData;
+
+    return { pieData: finalData, allData: sorted };
   }, [features]);
 
   const handleDownloadCsv = () => {
-    if (!pieData.length) return;
+    if (!allData.length) return;
 
     const columns: CsvColumn[] = [
       { title: "지역", dataIndex: "region" },
       { title: "피해 면적(ha)", dataIndex: "area" },
     ];
 
-    const data = pieData.map((d) => ({
+    // 전체 데이터를 CSV로 다운로드
+    const data = allData.map((d) => ({
       region: d.region,
       area: d.area.toLocaleString("ko-KR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
     }));

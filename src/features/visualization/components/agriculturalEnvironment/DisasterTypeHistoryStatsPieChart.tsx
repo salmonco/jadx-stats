@@ -14,6 +14,8 @@ interface Props {
   isReportMode?: boolean;
 }
 
+const MAX_DISPLAY_ITEMS = 20;
+
 const DisasterTypeHistoryStatsPieChart = ({ features, startDate, endDate, selectedDisaster, selectedCropPummok, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -36,9 +38,9 @@ const DisasterTypeHistoryStatsPieChart = ({ features, startDate, endDate, select
     return () => observer.disconnect();
   }, []);
 
-  const pieData = useMemo(() => {
+  const { pieData, allData } = useMemo(() => {
     if (!features?.features || features.features.length === 0) {
-      return [];
+      return { pieData: [], allData: [] };
     }
 
     const data: { region: string; households: number }[] = [];
@@ -54,18 +56,43 @@ const DisasterTypeHistoryStatsPieChart = ({ features, startDate, endDate, select
       }
     });
 
-    return data.sort((a, b) => b.households - a.households);
+    const sorted = data.sort((a, b) => b.households - a.households);
+
+    // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+    const topItems = sorted.slice(0, MAX_DISPLAY_ITEMS);
+    const others = sorted.slice(MAX_DISPLAY_ITEMS);
+
+    let displayData = topItems;
+
+    if (others.length > 0) {
+      const othersSum = others.reduce((sum, item) => sum + item.households, 0);
+      displayData = [
+        ...topItems,
+        {
+          region: "기타",
+          households: othersSum,
+        },
+      ];
+    }
+
+    // "기타"를 제외하고 정렬한 후, "기타"를 맨 마지막에 추가
+    const othersItem = displayData.find((d) => d.region === "기타");
+    const nonOthersData = displayData.filter((d) => d.region !== "기타");
+    const finalData = othersItem ? [...nonOthersData, othersItem] : nonOthersData;
+
+    return { pieData: finalData, allData: sorted };
   }, [features]);
 
   const handleDownloadCsv = () => {
-    if (!pieData.length) return;
+    if (!allData.length) return;
 
     const columns: CsvColumn[] = [
       { title: "지역", dataIndex: "region" },
       { title: "피해 농가수(개)", dataIndex: "households" },
     ];
 
-    const data = pieData.map((d) => ({
+    // 전체 데이터를 CSV로 다운로드
+    const data = allData.map((d) => ({
       region: d.region,
       households: d.households.toLocaleString(),
     }));
