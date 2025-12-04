@@ -14,6 +14,9 @@ interface Props {
   isReportMode?: boolean;
 }
 
+const MAX_DISPLAY_ITEMS = 20;
+const BAR_HEIGHT_THRESHOLD = 12;
+
 const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode }: Props) => {
   const mapList = useMapList<AgingStatusMap>();
   const firstMap = mapList.getFirstMap();
@@ -73,9 +76,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       return;
     }
 
-    const actualWidth = isReportMode && containerRef.current.parentElement 
-      ? containerRef.current.parentElement.clientWidth 
-      : size.width;
+    const actualWidth = isReportMode && containerRef.current.parentElement ? containerRef.current.parentElement.clientWidth : size.width;
 
     const margin = {
       top: 0,
@@ -83,15 +84,37 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       bottom: 30,
       left: firstMap?.getSelectedRegionLevel() === "ri" ? 80 : 55,
     };
-    const barHeight = chartData.length > 12 ? 32 : 48;
+    const barHeight = firstMap?.getSelectedRegionLevel() === "ri" ? 4 : chartData.length > BAR_HEIGHT_THRESHOLD ? 32 : 48;
     const calculatedChartHeight = chartData.length * barHeight + margin.top + margin.bottom;
     const treemapHeight = isReportMode ? Math.min(550, calculatedChartHeight) : size.height;
 
     if (category === "count") {
       // 트리맵 차트
-      const root = d3.hierarchy({ children: chartData }).sum((d: any) => d.count);
+      // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+      const sortedData = [...chartData].sort((a, b) => b.count - a.count);
+      const topItems = sortedData.slice(0, MAX_DISPLAY_ITEMS);
+      const others = sortedData.slice(MAX_DISPLAY_ITEMS);
 
-      const treemapLayout = d3.treemap().size([actualWidth, treemapHeight]).padding(1);
+      const processedData = [...topItems];
+
+      if (others.length > 0) {
+        const othersSum = others.reduce((sum, item) => sum + item.count, 0);
+        processedData.push({
+          region: "기타",
+          label: "기타",
+          avg_age: 0,
+          count: othersSum,
+        });
+      }
+
+      const root = d3.hierarchy({ children: processedData }).sum((d: any) => d.count);
+
+      // 텍스트를 위한 여백 추가
+      const padding = 10;
+      const treemapWidth = actualWidth - padding * 2;
+      const treemapContentHeight = treemapHeight - padding * 2;
+
+      const treemapLayout = d3.treemap().size([treemapWidth, treemapContentHeight]).padding(1);
 
       treemapLayout(root);
 
@@ -99,14 +122,16 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
 
       const svg = d3
         .create("svg")
-        .attr("width", size.width)
+        .attr("width", actualWidth)
         .attr("height", treemapHeight)
-        .attr("viewBox", `0 0 ${size.width} ${treemapHeight}`)
         .style("font", "10px sans-serif")
         .style("overflow", "visible")
         .style("background", isReportMode ? "transparent" : undefined);
 
-      const leaf = svg
+      // 전체 트리맵을 감싸는 그룹에 패딩 적용
+      const mainGroup = svg.append("g").attr("transform", `translate(${padding},${padding})`);
+
+      const leaf = mainGroup
         .selectAll("g")
         .data(root.leaves())
         .join("g")
@@ -118,33 +143,37 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
         .attr("width", (d: d3.HierarchyRectangularNode<any>) => d.x1 - d.x0)
         .attr("height", (d: d3.HierarchyRectangularNode<any>) => d.y1 - d.y0);
 
+      // 텍스트를 SVG에 직접 추가하여 클리핑 방지 (padding 적용)
       svg
         .selectAll(".treemap-label-region")
         .data(root.leaves())
         .join("text")
         .attr("class", "treemap-label-region")
-        .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
-        .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 - 5)
+        .attr("x", (d: d3.HierarchyRectangularNode<any>) => padding + d.x0 + (d.x1 - d.x0) / 2)
+        .attr("y", (d: d3.HierarchyRectangularNode<any>) => padding + d.y0 + (d.y1 - d.y0) / 2 - 5)
         .attr("text-anchor", "middle")
+        .attr("pointer-events", "none")
         .text((d: any) => d.data.label)
-        .attr("fill", isReportMode ? "black" : "white") // Conditional text color
-        .style("font-size", "12px");
+        .attr("fill", isReportMode ? "black" : "white")
+        .style("font-size", "12px")
+        .style("font-weight", "600");
 
       svg
         .selectAll(".treemap-label-count")
         .data(root.leaves())
         .join("text")
         .attr("class", "treemap-label-count")
-        .attr("x", (d: d3.HierarchyRectangularNode<any>) => d.x0 + (d.x1 - d.x0) / 2)
-        .attr("y", (d: d3.HierarchyRectangularNode<any>) => d.y0 + (d.y1 - d.y0) / 2 + 10)
+        .attr("x", (d: d3.HierarchyRectangularNode<any>) => padding + d.x0 + (d.x1 - d.x0) / 2)
+        .attr("y", (d: d3.HierarchyRectangularNode<any>) => padding + d.y0 + (d.y1 - d.y0) / 2 + 10)
         .attr("text-anchor", "middle")
+        .attr("pointer-events", "none")
         .text((d: any) => `${d.data.count.toLocaleString()}개`)
-        .attr("fill", isReportMode ? "black" : "white") // Conditional text color
+        .attr("fill", isReportMode ? "black" : "white")
         .style("font-size", "12px");
       containerRef.current.innerHTML = "";
       containerRef.current.appendChild(svg.node()!);
     } else {
-      const regionTotals = chartData
+      const allRegionTotals = chartData
         .map((d) => ({
           region: d.region,
           label: d.label,
@@ -153,21 +182,37 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
         .filter((d) => typeof d.value === "number" && !isNaN(d.value))
         .sort((a, b) => b.value - a.value);
 
+      // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+      const topItems = allRegionTotals.slice(0, MAX_DISPLAY_ITEMS);
+      const others = allRegionTotals.slice(MAX_DISPLAY_ITEMS);
+
+      const regionTotals =
+        others.length > 0
+          ? [
+              ...topItems,
+              {
+                region: "기타",
+                label: "기타",
+                value: others.reduce((sum, item) => sum + item.value, 0) / others.length,
+              },
+            ]
+          : topItems;
+
       const barInset = regionTotals.length === 1 ? 110 : regionTotals.length === 2 ? 40 : regionTotals.length === 4 ? 15 : 7;
 
       const maxAbs = d3.max(regionTotals, (d) => Math.abs(d.value)) || 1;
       const xMin = category === "avg_age" ? 50 : 0;
       const xDomain = category === "avg_age" ? [xMin, maxAbs * 1.035] : [xMin, maxAbs * 1.08];
 
-      const barColor = category === "avg_age" ? "#F59E0B" : "#EA580C";
+      const barColor = category === "avg_age" ? "#3B82F6" : "#10B981";
 
       const chart = Plot.plot({
         width: actualWidth,
-        height: isReportMode ? calculatedChartHeight : regionTotals.length > 11 ? calculatedChartHeight : size.height,
+        height: isReportMode ? calculatedChartHeight : regionTotals.length > BAR_HEIGHT_THRESHOLD ? calculatedChartHeight : size.height,
         marginTop: margin.top,
         marginRight: margin.right,
         marginBottom: margin.bottom,
-        marginLeft: regionTotals.length > 12 ? margin.left : 55,
+        marginLeft: regionTotals.length > BAR_HEIGHT_THRESHOLD ? margin.left : 55,
         x: {
           grid: true,
           label: "",

@@ -3,12 +3,15 @@ import * as d3 from "d3";
 import { Download } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import InfoTooltip from "~/components/InfoTooltip";
+import { getColor } from "~/maps/constants/mandarinCultivationInfo";
 import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface Props {
   chartData: any;
   isReportMode?: boolean;
 }
+
+const MAX_DISPLAY_ITEMS = 20;
 
 const SimulatorResult = ({ chartData, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,6 +64,29 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
     const filteredData = chartData.filter((d: any) => d.value > 0);
     if (filteredData.length === 0) return;
 
+    // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+    const topItems = filteredData.slice(0, MAX_DISPLAY_ITEMS);
+    const others = filteredData.slice(MAX_DISPLAY_ITEMS);
+
+    let displayData = topItems;
+
+    if (others.length > 0) {
+      const othersSum = others.reduce((sum: number, item: any) => sum + item.value, 0);
+      displayData = [
+        ...topItems,
+        {
+          region: "기타",
+          label: "기타",
+          value: othersSum,
+        },
+      ];
+    }
+
+    // "기타"를 제외하고 정렬한 후, "기타"를 맨 마지막에 추가
+    const othersItem = displayData.find((d: any) => d.label === "기타");
+    const nonOthersData = displayData.filter((d: any) => d.label !== "기타");
+    const sortedDisplayData = othersItem ? [...nonOthersData, othersItem] : nonOthersData;
+
     const { width, height } = size;
     const actualWidth = width > 0 ? width : isReportMode ? 1200 : 800;
 
@@ -71,8 +97,6 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
     svg.attr("width", actualWidth).attr("height", height);
 
     const group = svg.append("g").attr("transform", `translate(${actualWidth / 2}, ${height / 2})`);
-
-    const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
     const pie = d3
       .pie<any>()
@@ -90,10 +114,10 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
 
     const paths = group
       .selectAll("path")
-      .data(pie(filteredData))
+      .data(pie(sortedDisplayData))
       .join("path")
       .attr("d", arc)
-      .attr("fill", (d, i) => colorScale(i.toString()))
+      .attr("fill", (_, i) => getColor(i))
       .attr("stroke", "#a9a9a9")
       .attr("stroke-width", 1)
       .style("cursor", "pointer");
@@ -125,7 +149,7 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
         d3.select(this).attr("fill-opacity", 1);
       });
 
-    const totalValue = filteredData.reduce((sum: number, d: any) => sum + d.value, 0);
+    const totalValue = displayData.reduce((sum: number, d: any) => sum + d.value, 0);
     group
       .append("text")
       .attr("text-anchor", "middle")
@@ -158,7 +182,8 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
     return null;
   }
 
-  const filteredCount = chartData.filter((d: any) => d.value > 0).length;
+  const filteredData = chartData.filter((d: any) => d.value > 0);
+  const filteredCount = filteredData.length;
 
   if (filteredCount === 0) {
     return (
@@ -172,7 +197,7 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
     <div className={`flex h-full w-full flex-col ${isReportMode ? "text-black" : "text-white"}`}>
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-[10px]">
-          <p className="text-xl font-semibold">지역별 경제수령 면적 {filteredCount === 20 && "(상위 20개 지역)"}</p>
+          <p className="text-xl font-semibold">지역별 경제수령 면적 {filteredCount > MAX_DISPLAY_ITEMS && "(상위 20개 지역)"}</p>
           {!isReportMode && (
             <InfoTooltip
               title="지역별 경제수령 면적이란?"

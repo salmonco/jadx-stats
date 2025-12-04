@@ -49,8 +49,7 @@ const MandarinTreeAgeDistributionChart = ({ map, isReportMode }: Props) => {
           value: area20_29 + area30_39 * 0.3,
         };
       })
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 20);
+      .sort((a, b) => b.value - a.value);
 
     return data;
   }, [features, map.getSelectedRegionLevel(), map.selectedCropGroup, map.selectedCropDetailGroup]);

@@ -10,7 +10,7 @@ Object.entries(CROPS).forEach(([korean, english]) => {
   KOREAN_CROP_COLORS[korean] = CROP_COLORS[english];
 });
 
-const TOP_CROPS_LIMIT = 12;
+const TOP_CROPS_LIMIT = 20;
 
 interface Props {
   chartData: { [crop: string]: { [region: string]: number } };

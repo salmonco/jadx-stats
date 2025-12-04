@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { Dayjs } from "dayjs";
 import { Download } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getColor } from "~/maps/constants/mandarinCultivationInfo";
 import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface Props {
@@ -13,6 +14,8 @@ interface Props {
   selectedCropPummok: string;
   isReportMode?: boolean;
 }
+
+const MAX_DISPLAY_ITEMS = 20;
 
 const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, selectedDisaster, selectedCropPummok, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -36,9 +39,9 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
     return () => observer.disconnect();
   }, []);
 
-  const pieData = useMemo(() => {
+  const { pieData, allData } = useMemo(() => {
     if (!features?.features || features.features.length === 0) {
-      return [];
+      return { pieData: [], allData: [] };
     }
 
     const data: { region: string; area: number }[] = [];
@@ -54,18 +57,43 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
       }
     });
 
-    return data.sort((a, b) => b.area - a.area);
+    const sorted = data.sort((a, b) => b.area - a.area);
+
+    // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+    const topItems = sorted.slice(0, MAX_DISPLAY_ITEMS);
+    const others = sorted.slice(MAX_DISPLAY_ITEMS);
+
+    let displayData = topItems;
+
+    if (others.length > 0) {
+      const othersSum = others.reduce((sum, item) => sum + item.area, 0);
+      displayData = [
+        ...topItems,
+        {
+          region: "기타",
+          area: othersSum,
+        },
+      ];
+    }
+
+    // "기타"를 제외하고 정렬한 후, "기타"를 맨 마지막에 추가
+    const othersItem = displayData.find((d) => d.region === "기타");
+    const nonOthersData = displayData.filter((d) => d.region !== "기타");
+    const finalData = othersItem ? [...nonOthersData, othersItem] : nonOthersData;
+
+    return { pieData: finalData, allData: sorted };
   }, [features]);
 
   const handleDownloadCsv = () => {
-    if (!pieData.length) return;
+    if (!allData.length) return;
 
     const columns: CsvColumn[] = [
       { title: "지역", dataIndex: "region" },
       { title: "피해 면적(ha)", dataIndex: "area" },
     ];
 
-    const data = pieData.map((d) => ({
+    // 전체 데이터를 CSV로 다운로드
+    const data = allData.map((d) => ({
       region: d.region,
       area: d.area.toLocaleString("ko-KR", { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
     }));
@@ -85,11 +113,6 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
 
     const group = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    const color = d3
-      .scaleOrdinal<string, string>()
-      .domain(pieData.map((d) => d.region))
-      .range(d3.schemeCategory10);
-
     const pie = d3
       .pie<{ region: string; area: number }>()
       .sort(null)
@@ -106,7 +129,7 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
       .data(pie(pieData))
       .join("path")
       .attr("d", arc)
-      .attr("fill", (d) => color(d.data.region))
+      .attr("fill", (_, i) => getColor(i))
       .attr("stroke", "#a9a9a9")
       .attr("stroke-width", 1)
       .style("cursor", "pointer");
