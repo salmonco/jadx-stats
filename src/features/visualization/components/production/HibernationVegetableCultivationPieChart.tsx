@@ -11,6 +11,8 @@ interface Props {
   isReportMode?: boolean;
 }
 
+const MAX_DISPLAY_ITEMS = 20;
+
 const HibernationVegetableCultivationPieChart = ({ chartData, selectedCrop, year, isReportMode }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -36,30 +38,50 @@ const HibernationVegetableCultivationPieChart = ({ chartData, selectedCrop, year
   const pieData = useMemo(() => {
     if (!chartData) return [];
 
-    return Object.entries(chartData)
+    const allRegions = Object.entries(chartData)
       .map(([region, products]) => {
         const match = (products as any[]).find((p) => p.crop_nm === selectedCrop);
         return match ? { region, area: match.area_std / 10_000 } : null;
       })
-      .filter((d) => d !== null) as { region: string; area: number }[];
+      .filter((d) => d !== null)
+      .sort((a, b) => b.area - a.area) as { region: string; area: number }[];
+
+    // 상위 MAX_DISPLAY_ITEMS개만 표시하고 나머지는 기타로 묶기
+    const topItems = allRegions.slice(0, MAX_DISPLAY_ITEMS);
+    const others = allRegions.slice(MAX_DISPLAY_ITEMS);
+
+    if (others.length > 0) {
+      const othersSum = others.reduce((sum, item) => sum + item.area, 0);
+      return [
+        ...topItems,
+        {
+          region: "기타",
+          area: othersSum,
+        },
+      ];
+    }
+
+    return topItems;
   }, [chartData, selectedCrop]);
 
   const handleDownloadCsv = () => {
-    if (!pieData.length) return;
-
-    const sortedData = [...pieData].sort((a, b) => b.area - a.area);
+    if (!chartData) return;
 
     const columns: CsvColumn[] = [
       { title: "지역", dataIndex: "region" },
       { title: `${year}년 재배면적(ha)`, dataIndex: "area" },
     ];
 
-    const data = sortedData.map((d) => ({
-      region: d.region,
-      area: d.area.toFixed(1),
-    }));
+    // 전체 데이터를 CSV로 다운로드
+    const allData = Object.entries(chartData)
+      .map(([region, products]) => {
+        const match = (products as any[]).find((p) => p.crop_nm === selectedCrop);
+        return match ? { region, area: (match.area_std / 10_000).toFixed(1) } : null;
+      })
+      .filter((d) => d !== null)
+      .sort((a, b) => parseFloat(b.area) - parseFloat(a.area));
 
-    downloadCsv(columns, data, `${selectedCrop}_지역별_재배면적_${year}.csv`);
+    downloadCsv(columns, allData, `${selectedCrop}_지역별_재배면적_${year}.csv`);
   };
 
   useEffect(() => {
@@ -74,7 +96,10 @@ const HibernationVegetableCultivationPieChart = ({ chartData, selectedCrop, year
 
     const group = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    const pieDataSorted = [...pieData].sort((a, b) => b.area - a.area);
+    // "기타"를 제외하고 정렬한 후, "기타"를 맨 마지막에 추가
+    const othersItem = pieData.find((d) => d.region === "기타");
+    const nonOthersData = pieData.filter((d) => d.region !== "기타").sort((a, b) => b.area - a.area);
+    const pieDataSorted = othersItem ? [...nonOthersData, othersItem] : nonOthersData;
 
     const color = d3
       .scaleOrdinal<string, string>()
