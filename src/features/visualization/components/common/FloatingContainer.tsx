@@ -1,7 +1,7 @@
 import { useState } from "react";
+import FloatingFilterContainer from "~/features/visualization/components/common/FloatingFilterContainer";
 import { VisualType } from "~/maps/constants/visualizationSetting";
 import DataVisualizationButton from "./DataVisualizationButton";
-import FilterContainer from "./FilterContainer";
 import VisualizationSettingContainer from "./VisualizationSettingContainer";
 
 export interface FloatingContainerProps {
@@ -36,9 +36,9 @@ const FloatingContainer = ({
       {/* 필터 컨테이너 영역 */}
       {filter && (
         <div className="absolute left-4 top-16 w-[220px]">
-          <FilterContainer isFixed={!!visualizationSetting} getPopupContainer={getPopupContainer}>
+          <FloatingFilterContainer isFixed={!!visualizationSetting} getPopupContainer={getPopupContainer}>
             {filter}
-          </FilterContainer>
+          </FloatingFilterContainer>
         </div>
       )}
 
