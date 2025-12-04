@@ -73,9 +73,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       return;
     }
 
-    const actualWidth = isReportMode && containerRef.current.parentElement 
-      ? containerRef.current.parentElement.clientWidth 
-      : size.width;
+    const actualWidth = isReportMode && containerRef.current.parentElement ? containerRef.current.parentElement.clientWidth : size.width;
 
     const margin = {
       top: 0,
@@ -83,13 +81,30 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       bottom: 30,
       left: firstMap?.getSelectedRegionLevel() === "ri" ? 80 : 55,
     };
-    const barHeight = chartData.length > 12 ? 32 : 48;
+    const barHeight = firstMap?.getSelectedRegionLevel() === "ri" ? 4 : chartData.length > 12 ? 32 : 48;
     const calculatedChartHeight = chartData.length * barHeight + margin.top + margin.bottom;
     const treemapHeight = isReportMode ? Math.min(550, calculatedChartHeight) : size.height;
 
     if (category === "count") {
       // 트리맵 차트
-      const root = d3.hierarchy({ children: chartData }).sum((d: any) => d.count);
+      // 상위 20개만 표시하고 나머지는 기타로 묶기
+      const sortedData = [...chartData].sort((a, b) => b.count - a.count);
+      const top20 = sortedData.slice(0, 20);
+      const others = sortedData.slice(20);
+
+      const processedData = [...top20];
+
+      if (others.length > 0) {
+        const othersSum = others.reduce((sum, item) => sum + item.count, 0);
+        processedData.push({
+          region: "기타",
+          label: "기타",
+          avg_age: 0,
+          count: othersSum,
+        });
+      }
+
+      const root = d3.hierarchy({ children: processedData }).sum((d: any) => d.count);
 
       const treemapLayout = d3.treemap().size([actualWidth, treemapHeight]).padding(1);
 
@@ -144,7 +159,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       containerRef.current.innerHTML = "";
       containerRef.current.appendChild(svg.node()!);
     } else {
-      const regionTotals = chartData
+      const allRegionTotals = chartData
         .map((d) => ({
           region: d.region,
           label: d.label,
@@ -152,6 +167,22 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
         }))
         .filter((d) => typeof d.value === "number" && !isNaN(d.value))
         .sort((a, b) => b.value - a.value);
+
+      // 상위 20개만 표시하고 나머지는 기타로 묶기
+      const top20 = allRegionTotals.slice(0, 20);
+      const others = allRegionTotals.slice(20);
+
+      const regionTotals =
+        others.length > 0
+          ? [
+              ...top20,
+              {
+                region: "기타",
+                label: "기타",
+                value: others.reduce((sum, item) => sum + item.value, 0) / others.length,
+              },
+            ]
+          : top20;
 
       const barInset = regionTotals.length === 1 ? 110 : regionTotals.length === 2 ? 40 : regionTotals.length === 4 ? 15 : 7;
 
@@ -163,7 +194,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
 
       const chart = Plot.plot({
         width: actualWidth,
-        height: isReportMode ? calculatedChartHeight : regionTotals.length > 11 ? calculatedChartHeight : size.height,
+        height: isReportMode ? calculatedChartHeight : regionTotals.length > 12 ? calculatedChartHeight : size.height,
         marginTop: margin.top,
         marginRight: margin.right,
         marginBottom: margin.bottom,
