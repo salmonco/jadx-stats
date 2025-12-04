@@ -46,8 +46,11 @@ const BackgroundMapWrapper = ({ maps, onClickFullScreen, getPopupContainer }: Ba
                 mapId={map.mapId}
                 initialX={position.x}
                 initialY={position.y}
+                initialWidth={position.width}
+                initialHeight={position.height}
                 onClose={mapList.removeMap}
                 onDrag={mapList.updateMapPosition}
+                onResize={mapList.updateMapSize}
                 containerRef={containerRef}
               >
                 <MapRenderer map={map} onClickFullScreen={onClickFullScreen} getPopupContainer={getPopupContainer} />
