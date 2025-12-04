@@ -20,7 +20,7 @@ const FloatingFilterContainer = ({ children, isFixed = false, getPopupContainer 
         </button>
       </div>
       {isExpanded && (
-        <div className="scrollbar-hide flex max-h-[320px] flex-col gap-3 overflow-y-auto px-4 py-3">
+        <div className="scrollbar-hide flex max-h-[420px] flex-col gap-3 overflow-y-auto px-4 py-3 3xl:max-h-[520px] 4xl:max-h-[620px]">
           {React.Children.map(children, (child) => {
             if (React.isValidElement(child) && child.type !== React.Fragment) {
               return React.cloneElement(child, { getPopupContainer } as { getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement });

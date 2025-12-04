@@ -18,7 +18,7 @@ const BackgroundMapWrapper = ({ maps, onClickFullScreen, getPopupContainer }: Ba
   const isFixedLayout = maps.length <= 2;
 
   return (
-    <div ref={containerRef} className="relative flex h-[85%] min-h-[750px] 3xl:min-h-[950px] 4xl:min-h-[1100px]">
+    <div ref={containerRef} className="relative flex h-[85%] min-h-[850px] 3xl:min-h-[1050px] 4xl:min-h-[1200px]">
       {isFixedLayout ? (
         <>
           {maps.map((map) => (
