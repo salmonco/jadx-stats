@@ -204,7 +204,7 @@ const AgingStatusDivergingBarChart = ({ title, category, chartData, isReportMode
       const xMin = category === "avg_age" ? 50 : 0;
       const xDomain = category === "avg_age" ? [xMin, maxAbs * 1.035] : [xMin, maxAbs * 1.08];
 
-      const barColor = category === "avg_age" ? "#F59E0B" : "#EA580C";
+      const barColor = category === "avg_age" ? "#3B82F6" : "#10B981";
 
       const chart = Plot.plot({
         width: actualWidth,

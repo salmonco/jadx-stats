@@ -2,6 +2,7 @@ import { Button } from "antd";
 import * as d3 from "d3";
 import { Download } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getColor } from "~/maps/constants/mandarinCultivationInfo";
 import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface Props {
@@ -101,11 +102,6 @@ const HibernationVegetableCultivationPieChart = ({ chartData, selectedCrop, year
     const nonOthersData = pieData.filter((d) => d.region !== "기타").sort((a, b) => b.area - a.area);
     const pieDataSorted = othersItem ? [...nonOthersData, othersItem] : nonOthersData;
 
-    const color = d3
-      .scaleOrdinal<string, string>()
-      .domain(pieData.map((d) => d.region))
-      .range(d3.schemeCategory10);
-
     const pie = d3
       .pie<{ region: string; area: number }>()
       .sort(null)
@@ -125,7 +121,7 @@ const HibernationVegetableCultivationPieChart = ({ chartData, selectedCrop, year
       .data(pie(pieDataSorted))
       .join("path")
       .attr("d", arc)
-      .attr("fill", (d) => color(d.data.region))
+      .attr("fill", (_, i) => getColor(i))
       .attr("stroke", "#a9a9a9")
       .attr("stroke-width", 1)
       .style("cursor", "pointer");

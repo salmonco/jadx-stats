@@ -19,7 +19,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [size, setSize] = useState({ width: 800, height: 420 });
-  const barColor = viewType === "absolute" ? "#F48FB1" : viewType === "rate" ? "#7E57C2" : "#4DB6AC";
+  const barColor = viewType === "absolute" ? "#8B5CF6" : viewType === "rate" ? "#3B82F6" : "#10B981";
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -157,7 +157,7 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
             Plot.barX(regionTotals, {
               x: "previous_area",
               y: "region",
-              fill: "#7E57C2",
+              fill: "#8B5CF6",
               insetTop: barInset,
               insetBottom: barInset,
             }),
@@ -174,13 +174,13 @@ const CultivationChangeDivergingBarChart = ({ chartData, selectedCrop, year, vie
             Plot.line(regionTotals, {
               x: "current_area",
               y: "region",
-              stroke: "#FF6B6B",
+              stroke: "#EF4444",
               strokeWidth: 3,
             }),
             Plot.dot(regionTotals, {
               x: "current_area",
               y: "region",
-              fill: "#FF6B6B",
+              fill: "#EF4444",
               r: 5,
             }),
             Plot.text(regionTotals, {

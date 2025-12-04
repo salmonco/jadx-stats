@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { Download } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import InfoTooltip from "~/components/InfoTooltip";
+import { getColor } from "~/maps/constants/mandarinCultivationInfo";
 import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface Props {
@@ -97,8 +98,6 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
 
     const group = svg.append("g").attr("transform", `translate(${actualWidth / 2}, ${height / 2})`);
 
-    const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
     const pie = d3
       .pie<any>()
       .sort(null)
@@ -118,7 +117,7 @@ const SimulatorResult = ({ chartData, isReportMode }: Props) => {
       .data(pie(sortedDisplayData))
       .join("path")
       .attr("d", arc)
-      .attr("fill", (d, i) => colorScale(i.toString()))
+      .attr("fill", (_, i) => getColor(i))
       .attr("stroke", "#a9a9a9")
       .attr("stroke-width", 1)
       .style("cursor", "pointer");

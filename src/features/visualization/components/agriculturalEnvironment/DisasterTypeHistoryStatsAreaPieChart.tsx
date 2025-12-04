@@ -3,6 +3,7 @@ import * as d3 from "d3";
 import { Dayjs } from "dayjs";
 import { Download } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { getColor } from "~/maps/constants/mandarinCultivationInfo";
 import downloadCsv, { CsvColumn } from "~/utils/downloadCsv";
 
 interface Props {
@@ -112,11 +113,6 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
 
     const group = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    const color = d3
-      .scaleOrdinal<string, string>()
-      .domain(pieData.map((d) => d.region))
-      .range(d3.schemeCategory10);
-
     const pie = d3
       .pie<{ region: string; area: number }>()
       .sort(null)
@@ -133,7 +129,7 @@ const DisasterTypeHistoryStatsAreaPieChart = ({ features, startDate, endDate, se
       .data(pie(pieData))
       .join("path")
       .attr("d", arc)
-      .attr("fill", (d) => color(d.data.region))
+      .attr("fill", (_, i) => getColor(i))
       .attr("stroke", "#a9a9a9")
       .attr("stroke-width", 1)
       .style("cursor", "pointer");
