@@ -7,7 +7,7 @@ export const shouldShowRegionFilter = (
   isSelectedAll: (selection: string[]) => boolean,
   isSelectedAllStr: (selection: string) => boolean
 ): boolean => {
-  const { 구분, 행정시, 권역, 읍면 } = currentSelectedValue;
+  const { 구분, 행정시, 권역, 읍면동 } = currentSelectedValue;
 
   if (구분 === REGION_LEVEL_OPTIONS.제주도) {
     return false;
@@ -36,8 +36,8 @@ export const shouldShowRegionFilter = (
       case REGION_LEVEL_OPTIONS.권역:
         if (isSelectedAll(권역)) allAncestorsSelectedSpecific = false;
         break;
-      case REGION_LEVEL_OPTIONS.읍면:
-        if (isSelectedAll(읍면)) allAncestorsSelectedSpecific = false;
+      case REGION_LEVEL_OPTIONS.읍면동:
+        if (isSelectedAll(읍면동)) allAncestorsSelectedSpecific = false;
     }
     if (!allAncestorsSelectedSpecific) break;
   }

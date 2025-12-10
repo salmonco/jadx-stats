@@ -8,8 +8,8 @@ export type RegionFilterOptions = {
   구분: RegionLevelOptions;
   행정시?: string | null;
   권역?: string[];
-  읍면?: string[];
-  리동?: string[];
+  읍면동?: string[];
+  리?: string[];
   excludeDong?: boolean;
 };
 
@@ -17,8 +17,8 @@ export const DEFAULT_REGION_SETTING: RegionFilterOptions = {
   구분: DEFAULT_REGION_LEVEL,
   행정시: null,
   권역: [],
-  읍면: [],
-  리동: [],
+  읍면동: [],
+  리: [],
   excludeDong: DEFAULT_EXCLUDE_DONG,
 };
 

@@ -19,11 +19,11 @@ const useRegionFilter = (regionFilterSetting: RegionFilterOptions) => {
     if (regionLevel === REGION_LEVEL_OPTIONS.권역 && selectedRegion.권역.length > 0) {
       return selectedRegion.권역.includes(props.vrbs_nm);
     }
-    if (regionLevel === REGION_LEVEL_OPTIONS.읍면 && selectedRegion.읍면.length > 0) {
-      return selectedRegion.읍면.includes(props.vrbs_nm);
+    if (regionLevel === REGION_LEVEL_OPTIONS.읍면동 && selectedRegion.읍면동.length > 0) {
+      return selectedRegion.읍면동.includes(props.vrbs_nm);
     }
-    if (regionLevel === REGION_LEVEL_OPTIONS.리동 && selectedRegion.리동.length > 0) {
-      return selectedRegion.리동.includes(props.vrbs_nm);
+    if (regionLevel === REGION_LEVEL_OPTIONS.리 && selectedRegion.리.length > 0) {
+      return selectedRegion.리.includes(props.vrbs_nm);
     }
     return true;
   };
