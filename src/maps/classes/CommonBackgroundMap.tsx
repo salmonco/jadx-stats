@@ -18,7 +18,7 @@ class CommonBackgroundMap {
 
   /**
    * 지역 필터 설정
-   * - 구분, 행정시, 권역, 읍면, 리동
+   * - 구분, 행정시, 권역, 읍면동, 리
    */
   #regionFilterSetting: RegionFilterOptions = structuredClone(DEFAULT_REGION_SETTING);
 
@@ -120,11 +120,11 @@ class CommonBackgroundMap {
     if (regionSetting.권역 && regionSetting.권역.length > 0) {
       filterParts.push(regionSetting.권역.join(", "));
     }
-    if (regionSetting.읍면 && regionSetting.읍면.length > 0) {
-      filterParts.push(regionSetting.읍면.join(", "));
+    if (regionSetting.읍면동 && regionSetting.읍면동.length > 0) {
+      filterParts.push(regionSetting.읍면동.join(", "));
     }
-    if (regionSetting.리동 && regionSetting.리동.length > 0) {
-      filterParts.push(regionSetting.리동.join(", "));
+    if (regionSetting.리 && regionSetting.리.length > 0) {
+      filterParts.push(regionSetting.리.join(", "));
     }
 
     return filterParts;

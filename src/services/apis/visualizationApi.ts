@@ -49,11 +49,12 @@ const getObservationResultByYear = async (targetYear: number, standardYear: numb
   return response?.data;
 };
 
-const getObservationResultByMonth = async (selectedLevel: RegionLevels, targetYear: number): Promise<any> => {
+const getObservationResultByMonth = async (selectedLevel: RegionLevels, targetYear: number, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/observation-result/by-month`, {
     params: {
       level: selectedLevel,
       target_year: targetYear,
+      exclude_dong: exclude_dong ?? selectedLevel === "ri",
     },
   });
   return response?.data;
@@ -108,12 +109,13 @@ const getMandarinFloweringByYear = async (targetYear: number, standardYear: numb
 };
 
 // 월동채소 재배면적 변화
-const getHinatVgtblCltvarDclrFile = async (target_year: number, standard_year: number, level: RegionLevels): Promise<any> => {
+const getHinatVgtblCltvarDclrFile = async (target_year: number, standard_year: number, level: RegionLevels, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/hinat_vgtbl_cltvar_dclr/file`, {
     params: {
       target_year,
       standard_year,
       level,
+      exclude_dong: exclude_dong ?? level === "ri",
     },
   });
   return response?.data;
@@ -136,37 +138,40 @@ const getMandarinVarietyList = async (): Promise<any> => {
 };
 
 // 감귤 수령분포
-const getMandarinTreeAgeDistribution = async (target_year: number, level: RegionLevels, pummok: string, variety: string): Promise<any> => {
+const getMandarinTreeAgeDistribution = async (target_year: number, level: RegionLevels, pummok: string, variety: string, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/cifru_cltvtn_mng_sys/simulation`, {
     params: {
       target_year,
       level,
       pummok,
       variety,
+      exclude_dong: exclude_dong ?? level === "ri",
     },
   });
   return response?.data;
 };
 
 // 지역별 감귤 재배정보
-const getMandarinCultivationInfo = async (level: RegionLevels, pummok: string, variety: string): Promise<any> => {
+const getMandarinCultivationInfo = async (level: RegionLevels, pummok: string, variety: string, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/cifru_cltvtn_mng_sys/zone`, {
     params: {
       level,
       pummok,
       variety,
+      exclude_dong: exclude_dong ?? level === "ri",
     },
   });
   return response?.data;
 };
 
 // 지역별 감귤 재배정보 (차트)
-const getMandarinCultivationInfoChart = async (level: string, pummok: string, variety: string): Promise<any> => {
+const getMandarinCultivationInfoChart = async (level: string, pummok: string, variety: string, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/cifru_cltvtn_mng_sys/chart`, {
     params: {
       level,
       pummok,
       variety,
+      exclude_dong: exclude_dong ?? level === "ri",
     },
   });
   return response?.data;
@@ -185,28 +190,30 @@ const getWorldGeoJson = async (): Promise<any> => {
 };
 
 // 내륙 지도 geoJson
-const getAreaGeojson = async (level: string): Promise<any> => {
+const getAreaGeojson = async (level: string, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/gisMap/getAreaGeojson`, {
     params: {
       level,
+      exclude_dong: exclude_dong ?? level === "ri",
     },
   });
   return response?.data;
 };
 
 // 지하수 데이터 및 영역
-const getField = async (level: string, targetYear: number): Promise<any> => {
+const getField = async (level: string, targetYear: number, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/agrclt_gwt_wtrqlty/ground_water`, {
     params: {
       level,
       targetYear,
+      exclude_dong: exclude_dong ?? level === "ri",
     },
   });
   return response?.data;
 };
 
 // 감귤 관측조사 결과 비교
-const getMandarinGrowthSurveyCompare = async (level: string, target_year: number, standard_year: number, category: string, altitude: string): Promise<any> => {
+const getMandarinGrowthSurveyCompare = async (level: string, target_year: number, standard_year: number, category: string, altitude: string, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/obsrvn_exmn`, {
     params: {
       level,
@@ -214,6 +221,7 @@ const getMandarinGrowthSurveyCompare = async (level: string, target_year: number
       standard_year,
       category,
       altitude,
+      exclude_dong: exclude_dong ?? level === "ri",
     },
   });
   return response?.data;
@@ -229,11 +237,12 @@ const getDisasterName = async (target_year: number): Promise<any> => {
   return response?.data;
 };
 
-const getDisasterFeatures = async (target_year: number, level: RegionLevels, disaster_name: string, item_name?: string): Promise<any> => {
+const getDisasterFeatures = async (target_year: number, level: RegionLevels, disaster_name: string, item_name?: string, exclude_dong?: boolean): Promise<any> => {
   const params: Record<string, any> = {
     target_year,
     level,
     disaster_name,
+    exclude_dong: exclude_dong ?? level === "ri",
   };
 
   if (item_name) {
@@ -333,11 +342,11 @@ const getRegionCultivationHarvestDetail = async (
   return response?.data?.response?.body?.emdMap?.items?.item ?? [];
 };
 
-const getAgingStatus = async (level: RegionLevels, exclude_dong: boolean): Promise<any> => {
+const getAgingStatus = async (level: RegionLevels, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/farming-entity/by-year`, {
     params: {
       level,
-      exclude_dong,
+      exclude_dong: exclude_dong ?? level === "ri",
     },
   });
   return response?.data;
