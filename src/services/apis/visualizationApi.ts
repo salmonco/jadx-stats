@@ -185,10 +185,11 @@ const getWorldGeoJson = async (): Promise<any> => {
 };
 
 // 내륙 지도 geoJson
-const getAreaGeojson = async (level: string): Promise<any> => {
+const getAreaGeojson = async (level: string, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/gisMap/getAreaGeojson`, {
     params: {
       level,
+      exclude_dong: exclude_dong ?? level === "ri",
     },
   });
   return response?.data;
@@ -333,11 +334,11 @@ const getRegionCultivationHarvestDetail = async (
   return response?.data?.response?.body?.emdMap?.items?.item ?? [];
 };
 
-const getAgingStatus = async (level: RegionLevels, exclude_dong: boolean): Promise<any> => {
+const getAgingStatus = async (level: RegionLevels, exclude_dong?: boolean): Promise<any> => {
   const response = await apiClient.get(`${domains.visualize}/farming-entity/by-year`, {
     params: {
       level,
-      exclude_dong,
+      exclude_dong: exclude_dong ?? level === "ri",
     },
   });
   return response?.data;

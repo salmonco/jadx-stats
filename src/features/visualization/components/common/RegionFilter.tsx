@@ -46,10 +46,10 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
         return selectedRegion.행정시 || DEFAULT_ALL_OPTION;
       case REGION_LEVEL_OPTIONS.권역:
         return selectedRegion.권역?.length ? selectedRegion.권역 : [DEFAULT_ALL_OPTION];
-      case REGION_LEVEL_OPTIONS.읍면:
-        return selectedRegion.읍면?.length ? selectedRegion.읍면 : [DEFAULT_ALL_OPTION];
-      case REGION_LEVEL_OPTIONS.리동:
-        return selectedRegion.리동?.length ? selectedRegion.리동 : [DEFAULT_ALL_OPTION];
+      case REGION_LEVEL_OPTIONS.읍면동:
+        return selectedRegion.읍면동?.length ? selectedRegion.읍면동 : [DEFAULT_ALL_OPTION];
+      case REGION_LEVEL_OPTIONS.리:
+        return selectedRegion.리?.length ? selectedRegion.리 : [DEFAULT_ALL_OPTION];
       default:
         return DEFAULT_ALL_OPTION;
     }
@@ -60,10 +60,10 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
   const handleLevelChange = useCallback(
     (newLevel: RegionLevelOptions) => {
       setSelectedRegion((prev) => {
-        if (newLevel === REGION_LEVEL_OPTIONS.리동) {
+        if (newLevel === REGION_LEVEL_OPTIONS.리) {
           // 애월 지역으로 줌인
           map.setMapView(AEWOL_CENTER_COORD, DEFAULT_ZOOM_LEVEL_FOR_AEWOL);
-        } else if (prev.구분 === REGION_LEVEL_OPTIONS.리동) {
+        } else if (prev.구분 === REGION_LEVEL_OPTIONS.리) {
           // 제주 전체 지역으로 줌아웃
           map.setMapView(jejuCenterCoord, DEFAULT_ZOOM_LEVEL);
         }
@@ -71,8 +71,9 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
           구분: newLevel,
           행정시: null,
           권역: [],
-          읍면: [],
-          리동: [],
+          읍면동: [],
+          리: [],
+          excludeDong: newLevel === REGION_LEVEL_OPTIONS.리 ? true : DEFAULT_EXCLUDE_DONG,
         };
       });
     },
@@ -86,8 +87,8 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
           ...prev,
           행정시: null,
           권역: [],
-          읍면: [],
-          리동: [],
+          읍면동: [],
+          리: [],
         };
 
         switch (prev.구분) {
@@ -97,11 +98,11 @@ const RegionFilter = <M extends CommonBackgroundMap>({ features, selectedRegion,
           case REGION_LEVEL_OPTIONS.권역:
             newSelection.권역 = processMultiSelect(Array.isArray(newValue) ? newValue : [newValue]);
             break;
-          case REGION_LEVEL_OPTIONS.읍면:
-            newSelection.읍면 = processMultiSelect(Array.isArray(newValue) ? newValue : [newValue]);
+          case REGION_LEVEL_OPTIONS.읍면동:
+            newSelection.읍면동 = processMultiSelect(Array.isArray(newValue) ? newValue : [newValue]);
             break;
-          case REGION_LEVEL_OPTIONS.리동:
-            newSelection.리동 = processMultiSelect(Array.isArray(newValue) ? newValue : [newValue]);
+          case REGION_LEVEL_OPTIONS.리:
+            newSelection.리 = processMultiSelect(Array.isArray(newValue) ? newValue : [newValue]);
             break;
         }
         return newSelection;
