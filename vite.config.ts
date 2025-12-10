@@ -13,23 +13,27 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': {
-        target: 'https://agri.jeju.go.kr',
+      "/api": {
+        // TODO: 배포 시 실제 서버 주소로 변경 필요 (현재는 개발용 서버로 설정)
+        // target: 'https://agri.jeju.go.kr',
+        target: "https://dev-agri.todayjeju.net",
         changeOrigin: true,
         secure: false,
-      }
-    }
+      },
+    },
   },
   preview: {
     host: true,
-    allowedHosts: ['hack.hypurrquant.com'],
+    allowedHosts: ["hack.hypurrquant.com"],
     port: 4173,
     proxy: {
-      '/api': {
-        target: 'https://agri.jeju.go.kr',
+      "/api": {
+        // TODO: 배포 시 실제 서버 주소로 변경 필요 (현재는 개발용 서버로 설정)
+        // target: 'https://agri.jeju.go.kr',
+        target: "https://dev-agri.todayjeju.net",
         changeOrigin: true,
         secure: false,
-      }
-    }
-  }
+      },
+    },
+  },
 });
